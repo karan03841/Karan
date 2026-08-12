@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>OSCP Complete Skill Map — Zero to Exam Ready</title>
+<style>
+  :root{
+    --bg:#0b0f14; --panel:#111820; --panel2:#0e151c; --text:#d7e2ea; --muted:#7d93a3; --grid:#1c2731;
+    --net:#3fd0ff; --os:#ffb454; --script:#5eff8f; --web:#ff5c8a; --ad:#8a6bff; --adv:#ff8a3d; --report:#4dd9c0;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(circle at 15% 0%,#10202b 0%,transparent 45%),var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;line-height:1.55}
+  header{padding:48px 6vw 36px;border-bottom:1px solid var(--grid);background:linear-gradient(180deg,#0d1720,#0b0f14 90%)}
+  .eyebrow{font-family:'Consolas','Courier New',monospace;color:var(--net);letter-spacing:.14em;font-size:12px;text-transform:uppercase}
+  h1{margin:10px 0 6px;font-size:clamp(28px,4vw,44px);font-weight:800;color:#f2f7fa}
+  .subtitle{color:var(--muted);font-size:15px;max-width:780px}
+  .badge-row{margin-top:22px;display:flex;gap:10px;flex-wrap:wrap}
+  .badge{font-family:'Consolas','Courier New',monospace;font-size:11.5px;padding:6px 12px;border-radius:20px;border:1px solid currentColor;text-transform:uppercase;letter-spacing:.05em}
+  main{padding:40px 6vw 90px;max-width:1150px;margin:0 auto}
+  .toc{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 50px}
+  @media(max-width:820px){.toc{grid-template-columns:1fr 1fr}}
+  .toc a{display:block;background:var(--panel);border:1px solid var(--grid);border-radius:8px;padding:10px 14px;color:#c3d1db;text-decoration:none;font-size:13px;font-family:Consolas,monospace}
+  .toc a:hover{border-color:var(--net)}
+  .section{margin-bottom:56px}
+  .section-head{display:flex;align-items:baseline;gap:14px;border-bottom:1px solid var(--grid);padding-bottom:10px;margin-bottom:20px}
+  .section-num{font-family:Consolas,monospace;font-size:13px;color:var(--muted)}
+  .section h2{margin:0;font-size:22px;color:#f2f7fa}
+  .tag{margin-left:auto;font-family:Consolas,monospace;font-size:11px;padding:3px 10px;border-radius:14px;text-transform:uppercase;letter-spacing:.05em}
+  .tag-net{background:rgba(63,208,255,.12);color:var(--net);border:1px solid rgba(63,208,255,.4)}
+  .tag-os{background:rgba(255,180,84,.12);color:var(--os);border:1px solid rgba(255,180,84,.4)}
+  .tag-script{background:rgba(94,255,143,.12);color:var(--script);border:1px solid rgba(94,255,143,.4)}
+  .tag-web{background:rgba(255,92,138,.12);color:var(--web);border:1px solid rgba(255,92,138,.4)}
+  .tag-ad{background:rgba(138,107,255,.12);color:var(--ad);border:1px solid rgba(138,107,255,.4)}
+  .tag-adv{background:rgba(255,138,61,.12);color:var(--adv);border:1px solid rgba(255,138,61,.4)}
+  .tag-report{background:rgba(77,217,192,.12);color:var(--report);border:1px solid rgba(77,217,192,.4)}
+  p{color:#c3d1db}
+  .note{background:var(--panel);border-left:3px solid var(--net);padding:14px 18px;border-radius:0 8px 8px 0;margin:16px 0;font-size:14.5px;color:#b9c8d3}
+  .note.adv{border-left-color:var(--adv)}
+  table{width:100%;border-collapse:collapse;background:var(--panel);border-radius:10px;overflow:hidden;font-size:14px;margin:14px 0 24px}
+  th{text-align:left;background:var(--panel2);color:var(--muted);font-family:Consolas,monospace;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;padding:12px 14px;border-bottom:1px solid var(--grid)}
+  td{padding:12px 14px;border-bottom:1px solid var(--grid);color:#c3d1db;vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  pre{background:#080b0f;border:1px solid var(--grid);border-radius:8px;padding:16px 18px;overflow-x:auto;font-family:Consolas,monospace;font-size:13.5px;color:var(--script);margin:10px 0 22px}
+  code.inline{background:#080b0f;color:var(--script);padding:2px 6px;border-radius:4px;font-size:13px;border:1px solid var(--grid)}
+  .steps{counter-reset:step;list-style:none;padding:0;margin:16px 0}
+  .steps li{counter-increment:step;position:relative;padding:14px 16px 14px 52px;background:var(--panel);border-radius:8px;margin-bottom:10px;border:1px solid var(--grid)}
+  .steps li::before{content:counter(step);position:absolute;left:14px;top:14px;width:26px;height:26px;border-radius:50%;background:rgba(63,208,255,.15);color:var(--net);font-family:Consolas,monospace;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(63,208,255,.5)}
+  footer{padding:28px 6vw 50px;color:var(--muted);font-size:12.5px;border-top:1px solid var(--grid);font-family:Consolas,monospace}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">OSCP Master Prep · Full Skill Map</div>
+  <h1>OSCP Complete Skill Map</h1>
+  <p class="subtitle">Zero se OSCP-exam-ready tak — networking, OS internals, scripting, terminal mastery, web attacks, Active Directory, privilege escalation, aur advanced topics. Ye ek complete syllabus hai jo Red Team roadmap ke saath overlap karta hai.</p>
+  <div class="badge-row">
+    <span class="badge" style="color:var(--net)">Networking</span>
+    <span class="badge" style="color:var(--os)">OS Internals</span>
+    <span class="badge" style="color:var(--script)">Scripting</span>
+    <span class="badge" style="color:var(--web)">Web Attacks</span>
+    <span class="badge" style="color:var(--ad)">Active Directory</span>
+    <span class="badge" style="color:var(--adv)">Advanced/Exploit Dev</span>
+  </div>
+</header>
+
+<main>
+
+  <div class="toc">
+    <a href="#s1">01 · Networking Fundamentals</a>
+    <a href="#s2">02 · Linux Mastery</a>
+    <a href="#s3">03 · Windows Internals</a>
+    <a href="#s4">04 · Scripting (Bash/Python/PS)</a>
+    <a href="#s5">05 · Terminal &amp; Tooling</a>
+    <a href="#s6">06 · Enumeration</a>
+    <a href="#s7">07 · Web App Attacks</a>
+    <a href="#s8">08 · Privilege Escalation</a>
+    <a href="#s9">09 · Active Directory</a>
+    <a href="#s10">10 · Buffer Overflow / Exploit Dev</a>
+    <a href="#s11">11 · AV/Detection Evasion</a>
+    <a href="#s12">12 · Report Writing</a>
+  </div>
+
+  <!-- 1 -->
+  <div class="section" id="s1">
+    <div class="section-head"><span class="section-num">01</span><h2>Networking Fundamentals</h2><span class="tag tag-net">Foundation</span></div>
+    <p>Bina networking samjhe pentest karna impossible hai — har exploit, har lateral movement network concepts pe based hota hai.</p>
+    <table>
+      <tr><th>Topic</th><th>Kya samajhna hai</th></tr>
+      <tr><td>OSI / TCP-IP model</td><td>Har layer ka role — especially Layer 3 (IP), Layer 4 (TCP/UDP), Layer 7 (application protocols)</td></tr>
+      <tr><td>Subnetting / CIDR</td><td>IP ranges calculate karna, network scope samajhna</td></tr>
+      <tr><td>Common ports/protocols</td><td>21(FTP), 22(SSH), 25(SMTP), 53(DNS), 80/443(HTTP/S), 139/445(SMB), 389(LDAP), 3389(RDP), 5985(WinRM)</td></tr>
+      <tr><td>Routing basics</td><td>Static routes, NAT, pivoting concepts ke liye zaroori</td></tr>
+      <tr><td>VPN/Tunneling</td><td>SSH tunneling, port forwarding (local/remote/dynamic)</td></tr>
+      <tr><td>Packet analysis</td><td>Wireshark/tcpdump se traffic padhna</td></tr>
+    </table>
+  </div>
+
+  <!-- 2 -->
+  <div class="section" id="s2">
+    <div class="section-head"><span class="section-num">02</span><h2>Linux Mastery</h2><span class="tag tag-os">OS Internals</span></div>
+    <p>Attacking machine (Kali) aur target machines dono mein Linux deeply aana chahiye — sirf commands yaad karna nahi, samajhna ki system kaise kaam karta hai.</p>
+    <table>
+      <tr><th>Area</th><th>Detail</th></tr>
+      <tr><td>File system hierarchy</td><td>/etc, /var, /home, /tmp, permissions (rwx, SUID/SGID bits)</td></tr>
+      <tr><td>Users &amp; permissions</td><td>UID/GID, sudoers file, /etc/passwd &amp; /etc/shadow structure</td></tr>
+      <tr><td>Process management</td><td>ps, top, kill, systemctl/services enumeration</td></tr>
+      <tr><td>Cron jobs</td><td>Scheduled tasks — privesc ka common vector</td></tr>
+      <tr><td>Networking commands</td><td>ip a, netstat/ss, iptables basics</td></tr>
+      <tr><td>Package/service internals</td><td>Kaunsi service kaunse config file se chalti hai</td></tr>
+    </table>
+    <div class="note">Goal: kisi bhi Linux box pe utro to bina Google kiye basic navigation, permission check, aur service enumeration kar sako.</div>
+  </div>
+
+  <!-- 3 -->
+  <div class="section" id="s3">
+    <div class="section-head"><span class="section-num">03</span><h2>Windows Internals</h2><span class="tag tag-os">OS Internals</span></div>
+    <table>
+      <tr><th>Area</th><th>Detail</th></tr>
+      <tr><td>Windows file system</td><td>C:\Windows, C:\Users, registry structure basics</td></tr>
+      <tr><td>Users &amp; groups</td><td>Local admin vs domain accounts, SID structure</td></tr>
+      <tr><td>Services &amp; processes</td><td>tasklist, Get-Process, service permissions (misconfig = privesc)</td></tr>
+      <tr><td>Registry</td><td>Autoruns, stored credentials, persistence locations</td></tr>
+      <tr><td>WMI / .NET basics</td><td>Windows Management Instrumentation queries</td></tr>
+      <tr><td>Authentication</td><td>NTLM vs Kerberos basics (AD section mein deep jaayenge)</td></tr>
+    </table>
+  </div>
+
+  <!-- 4 -->
+  <div class="section" id="s4">
+    <div class="section-head"><span class="section-num">04</span><h2>Scripting — Bash, Python, PowerShell</h2><span class="tag tag-script">Must-Have Skill</span></div>
+    <p>Scripting sirf "nice to have" nahi — exam mein custom exploits modify karne, automation, aur payloads banane ke liye zaroori hai.</p>
+
+    <table>
+      <tr><th>Language</th><th>Kyun zaroori</th><th>Kya seekhna hai</th></tr>
+      <tr><td><strong>Bash</strong></td><td>Linux automation, quick recon scripts</td><td>Loops, variables, piping, grep/awk/sed, one-liners</td></tr>
+      <tr><td><strong>Python</strong></td><td>Exploit-DB scripts modify karna, custom tools banana</td><td>Sockets, requests library, file handling, exploit scripts padhna/likhna</td></tr>
+      <tr><td><strong>PowerShell</strong></td><td>Windows environment mein primary weapon</td><td>Cmdlets, AD queries, download cradles, obfuscation basics</td></tr>
+    </table>
+
+    <div class="note">
+      <strong>Practice goal:</strong> Ek public exploit (Python/C) le, usse samajh ke apne target IP/port ke hisaab se modify kar sako bina copy-paste ke — yahi OSCP ka core test hai.
+    </div>
+
+    <pre><span style="color:#7d93a3"># Bash quick recon one-liner example</span>
+for port in $(cat ports.txt); do nc -zv $TARGET $port 2>&1 | grep succeeded; done
+
+<span style="color:#7d93a3"># Python simple reverse shell listener test</span>
+import socket
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.bind(("0.0.0.0", 4444))
+s.listen(1)
+conn, addr = s.accept()
+print(f"Connection from {addr}")</pre>
+  </div>
+
+  <!-- 5 -->
+  <div class="section" id="s5">
+    <div class="section-head"><span class="section-num">05</span><h2>Terminal &amp; Tooling Mastery</h2><span class="tag tag-net">Core Tools</span></div>
+    <table>
+      <tr><th>Category</th><th>Tools</th></tr>
+      <tr><td>Scanning</td><td>nmap (deep flag knowledge — not just default scan), masscan</td></tr>
+      <tr><td>Web enum</td><td>gobuster, ffuf, nikto, whatweb</td></tr>
+      <tr><td>Web proxy</td><td>Burp Suite (already Phase 2 focus) — repeater, intruder mastery</td></tr>
+      <tr><td>SMB/AD enum</td><td>enum4linux, smbclient, crackmapexec, BloodHound</td></tr>
+      <tr><td>Password attacks</td><td>hydra, john, hashcat</td></tr>
+      <tr><td>File transfer</td><td>python http.server, scp, certutil (Windows), impacket tools</td></tr>
+      <tr><td>Shell handling</td><td>netcat, socat, rlwrap, tty upgrade techniques (python -c pty.spawn)</td></tr>
+    </table>
+    <div class="note">Terminal mastery ka matlab: bina GUI ke, keyboard-only navigate karna, tmux/screen use karna multi-session manage karne ke liye, aur history/aliases efficiently use karna.</div>
+  </div>
+
+  <!-- 6 -->
+  <div class="section" id="s6">
+    <div class="section-head"><span class="section-num">06</span><h2>Enumeration Methodology</h2><span class="tag tag-net">Process</span></div>
+    <ol class="steps">
+      <li><strong>Port scan:</strong> Full TCP + top UDP ports, service version detection</li>
+      <li><strong>Service-specific enum:</strong> Har open port ke hisaab se deep dive (HTTP → dirs, SMB → shares, FTP → anonymous login)</li>
+      <li><strong>Vulnerability mapping:</strong> Version numbers se known CVEs check karna (searchsploit)</li>
+      <li><strong>Manual verification:</strong> Automated scanner results ko manually confirm karna (false positives common hain)</li>
+    </ol>
+  </div>
+
+  <!-- 7 -->
+  <div class="section" id="s7">
+    <div class="section-head"><span class="section-num">07</span><h2>Web Application Attacks</h2><span class="tag tag-web">Bug Bounty Overlap</span></div>
+    <table>
+      <tr><th>Vulnerability Class</th><th>Focus</th></tr>
+      <tr><td>SQL Injection</td><td>Manual + sqlmap (already teri repo mein commands hain)</td></tr>
+      <tr><td>File Upload / LFI-RFI</td><td>Webshell upload, path traversal, log poisoning</td></tr>
+      <tr><td>Command Injection</td><td>OS command chaining, filter bypass</td></tr>
+      <tr><td>Authentication bypass</td><td>Session handling flaws, IDOR</td></tr>
+      <tr><td>CMS-specific exploits</td><td>WordPress, Joomla common misconfig/plugin vulns</td></tr>
+    </table>
+  </div>
+
+  <!-- 8 -->
+  <div class="section" id="s8">
+    <div class="section-head"><span class="section-num">08</span><h2>Privilege Escalation (Linux + Windows)</h2><span class="tag tag-os">Core OSCP Skill</span></div>
+    <table>
+      <tr><th>OS</th><th>Common Vectors</th></tr>
+      <tr><td>Linux</td><td>SUID binaries, sudo misconfig (GTFOBins), cron jobs, kernel exploits, writable /etc/passwd, PATH hijacking</td></tr>
+      <tr><td>Windows</td><td>Unquoted service paths, weak service permissions, AlwaysInstallElevated, stored creds, token impersonation (Potato attacks), kernel exploits</td></tr>
+    </table>
+    <pre><span style="color:#7d93a3"># Linux quick privesc enum</span>
+find / -perm -4000 -type f 2>/dev/null
+sudo -l
+
+<span style="color:#7d93a3"># Windows quick privesc enum</span>
+whoami /priv
+systeminfo</pre>
+    <div class="note">Manual enumeration scripts (LinPEAS, WinPEAS) use karna theek hai, par output khud analyze karna aana chahiye — blind trust nahi.</div>
+  </div>
+
+  <!-- 9 -->
+  <div class="section" id="s9">
+    <div class="section-head"><span class="section-num">09</span><h2>Active Directory Attacks</h2><span class="tag tag-ad">40% of Exam Points</span></div>
+    <p>Ye tera <em>Red Team Roadmap</em> ke Phase 3 se directly overlap karta hai — is se related detail waha already file kiya hai.</p>
+    <table>
+      <tr><th>Technique</th><th>Purpose</th></tr>
+      <tr><td>Enumeration</td><td>BloodHound, PowerView — attack paths visualize karna</td></tr>
+      <tr><td>Kerberoasting / ASREPRoasting</td><td>Service account hashes crack karna</td></tr>
+      <tr><td>Pass-the-Hash / Pass-the-Ticket</td><td>Credentials reuse karke lateral movement</td></tr>
+      <tr><td>DCSync / Golden Ticket</td><td>Domain dominance techniques</td></tr>
+    </table>
+  </div>
+
+  <!-- 10 -->
+  <div class="section" id="s10">
+    <div class="section-head"><span class="section-num">10</span><h2>Buffer Overflow / Exploit Development</h2><span class="tag tag-adv">Advanced</span></div>
+    <p>OSCP ke current syllabus mein full buffer overflow module nahi hai (2023 update ke baad), par concept samajhna exploit-dev interest ke liye valuable hai:</p>
+    <ol class="steps">
+      <li>Fuzzing — crash point dhundhna</li>
+      <li>EIP control — exact offset find karna (pattern_create/offset)</li>
+      <li>Bad characters identify karna</li>
+      <li>JMP ESP address find karna (no ASLR/DEP environment)</li>
+      <li>Shellcode generate karke (msfvenom) full exploit chain banana</li>
+    </ol>
+  </div>
+
+  <!-- 11 -->
+  <div class="section" id="s11">
+    <div class="section-head"><span class="section-num">11</span><h2>AV / Detection Evasion Basics</h2><span class="tag tag-adv">Advanced / Red Team Overlap</span></div>
+    <table>
+      <tr><th>Concept</th><th>Detail</th></tr>
+      <tr><td>AMSI bypass basics</td><td>PowerShell script scanning evade karna (concept level)</td></tr>
+      <tr><td>Payload obfuscation</td><td>Encoding/packing to avoid signature detection</td></tr>
+      <tr><td>Living off the Land (LOLBins)</td><td>Built-in Windows binaries abuse karna (certutil, mshta, regsvr32)</td></tr>
+    </table>
+    <div class="note adv">Ye Red Team roadmap ke Phase 5 mein detail mein cover hoga — OSCP ke liye basic awareness hi kaafi hai.</div>
+  </div>
+
+  <!-- 12 -->
+  <div class="section" id="s12">
+    <div class="section-head"><span class="section-num">12</span><h2>Report Writing</h2><span class="tag tag-report">Exam-Critical</span></div>
+    <p>OSCP mein sirf hack karna kaafi nahi — report properly likhna 24-hour submission window mein utna hi important hai.</p>
+    <table>
+      <tr><th>Section</th><th>Kya include karna hai</th></tr>
+      <tr><td>Executive Summary</td><td>Non-technical overview — kya risk mila, overall impact</td></tr>
+      <tr><td>Methodology</td><td>Enumeration se lekar exploitation tak ka process</td></tr>
+      <tr><td>Findings (per machine)</td><td>Step-by-step reproduction, screenshots, commands used</td></tr>
+      <tr><td>Proof</td><td>local.txt aur proof.txt content ke screenshots</td></tr>
+      <tr><td>Remediation</td><td>Har vulnerability ke liye fix suggest karna</td></tr>
+    </table>
+    <div class="note">Abhi se hi practice karte waqt har machine ka mini-report banane ki habit daal — exam din ye second nature ban jaayega.</div>
+  </div>
+
+</main>
+
+<footer>
+  OSCP Complete Skill Map · Karan's Reference Vault · Overlaps with OSINT Roadmap + Red Team Roadmap
+</footer>
+
+</body>
+</html>

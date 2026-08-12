@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>People OSINT — Person Tracing Mastery</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --border:#30363d;
+    --user:#58a6ff; --phone:#f78166; --email:#3fb950;
+    --social:#a371f7; --img:#d29922; --records:#39c5cf; --corr:#f85149; --adv:#ff7b72;
+    --text:#c9d1d9; --muted:#8b949e;
+  }
+  *{box-sizing:border-box}
+  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-serif;margin:0;padding:0 0 60px 0;}
+  header{padding:40px 20px 30px;text-align:center;border-bottom:2px solid var(--border);
+    background:linear-gradient(135deg,#0d1117 0%,#161b22 60%,#0d1117 100%);}
+  header h1{font-size:2em;margin:0;color:#fff;letter-spacing:1px;}
+  header p{color:var(--muted);margin-top:8px;font-size:1em;}
+  .cover-svg{margin:0 auto 10px;display:block;}
+  nav{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;padding:20px;max-width:1100px;margin:0 auto;}
+  nav a{padding:6px 14px;border-radius:20px;font-size:0.85em;text-decoration:none;color:#0d1117;font-weight:600;}
+  .container{max-width:1100px;margin:0 auto;padding:0 20px;}
+  section{margin-bottom:36px;border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+  .sec-head{padding:14px 20px;font-size:1.2em;font-weight:700;color:#0d1117;}
+  .sec-body{padding:18px 20px;background:var(--panel);}
+  .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:14px;border-radius:6px;}
+  table{width:100%;min-width:520px;border-collapse:collapse;margin-bottom:0;}
+  th,td{padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;font-size:0.92em;vertical-align:top;}
+  th{color:var(--muted);font-weight:600;font-size:0.85em;text-transform:uppercase;}
+  .steps{background:#0d1117;border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin:10px 0 18px;}
+  .steps h4{margin:0 0 8px;font-size:0.95em;color:var(--muted);}
+  .steps ol{margin:0;padding-left:20px;}
+  .steps li{margin-bottom:8px;font-size:0.9em;}
+  code{background:#0d1117;border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:0.87em;color:#79c0ff;}
+  .note{font-size:0.85em;color:var(--muted);font-style:italic;margin-top:6px;}
+  .warn{background:#2d1618;border:1px solid #f85149;border-radius:8px;padding:12px 16px;margin:14px 0;font-size:0.88em;color:#ffb3ae;}
+  footer{text-align:center;color:var(--muted);font-size:0.8em;margin-top:30px;padding:0 20px;}
+</style>
+</head>
+<body>
+
+<header>
+<svg class="cover-svg" width="260" height="90" viewBox="0 0 260 90">
+  <circle cx="90" cy="45" r="24" fill="none" stroke="#58a6ff" stroke-width="2"/>
+  <circle cx="90" cy="36" r="8" fill="#58a6ff"/>
+  <path d="M74 58 Q90 44 106 58" fill="none" stroke="#58a6ff" stroke-width="2"/>
+  <line x1="120" y1="45" x2="150" y2="45" stroke="#8b949e" stroke-width="2" stroke-dasharray="4"/>
+  <rect x="155" y="25" width="60" height="40" rx="6" fill="none" stroke="#3fb950" stroke-width="2"/>
+  <circle cx="175" cy="40" r="4" fill="#a371f7"/>
+  <circle cx="195" cy="50" r="4" fill="#d29922"/>
+  <line x1="175" y1="40" x2="195" y2="50" stroke="#8b949e" stroke-width="1.5"/>
+</svg>
+<h1>👤 PEOPLE OSINT</h1>
+<p>Person Tracing Mastery — Username, Phone, Email, Social, Image se identity build karna</p>
+</header>
+
+<nav>
+<a href="#user" style="background:var(--user)">Username</a>
+<a href="#phone" style="background:var(--phone)">Phone</a>
+<a href="#email" style="background:var(--email)">Email</a>
+<a href="#social" style="background:var(--social)">Social Media</a>
+<a href="#img" style="background:var(--img)">Image/Face</a>
+<a href="#records" style="background:var(--records)">Public Records</a>
+<a href="#adv" style="background:var(--adv)">Advanced</a>
+<a href="#bonus" style="background:#e3b341">Bonus Tricks</a>
+<a href="#scenario" style="background:#ec8fac">Scenario Guide</a>
+<a href="#corr" style="background:var(--corr)">Correlation</a>
+</nav>
+
+<div class="container">
+
+<div class="container">
+<div class="warn">⚖️ Cyber Cell / law-enforcement context mein People OSINT sirf authorized investigations, official complaints, ya apni khud ki authorized bug-bounty/legal research ke liye use hoti hai. Kisi private individual ko bina consent/authorization ke stalk/track karna illegal hai (IT Act, stalking laws). Ye file sirf ethical/legal use ke liye hai.</div>
+</div>
+
+<section id="user">
+<div class="sec-head" style="background:var(--user)">🔹 Username Tracing</div>
+<div class="sec-body">
+<div class="table-wrap"><table>
+<tr><th>Tool</th><th>Kaam</th><th>Link/Command</th></tr>
+<tr><td>WhatsMyName</td><td>600+ platforms pe username check</td><td><code>whatsmyname.app</code></td></tr>
+<tr><td>Sherlock</td><td>CLI tool — 400+ sites pe username hunt</td><td><code>sherlock username</code></td></tr>
+<tr><td>Maigret</td><td>Sherlock se advanced — profile data bhi extract karta hai</td><td><code>maigret username -a</code></td></tr>
+<tr><td>Namechk</td><td>Username availability + existing accounts</td><td><code>namechk.com</code></td></tr>
+<tr><td>UserSearch.org</td><td>Web-based multi-platform username search</td><td><code>usersearch.org</code></td></tr>
+</table></div>
+<div class="steps">
+<h4>Username Recon — step by step</h4>
+<ol>
+<li>Target ka ek known username collect karo (kisi bhi platform se)</li>
+<li>Sherlock/Maigret CLI chalao: <code>python3 sherlock.py targetuser --print-found</code></li>
+<li>Har result manually visit karo — parked/fake accounts filter karo</li>
+<li>Username variations bhi try karo (numbers add/remove, underscores)</li>
+<li>Bio, linked links, profile pic — sab ek jagah note karo</li>
+<li>Same username across platforms = strong signal ki same person hai</li>
+</ol>
+</div>
+</div>
+</section>
+
+<section id="phone">
+<div class="sec-head" style="background:var(--phone)">🔹 Phone Number Lookup</div>
+<div class="sec-body">
+<div class="table-wrap"><table>
+<tr><th>Tool</th><th>Kaam</th><th>Link/Command</th></tr>
+<tr><td>TrueCaller (web)</td><td>Number se registered naam dikhata hai</td><td><code>truecaller.com</code></td></tr>
+<tr><td>PhoneInfoga</td><td>CLI tool — carrier, location, OSINT footprint</td><td><code>phoneinfoga scan -n "+91XXXXXXXXXX"</code></td></tr>
+<tr><td>Numverify API</td><td>Number validate + carrier/country info</td><td><code>numverify.com</code></td></tr>
+<tr><td>WhatsApp lookup</td><td>Number save karke WhatsApp pe DP/status check</td><td>Manual — save number → WhatsApp check</td></tr>
+<tr><td>Eyecon / Sync.me</td><td>Community-sourced caller ID databases</td><td><code>sync.me</code></td></tr>
+</table></div>
+<div class="steps">
+<h4>PhoneInfoga — step by step</h4>
+<ol>
+<li>Install: <code>go install github.com/sundowndev/phoneinfoga/v2/cmd/phoneinfoga@latest</code></li>
+<li>Scan chalao: <code>phoneinfoga scan -n "+919876543210"</code></li>
+<li>Output se carrier, line type (mobile/landline), country/region milega</li>
+<li>Number ko Truecaller/WhatsApp/Telegram pe cross-check karo naam ke liye</li>
+<li>Findings correlation section mein dusre data se milao</li>
+</ol>
+</div>
+<div class="note">Indian numbers ke liye TrueCaller sabse reliable hai naam match ke liye, but privacy settings ki wajah se hamesha kaam nahi karta.</div>
+</div>
+</section>
+
+<section id="email">
+<div class="sec-head" style="background:var(--email)">🔹 Email Tracing</div>
+<div class="sec-body">
+<div class="table-wrap"><table>
+<tr><th>Tool</th><th>Kaam</th><th>Link/Command</th></tr>
+<tr><td>Have I Been Pwned</td><td>Email kisi breach mein hai ya nahi</td><td><code>haveibeenpwned.com</code></td></tr>
+<tr><td>Holehe</td><td>Email se pata karo kaunse platforms pe account bana hai</td><td><code>holehe email@target.com</code></td></tr>
+<tr><td>Epieos</td><td>Google account se linked info (Maps reviews, calendar) nikaalta hai</td><td><code>epieos.com</code></td></tr>
+<tr><td>Hunter.io</td><td>Company domain se email pattern discover</td><td><code>hunter.io</code></td></tr>
+<tr><td>GHunt</td><td>Gmail address se Google services footprint deep-dive</td><td><code>ghunt email target@gmail.com</code></td></tr>
+</table></div>
+<div class="steps">
+<h4>Holehe + GHunt combo</h4>
+<ol>
+<li><code>holehe target@gmail.com</code> chalao — 120+ sites check karega account exists ya nahi</li>
+<li>Jo platforms confirm aaye, unko username tracing section se cross-verify karo</li>
+<li>Agar Gmail hai to GHunt chalao — Google Maps reviews, YouTube channel, Calendar visibility milegi</li>
+<li>HaveIBeenPwned se breach history check karo — leaked passwords/data points milte hain</li>
+</ol>
+</div>
+</div>
+</section>
+
+<section id="social">
+<div class="sec-head" style="background:var(--social)">🔹 Social Media Deep Dive</div>
+<div class="sec-body">
+<div class="table-wrap"><table>
+<tr><th>Tool</th><th>Kaam</th><th>Link/Command</th></tr>
+<tr><td>StalkScan</td><td>Facebook profile ko graph queries se deep search</td><td><code>stalkscan.com</code></td></tr>
+<tr><td>Picuki / Pixwox</td><td>Instagram anonymously browse (stories/posts)</td><td><code>picuki.com</code></td></tr>
+<tr><td>Social Blade</td><td>Growth stats — kab account active hua, kab spike aayi</td><td><code>socialblade.com</code></td></tr>
+<tr><td>TweetDeck adv. search</td><td>Twitter/X — location, date range, keyword filter</td><td><code>twitter.com/search-advanced</code></td></tr>
+<tr><td>LinkedIn X-Ray</td><td>Google dork se LinkedIn profile bina login</td><td><code>site:linkedin.com/in "naam" "company"</code></td></tr>
+</table></div>
+<div class="steps">
+<h4>Social media mapping — step by step</h4>
+<ol>
+<li>Username tracing se mile har platform ko visit karo</li>
+<li>Friends/followers list dekho — mutual connections family/colleagues reveal karte hain</li>
+<li>Tagged photos, check-ins, comments — location aur routine patterns milte hain</li>
+<li>Old posts (2015-2019 era) zyada personal info leak karte hain — scroll karke dekho</li>
+<li>Bio mein diya email/phone/other-platform link note karo — cross-reference ke liye</li>
+</ol>
+</div>
+</div>
+</section>
+
+<section id="img">
+<div class="sec-head" style="background:var(--img)">🔹 Image &amp; Face Recognition</div>
+<div class="sec-body">
+<div class="table-wrap"><table>
+<tr><th>Tool</th><th>Kaam</th><th>Link</th></tr>
+<tr><td>Google Images / Yandex</td><td>Reverse image search — source aur other appearances</td><td><code>images.google.com</code>, <code>yandex.com/images</code></td></tr>
+<tr><td>PimEyes</td><td>Face-search engine — same face ke aur photos web pe</td><td><code>pimeyes.com</code></td></tr>
+<tr><td>FaceCheck.id</td><td>Face search, social profiles se match karta hai</td><td><code>facecheck.id</code></td></tr>
+<tr><td>FotoForensics</td><td>Image edited/manipulated hai ya original — ELA analysis</td><td><code>fotoforensics.com</code></td></tr>
+<tr><td>ExifTool</td><td>Photo ke EXIF metadata (GPS, device, timestamp) nikalna</td><td><code>exiftool photo.jpg</code></td></tr>
+</table></div>
+<div class="steps">
+<h4>Photo se identity build karna</h4>
+<ol>
+<li>Sabse pehle ExifTool se metadata check karo — GPS coordinates mile to seedha location milegi</li>
+<li>Yandex reverse image search sabse accurate hai faces ke liye — try karo</li>
+<li>PimEyes/FaceCheck se dusri jagah same face dhoondo</li>
+<li>Background objects (signboards, landmarks, license plates) note karo — geolocation OSINT se cross-verify hoga</li>
+</ol>
+</div>
+</div>
+</section>
+
+<section id="records">
+<div class="sec-head" style="background:var(--records)">🔹 Public Records &amp; Directories</div>
+<div class="sec-body">
+<div class="table-wrap"><table>
+<tr><th>Source</th><th>Kaam</th><th>Link</th></tr>
+<tr><td>Voter ID search (state CEO sites)</td><td>India mein voter list se naam/address verify</td><td>state-specific CEO election sites</td></tr>
+<tr><td>MCA (Ministry of Corporate Affairs)</td><td>Company directors/business owners ka data</td><td><code>mca.gov.in</code></td></tr>
+<tr><td>Court records (eCourts)</td><td>Case history, legal proceedings public search</td><td><code>ecourts.gov.in</code></td></tr>
+<tr><td>Justdial / IndiaMart</td><td>Business owners ki contact/address info</td><td><code>justdial.com</code></td></tr>
+<tr><td>TrueCaller business listings</td><td>Businesses aur unke registered numbers</td><td><code>truecaller.com</code></td></tr>
+</table></div>
+<div class="note">Public records official government portals se hi verify karo — third-party "people search" sites ka data outdated/wrong ho sakta hai.</div>
+</div>
+</section>
+
+<section id="adv">
+<div class="sec-head" style="background:var(--adv)">🔺 Advanced Techniques</div>
+<div class="sec-body">
+
+<h4 style="color:var(--muted);font-size:0.95em;margin:0 0 8px;">1. Maltego — Link Analysis for People</h4>
+<div class="table-wrap"><table>
+<tr><th>Tool/Transform</th><th>Kaam</th><th>Link/Command</th></tr>
+<tr><td>Maltego CE (free)</td><td>Visual link-analysis tool — entities ko graph mein connect karta hai</td><td><code>maltego.com/downloads</code></td></tr>
+<tr><td>Email → Domain transform</td><td>Email se related domain/company nikaalta hai</td><td>Right-click entity → Run Transform</td></tr>
+<tr><td>Phone → Carrier/Location transform</td><td>Phone number se carrier aur rough location</td><td>Built-in "To Phone Details"</td></tr>
+<tr><td>Person → Social Links transform</td><td>Naam/email se linked social accounts auto-discover</td><td>SocialLinks CE transform pack</td></tr>
+<tr><td>Alias → Person transform</td><td>Username se real identity link karne ki koshish</td><td>Community transform hub se install</td></tr>
+</table></div>
+<div class="steps">
+<h4>Maltego — step by step</h4>
+<ol>
+<li>Maltego CE install karo, free account banao (community edition kaafi hai shuru mein)</li>
+<li>New graph banao, "Person" entity daalo — naam ya email jo bhi pata hai</li>
+<li>Right-click karke relevant transforms run karo (email→domain, phone→carrier)</li>
+<li>Har naya node jo aaye, uspar bhi transforms chalao — graph organically expand hota hai</li>
+<li>Clusters dekho — kaunse nodes zyada connections share kar rahe hain (family/close contacts)</li>
+<li>Final graph export karo (image/PDF) — report mein evidence ke saath use hoga</li>
+</ol>
+</div>
+
+<h4 style="color:var(--muted);font-size:0.95em;margin:24px 0 8px;">2. Instagram Deep Extraction</h4>
+<div class="table-wrap"><table>
+<tr><th>Tool</th><th>Kaam</th><th>Command</th></tr>
+<tr><td>Osintgram</td><td>Followers, following, likes, comments, tagged posts extract</td><td><code>osintgram username</code></td></tr>
+<tr><td>Instaloader</td><td>Pura post history + metadata (caption, date, location tag) download</td><td><code>instaloader profile username</code></td></tr>
+<tr><td>Instaloader (stories)</td><td>Public stories aur highlights download karta hai</td><td><code>instaloader --stories username</code></td></tr>
+<tr><td>Toutatis</td><td>Instagram user ID se email/phone (partial, masked) reveal karta hai</td><td><code>toutatis -u username</code></td></tr>
+</table></div>
+<div class="steps">
+<h4>Instagram extraction — step by step</h4>
+<ol>
+<li>Sherlock/WhatsMyName se Instagram username confirm karo</li>
+<li>Osintgram install karke login karo (apne sock puppet account se, target account se nahi)</li>
+<li><code>osintgram target_username</code> chalao — followers/following/tagged list nikaalo</li>
+<li>Instaloader se pura history download karo, EXIF/caption mein location tags dhoondo</li>
+<li>Followers list ko username-tracing se cross-reference karo — real identities milengi</li>
+<li>Story highlights manually browse karo — travel/location clues yahan zyada milte hain</li>
+</ol>
+</div>
+
+<h4 style="color:var(--muted);font-size:0.95em;margin:24px 0 8px;">3. IntelTechniques Search Tools</h4>
+<div class="table-wrap"><table>
+<tr><th>Resource</th><th>Kaam</th><th>Link</th></tr>
+<tr><td>OSINT Framework</td><td>Categorized directory — username/email/phone/image sab ke tools</td><td><code>osintframework.com</code></td></tr>
+<tr><td>IntelTechniques Search Tools</td><td>Michael Bazzell ke pre-built one-click search links (100+ sites)</td><td><code>inteltechniques.com/tools</code></td></tr>
+<tr><td>IntelTechniques Custom Search Tool</td><td>Ek naam/username daal ke saath saath saare platforms open ho jaate hain</td><td>Search Tools → "Username" tab</td></tr>
+</table></div>
+<div class="steps">
+<h4>Use karne ka tareeka</h4>
+<ol>
+<li>inteltechniques.com/tools pe jao, relevant category select karo (username/email/phone)</li>
+<li>Target ka data ek baar daalo — tool automatically 20-30 platforms pe search links generate karta hai</li>
+<li>Har tab open karke manually verify karo (automation sirf links banata hai, result khud dekhna padta hai)</li>
+<li>OSINT Framework se agar koi naya specific tool chahiye ho to category-wise navigate karo</li>
+</ol>
+</div>
+
+<h4 style="color:var(--muted);font-size:0.95em;margin:24px 0 8px;">4. Breach Data Pivoting (Deeper)</h4>
+<div class="table-wrap"><table>
+<tr><th>Tool</th><th>Kaam</th><th>Link</th></tr>
+<tr><td>DeHashed</td><td>Breach database search — email/phone/username se paid access</td><td><code>dehashed.com</code></td></tr>
+<tr><td>LeakCheck</td><td>Alternative breach search engine, free tier available</td><td><code>leakcheck.io</code></td></tr>
+<tr><td>Have I Been Pwned</td><td>Free — sirf confirm karta hai breach hui ya nahi (data nahi dikhata)</td><td><code>haveibeenpwned.com</code></td></tr>
+<tr><td>IntelX</td><td>Leaked documents/pastes/breach data search engine</td><td><code>intelx.io</code></td></tr>
+</table></div>
+<div class="steps">
+<h4>Pivoting workflow — step by step</h4>
+<ol>
+<li>Known email/phone/username DeHashed ya LeakCheck mein search karo</li>
+<li>Result mein secondary emails, old usernames, ya linked phone numbers milte hain</li>
+<li>Har naya data point wapas Section 1-3 (username/email/phone tracing) mein daal ke pura cycle dobara chalao</li>
+<li>Ye recursive process hai — naye data se naye accounts, naye accounts se naya data milta rehta hai</li>
+<li>Purana password pattern sirf identity-correlation ke liye use karo, kabhi bhi login attempt mat karo — ye illegal hai</li>
+</ol>
+</div>
+
+<h4 style="color:var(--muted);font-size:0.95em;margin:24px 0 8px;">5. Geolocation Correlation</h4>
+<div class="table-wrap"><table>
+<tr><th>Tool</th><th>Kaam</th><th>Link</th></tr>
+<tr><td>SunCalc</td><td>Photo ke shadow angle se approx date/time/hemisphere estimate</td><td><code>suncalc.org</code></td></tr>
+<tr><td>Google Street View</td><td>Background landmarks/signboards se exact location match</td><td><code>google.com/maps</code></td></tr>
+<tr><td>Wikimapia</td><td>User-annotated satellite map, local landmark names</td><td><code>wikimapia.org</code></td></tr>
+<tr><td>GeoSpy AI</td><td>AI-based — photo se location predict karta hai</td><td><code>geospy.ai</code></td></tr>
+</table></div>
+<div class="steps">
+<h4>Geolocation — step by step</h4>
+<ol>
+<li>Photo mein visible clues note karo — signboards (language/script), architecture style, vehicle number plates</li>
+<li>ExifTool se GPS metadata already check ho chuka ho to seedha confirm karo</li>
+<li>SunCalc pe shadow angle daal ke rough date/hemisphere estimate karo</li>
+<li>Google Street View pe unique landmarks (buildings, signage) match karke area narrow karo</li>
+<li>Social media check-ins/tagged location se final cross-verify karo</li>
+</ol>
+</div>
+
+<h4 style="color:var(--muted);font-size:0.95em;margin:24px 0 8px;">6. Sock Puppet Accounts &amp; OPSEC</h4>
+<div class="table-wrap"><table>
+<tr><th>Practice</th><th>Kaam</th><th>Kaise</th></tr>
+<tr><td>Dedicated investigation account</td><td>Real identity se target ko link hone se bachata hai</td><td>Naya email + naya phone number (virtual/burner) se account banao</td></tr>
+<tr><td>VPN / Tor</td><td>Real IP address leak hone se bachao</td><td>Investigation shuru karne se pehle hamesha ON rakho</td></tr>
+<tr><td>Separate browser profile</td><td>Cookies/fingerprint real account se mix na ho</td><td>Firefox Container ya separate Chrome profile use karo</td></tr>
+<tr><td>Private/incognito browsing mode</td><td>LinkedIn jaise platforms pe "viewed your profile" notification na jaaye</td><td>LinkedIn Private mode setting ON karo before viewing</td></tr>
+</table></div>
+<div class="steps">
+<h4>OPSEC checklist — step by step</h4>
+<ol>
+<li>Investigation shuru karne se pehle VPN/Tor connect karo</li>
+<li>Sock puppet account banao — koi real personal detail (real naam, real photo, real location) mat daalo</li>
+<li>Separate browser profile use karo taaki apne real accounts ke cookies mix na ho</li>
+<li>Platform-specific privacy setting check karo (LinkedIn "private mode", Instagram "activity status off")</li>
+<li>Investigation ke baad bhi sock puppet account ko apne real identity se kabhi link mat karo</li>
+</ol>
+</div>
+
+<h4 style="color:var(--muted);font-size:0.95em;margin:24px 0 8px;">7. Timeline Reconstruction</h4>
+<div class="table-wrap"><table>
+<tr><th>Source</th><th>Kaam</th><th>Kaise</th></tr>
+<tr><td>Platform user-ID</td><td>Kayi platforms ka user ID sequential hota hai — account-creation date estimate hoti hai</td><td>Third-party "account age checker" tools</td></tr>
+<tr><td>Post/activity dates</td><td>Chronological pattern se routine/location-change trace hota hai</td><td>Manual scroll + note-taking, ya Instaloader/Osintgram ka date-tagged export</td></tr>
+<tr><td>Google Photos/Maps Timeline (agar accessible)</td><td>Agar account compromise/leak mila ho to travel history</td><td>Sirf authorized/legal access ke case mein</td></tr>
+</table></div>
+<div class="steps">
+<h4>Timeline banane ka process</h4>
+<ol>
+<li>Har platform ka account-creation date note karo</li>
+<li>Sabhi posts/activities ko date-wise ek spreadsheet mein arrange karo</li>
+<li>Gaps identify karo — activity ruk gayi kisi period mein? Naya job/city mention hua?</li>
+<li>Cross-platform correlate karo — same time period mein alag platforms pe kya post hua</li>
+<li>Final timeline se motive/context/pattern samajhne ki koshish karo — evidence ke saath likho, assumption ke saath nahi</li>
+</ol>
+</div>
+
+<div class="warn">⚖️ Telecom call-detail-records (CDR), SIM tracing, ya live location pulling sirf official law-enforcement channel (police requisition to telecom operator) se legally possible hai — koi bhi public/civilian tool ye nahi kar sakta. Cyber cell join karne ke baad ye official process training mein sikhaya jaata hai, khud se try mat karna.</div>
+</div>
+</section>
+
+
+<section id="bonus">
+<div class="sec-head" style="background:#e3b341">💡 Bonus Tricks (Missed Earlier)</div>
+<div class="sec-body">
+
+<h4 style="color:var(--muted);font-size:0.95em;margin:0 0 8px;">1. Google Dorks for People</h4>
+<div class="table-wrap"><table>
+<tr><th>Dork</th><th>Kaam</th></tr>
+<tr><td><code>"Full Name" site:linkedin.com/in</code></td><td>Bina login LinkedIn profile dhoondo</td></tr>
+<tr><td><code>"Full Name" filetype:pdf resume</code></td><td>Public resumes/CVs jo google index kar chuka hai</td></tr>
+<tr><td><code>"Full Name" intext:"phone" OR intext:"email"</code></td><td>Kisi bhi page pe contact info mention hua ho</td></tr>
+<tr><td><code>site:pastebin.com "email@target.com"</code></td><td>Pastebin leaks mein specific email/username</td></tr>
+<tr><td><code>"Full Name" -site:facebook.com -site:instagram.com</code></td><td>Bade platforms hata ke lesser-known mentions dhoondo</td></tr>
+</table></div>
+
+<h4 style="color:var(--muted);font-size:0.95em;margin:24px 0 8px;">2. Wayback Machine — Deleted Content</h4>
+<div class="table-wrap"><table>
+<tr><th>Tool</th><th>Kaam</th></tr>
+<tr><td>web.archive.org</td><td>Deleted/edited social profiles, old bio, purani job details</td></tr>
+<tr><td>archive.today (archive.ph)</td><td>Twitter/X aur dusre pages jo Wayback save nahi karta, unke snapshots</td></tr>
+</table></div>
+<div class="steps"><ol>
+<li>Target ke profile URL ko web.archive.org mein daalo — purane snapshots dikhenge</li>
+<li>Har snapshot compare karo — bio/job/location kab-kab change hua</li>
+<li>Deleted posts/tweets bhi kabhi cache mein reh jaate hain — yahi se milte hain</li>
+</ol></div>
+
+<h4 style="color:var(--muted);font-size:0.95em;margin:24px 0 8px;">3. GitHub OSINT (agar target developer hai)</h4>
+<div class="table-wrap"><table>
+<tr><th>Tool/Trick</th><th>Kaam</th></tr>
+<tr><td>GitHub commit history</td><td>Commits mein real naam + real email chhupa hota hai (git config se)</td></tr>
+<tr><td><code>site:github.com "username"</code></td><td>Repos, gists, comments dhoondo</td></tr>
+<tr><td>GitHub → Following/Followers</td><td>Professional network/colleagues map karta hai</td></tr>
+</table></div>
+
+<h4 style="color:var(--muted);font-size:0.95em;margin:24px 0 8px;">4. WhatsApp OSINT</h4>
+<div class="table-wrap"><table>
+<tr><th>Trick</th><th>Kaam</th></tr>
+<tr><td>Number save karke DP/status check</td><td>Profile photo se face-search combine kar sakte ho</td></tr>
+<tr><td>WhatsApp "last seen" pattern</td><td>Rough active-hours/timezone ka idea milta hai</td></tr>
+<tr><td>WhatsApp Business info tab</td><td>Business accounts mein address/email/website milta hai</td></tr>
+</table></div>
+
+<h4 style="color:var(--muted);font-size:0.95em;margin:24px 0 8px;">5. Document Metadata (sirf photos nahi)</h4>
+<div class="table-wrap"><table>
+<tr><th>Tool</th><th>Kaam</th></tr>
+<tr><td><code>exiftool document.pdf</code></td><td>PDF/Word files ke "Author" field mein real naam chhupa hota hai</td></tr>
+<tr><td>Company reports/PDFs</td><td>Kisi company ke public PDF documents ke authors employee names reveal karte hain</td></tr>
+</table></div>
+
+<h4 style="color:var(--muted);font-size:0.95em;margin:24px 0 8px;">6. Vehicle/RTO Lookup (India-specific)</h4>
+<div class="table-wrap"><table>
+<tr><th>Source</th><th>Kaam</th></tr>
+<tr><td>Parivahan (mParivahan app/site)</td><td>Vehicle number se owner ka partial naam, RC status, insurance validity — official govt portal</td></tr>
+</table></div>
+<div class="note">Vehicle owner ka full address/phone sirf authorized law-enforcement request se milta hai — public portal sirf basic RC status dikhata hai.</div>
+
+<h4 style="color:var(--muted);font-size:0.95em;margin:24px 0 8px;">7. Telegram OSINT</h4>
+<div class="table-wrap"><table>
+<tr><th>Tool</th><th>Kaam</th></tr>
+<tr><td>Telegram username/phone search bots</td><td>Public groups/channels se username-linked activity</td></tr>
+<tr><td>Telegram group search (via Google)</td><td><code>site:t.me "keyword"</code> — public groups/channels dhoondo</td></tr>
+</table></div>
+
+</div>
+</section>
+
+<section id="scenario">
+<div class="sec-head" style="background:#ec8fac">🎯 Scenario Guide — "Mere paas Ye Hai, Ab Kya?"</div>
+<div class="sec-body">
+
+<h4 style="color:var(--muted);font-size:0.95em;margin:0 0 8px;">📌 Agar sirf Instagram username hai</h4>
+<div class="table-wrap"><table>
+<tr><th>Kya milega</th><th>Kaise</th></tr>
+<tr><td>Real naam, bio info, location tag</td><td>Profile bio + tagged posts manually check karo</td></tr>
+<tr><td>External links (WhatsApp, YouTube, other socials)</td><td>Bio ka "link in bio" aur business contact button check karo</td></tr>
+<tr><td>Followers/Following list (family, colleagues, friends)</td><td><code>osintgram username</code> — followers/following extract</td></tr>
+<tr><td>Pura post history + captions + old locations</td><td><code>instaloader profile username</code></td></tr>
+<tr><td>Same username dusre platforms pe</td><td>Sherlock/Maigret/WhatsMyName se cross-search</td></tr>
+<tr><td>Phone number (agar business account hai)</td><td>Business profile → "Call"/"WhatsApp" button pe number visible hota hai</td></tr>
+<tr><td>Real face → dusri jagah match</td><td>Profile photo Yandex/PimEyes pe reverse search karo</td></tr>
+<tr><td>Purane deleted posts</td><td>Wayback Machine pe profile URL daalo</td></tr>
+</table></div>
+
+<h4 style="color:var(--muted);font-size:0.95em;margin:24px 0 8px;">📌 Agar Facebook/Instagram friend list mil gayi</h4>
+<div class="table-wrap"><table>
+<tr><th>Kya milega</th><th>Kaise</th></tr>
+<tr><td>Family members identify karna</td><td>Same surname wale friends + "birthday wish"/"family trip" comments dhoondo</td></tr>
+<tr><td>Close friends vs random followers</td><td>Zyada mutual likes/comments karne wale = close circle</td></tr>
+<tr><td>Workplace/school confirm karna</td><td>Multiple friends jo same company/college mention karte hain — pattern se confirm hota hai</td></tr>
+<tr><td>Target ki purani photos (jo target ne khud delete kar di)</td><td>Friends ki profile pe tagged photos check karo — wahan abhi bhi ho sakti hain</td></tr>
+<tr><td>Target ka current city/relationship status</td><td>Recent tagged posts + "relationship" mentions friends ki activity se</td></tr>
+<tr><td>Deeper Facebook graph search</td><td><code>stalkscan.com</code> pe target ka profile ID daalo — friends, photos, likes categorized milte hain</td></tr>
+</table></div>
+
+<h4 style="color:var(--muted);font-size:0.95em;margin:24px 0 8px;">📌 Agar sirf phone number hai</h4>
+<div class="table-wrap"><table>
+<tr><th>Kya milega</th><th>Kaise</th></tr>
+<tr><td>Registered naam</td><td>TrueCaller web search</td></tr>
+<tr><td>Carrier, region, line type</td><td><code>phoneinfoga scan -n "+91XXXXXXXXXX"</code></td></tr>
+<tr><td>WhatsApp DP, status, "About" text</td><td>Number save karo phone mein → WhatsApp check karo</td></tr>
+<tr><td>Telegram account (agar hai)</td><td>Telegram mein "Add Contact" se number search karo — agar account hai to dikh jaata hai</td></tr>
+<tr><td>Breach history (leaked data)</td><td>DeHashed/LeakCheck mein number search karo</td></tr>
+<tr><td>Linked social accounts</td><td>Kayi platforms (Facebook/Instagram) "forgot password" flow mein number daal ke masked email/name hint milta hai (sirf observe karo, login mat karo)</td></tr>
+</table></div>
+
+<h4 style="color:var(--muted);font-size:0.95em;margin:24px 0 8px;">📌 Agar sirf email hai</h4>
+<div class="table-wrap"><table>
+<tr><th>Kya milega</th><th>Kaise</th></tr>
+<tr><td>Kaunse platforms pe account bana hai</td><td><code>holehe email@target.com</code></td></tr>
+<tr><td>Google footprint (Maps reviews, YouTube, Calendar)</td><td><code>ghunt email target@gmail.com</code> (sirf Gmail ke liye)</td></tr>
+<tr><td>Breach hui hai ya nahi + leaked data</td><td><code>haveibeenpwned.com</code> (confirm) + DeHashed (details)</td></tr>
+<tr><td>Company/employer pattern</td><td><code>hunter.io</code> se domain ka email format match karo</td></tr>
+<tr><td>Linked phone (partial/masked)</td><td>Kayi platforms ke "forgot password" flow mein email daalne pe masked phone number hint milta hai</td></tr>
+<tr><td>Real naam (agar signup mein diya ho)</td><td>Gravatar check karo: <code>gravatar.com/email-md5-hash</code> — kayi log apna naam/photo yahan link karte hain</td></tr>
+</table></div>
+
+<h4 style="color:var(--muted);font-size:0.95em;margin:24px 0 8px;">📌 Agar sirf WhatsApp number/DP hai</h4>
+<div class="table-wrap"><table>
+<tr><th>Kya milega</th><th>Kaise</th></tr>
+<tr><td>DP se real face match</td><td>DP screenshot lo → Yandex/PimEyes pe reverse search karo</td></tr>
+<tr><td>Active hours/timezone pattern</td><td>"Last seen" time ko kuch dino tak track karo — pattern milega</td></tr>
+<tr><td>Business info (address, email, website)</td><td>Agar WhatsApp Business hai to "Business Info" tab check karo</td></tr>
+<tr><td>Status updates se location/activity clues</td><td>Status photos/text periodically check karo</td></tr>
+</table></div>
+
+<h4 style="color:var(--muted);font-size:0.95em;margin:24px 0 8px;">📌 Agar sirf naam hai (koi username/number nahi)</h4>
+<div class="table-wrap"><table>
+<tr><th>Kya milega</th><th>Kaise</th></tr>
+<tr><td>LinkedIn profile</td><td><code>site:linkedin.com/in "Full Name" "city/company"</code></td></tr>
+<tr><td>Social media profiles</td><td><code>"Full Name" site:facebook.com</code> ya Instagram/Twitter similarly</td></tr>
+<tr><td>Public documents/resume</td><td><code>"Full Name" filetype:pdf</code></td></tr>
+<tr><td>News mentions</td><td>Google News search naam se</td></tr>
+<tr><td>Voter records (India)</td><td>State CEO election website pe naam+area se search</td></tr>
+</table></div>
+
+<h4 style="color:var(--muted);font-size:0.95em;margin:24px 0 8px;">📌 Agar sirf ek photo hai (koi naam/username nahi)</h4>
+<div class="table-wrap"><table>
+<tr><th>Kya milega</th><th>Kaise</th></tr>
+<tr><td>Naam/social profile</td><td>Yandex/Google reverse image search + PimEyes/FaceCheck.id</td></tr>
+<tr><td>GPS location (agar original file hai)</td><td><code>exiftool photo.jpg</code> se EXIF GPS data</td></tr>
+<tr><td>Approximate location (agar EXIF nahi hai)</td><td>Background clues + SunCalc (shadow angle) + Street View match</td></tr>
+<tr><td>Edited/fake hai ya original</td><td><code>fotoforensics.com</code> pe ELA analysis</td></tr>
+</table></div>
+
+<div class="note">Trick: har starting point se jo bhi naya data point mile (naya email, naya username, naya phone) — usko wapas iske corresponding row mein daal ke recon dobara chalao. Yehi "Correlation" section ka core idea hai — ek chhoti si cheez se pura chain ban jaata hai.</div>
+
+</div>
+</section>
+
+<section id="corr">
+<div class="sec-head" style="background:var(--corr)">🔺 Correlation — Sab Data Ek Profile Mein</div>
+<div class="sec-body">
+<div class="steps">
+<h4>Final identity profile banane ka process</h4>
+<ol>
+<li>Ek document/spreadsheet banao: Username(s) | Email(s) | Phone | Social profiles | Photos | Location clues | Employer/Company</li>
+<li>Timeline banao — kab kaunsi info post hui, kab account bana</li>
+<li>Cross-verify karo — kya email aur phone same platforms pe registered hain? (confirms same person)</li>
+<li>Contradictions note karo — agar do sources conflict karte hain to dono ko flag karo, confirm mat karo bina verification ke</li>
+<li>Confidence level assign karo har data point ko — "confirmed", "likely", "unverified"</li>
+<li>Final report mein sirf verified/high-confidence findings include karo</li>
+</ol>
+</div>
+<div class="note">Cyber cell investigations mein evidence chain important hoti hai — har finding ka source aur timestamp record karna zaroori hai, sirf assumption pe kabhi conclude mat karo.</div>
+</div>
+</section>
+
+</div>
+
+<footer>
+Sirf authorized investigations, legal research, ya khud ki bug-bounty scope ke andar use karo. Private individual ko bina authorization track karna Indian law ke under offence hai.
+</footer>
+
+</body>
+</html>
