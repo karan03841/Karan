@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Nmap — Scenario Guide &amp; Advanced Tricks — OSCP Notes</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --border:#30363d;
+    --text:#c9d1d9; --muted:#8b949e; --accent:#58a6ff;
+    --green:#3fb950; --red:#f85149; --yellow:#d29922; --purple:#bc8cff;
+  }
+  *{box-sizing:border-box;}
+  body{
+    background:var(--bg); color:var(--text); font-family:'Segoe UI',Consolas,sans-serif;
+    margin:0; padding:0 0 60px 0; line-height:1.6;
+  }
+  header{
+    background:linear-gradient(135deg,#161b22,#0d1117);
+    border-bottom:2px solid var(--accent); padding:30px 40px;
+  }
+  header h1{margin:0; font-size:28px; color:#fff;}
+  header p{color:var(--muted); margin-top:6px;}
+  .container{max-width:1100px; margin:0 auto; padding:0 30px;}
+  .badge{
+    display:inline-block; padding:2px 10px; border-radius:12px;
+    font-size:12px; font-weight:600; margin-right:6px;
+  }
+  .badge.high{background:#f8514933; color:#f85149; border:1px solid #f85149;}
+  .badge.med{background:#d2992233; color:#d29922; border:1px solid #d29922;}
+  .badge.low{background:#8b949e33; color:#8b949e; border:1px solid #8b949e;}
+  nav.toc{
+    background:var(--panel); border:1px solid var(--border); border-radius:8px;
+    padding:18px 24px; margin:30px 0;
+  }
+  nav.toc h2{margin-top:0; font-size:16px; color:var(--accent);}
+  nav.toc ul{columns:2; -webkit-columns:2; list-style:none; padding-left:0;}
+  nav.toc li{margin-bottom:6px;}
+  nav.toc a{color:var(--text); text-decoration:none; font-size:14px;}
+  nav.toc a:hover{color:var(--accent);}
+  section{margin:40px 0;}
+  h2{
+    color:#fff; border-left:4px solid var(--accent); padding-left:12px;
+    font-size:22px; margin-bottom:14px;
+  }
+  h3{color:var(--purple); font-size:17px; margin-top:26px;}
+  p{color:var(--text);}
+  .note{
+    background:#1f6feb1a; border-left:3px solid var(--accent);
+    padding:10px 16px; border-radius:4px; margin:14px 0; font-size:14px; color:var(--muted);
+  }
+  .warn{
+    background:#f851491a; border-left:3px solid var(--red);
+    padding:10px 16px; border-radius:4px; margin:14px 0; font-size:14px; color:#ffb4ab;
+  }
+  .scenario{
+    background:var(--panel); border:1px solid var(--border); border-left:4px solid var(--yellow);
+    border-radius:6px; padding:16px 20px; margin:16px 0;
+  }
+  .scenario h3{margin-top:0; color:var(--yellow);}
+  table{width:100%; border-collapse:collapse; margin:14px 0; font-size:14px;}
+  th, td{border:1px solid var(--border); padding:8px 12px; text-align:left; vertical-align:top;}
+  th{background:#1c2128; color:var(--accent);}
+  tr:nth-child(even){background:#12161c;}
+  code, pre{
+    font-family:'Fira Code',Consolas,monospace; color:#79c0ff;
+  }
+  pre{
+    background:#010409; border:1px solid var(--border); border-radius:6px;
+    padding:14px 16px; overflow-x:auto; font-size:13.5px; margin:10px 0;
+  }
+  code.inline{
+    background:#1c2128; padding:2px 6px; border-radius:4px; color:#79c0ff;
+  }
+  .cmd-title{color:var(--green); font-size:13px; font-weight:600; margin-bottom:-4px;}
+  footer{text-align:center; color:var(--muted); font-size:12px; margin-top:50px;}
+  hr{border:none; border-top:1px solid var(--border); margin:40px 0;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1>🎯 Nmap — Scenario Guide &amp; Advanced Tricks</h1>
+    <p>OSCP / Red Team reference — kab kaunsa flag/command use karna hai, situation-wise + advanced techniques</p>
+  </div>
+</header>
+
+<div class="container">
+
+<nav class="toc">
+  <h2>Contents</h2>
+  <ul>
+    <li><a href="#decision">1. Decision Flow — Konsa Scan Kab</a></li>
+    <li><a href="#scenarios">2. Scenario-Based Usage</a></li>
+    <li><a href="#advtiming">3. Advanced Timing Control</a></li>
+    <li><a href="#advscripts">4. Advanced NSE Usage</a></li>
+    <li><a href="#advevasion">5. Advanced Evasion Tricks</a></li>
+    <li><a href="#chaining">6. Output Chaining &amp; Automation</a></li>
+    <li><a href="#specialcases">7. Special Case Targets</a></li>
+    <li><a href="#pitfalls">8. Common Mistakes / Pitfalls</a></li>
+    <li><a href="#workflow">9. Full OSCP Recon Workflow</a></li>
+    <li><a href="#cheatsheet">10. Quick Decision Cheatsheet</a></li>
+  </ul>
+</nav>
+
+<section id="decision">
+  <h2>1. Decision Flow — Konsa Scan Kab</h2>
+  <p>Har situation mein same command chalana galat hai. Neeche simple table hai — kis case mein kya use karna chahiye aur kyu, easy words mein.</p>
+  <table>
+    <tr><th>Situation</th><th>Use karo</th><th>Kyu (easy explanation)</th></tr>
+    <tr><td>Root/sudo access hai</td><td><code class="inline">-sS</code></td><td>Sabse tez aur chhupa hua tarika, isiliye default best choice hai</td></tr>
+    <tr><td>Root nahi hai</td><td><code class="inline">-sT</code></td><td>-sS ko system-level access chahiye hoti hai, jo bina root nahi milti</td></tr>
+    <tr><td>Time kam hai / bahut saare targets hain</td><td><code class="inline">-F</code> ya <code class="inline">--top-ports</code></td><td>Shuru mein saare 65535 ports check karna time barbaad karna hoga</td></tr>
+    <tr><td>Poora detailed check karna hai (jaise OSCP box)</td><td><code class="inline">-p-</code></td><td>Kabhi kabhi services normal se hatke port pe chal rahi hoti hain — miss karna nuksaan de sakta hai</td></tr>
+    <tr><td>Lagta hai IDS/IPS (security alarm) laga hai</td><td><code class="inline">-T2</code> + <code class="inline">-f</code> + <code class="inline">--data-length</code></td><td>Dheere scan karna + packet todna, dono milke alarm ko dhoka dete hain</td></tr>
+    <tr><td>Stable, tez lab network (HTB/OSCP)</td><td><code class="inline">-T4</code></td><td>Yahan chhupne ki zaroorat nahi, seedha speed pe chalo</td></tr>
+    <tr><td>DNS/SNMP jaisi services ka shak hai</td><td><code class="inline">-sU</code></td><td>Ye services UDP pe chalti hain — normal TCP scan inhe kabhi nahi dikhayega</td></tr>
+    <tr><td>Firewall kaise kaam kar raha hai samajhna hai</td><td><code class="inline">-sA</code></td><td>Ye sirf firewall ka behavior batata hai, port khula hai ya nahi wo nahi batata</td></tr>
+    <tr><td>Service ka exact version pata karna hai</td><td><code class="inline">-sV</code></td><td>Bina exact version pata kiye, sahi exploit dhoondhna mushkil hota hai</td></tr>
+    <tr><td>Target Windows hai</td><td><code class="inline">-sS -sV</code>, -sF/-sN/-sX mat use karo</td><td>Windows in scans ke tareeke ko follow nahi karta, isliye result galat aa sakta hai</td></tr>
+  </table>
+</section>
+
+<section id="scenarios">
+  <h2>2. Scenario-Based Usage</h2>
+
+  <div class="scenario">
+    <h3>🔹 Scenario: Naya box mila, kuch pata nahi</h3>
+    <p>Pehle jaldi se ek chhota scan karke andaza lo, phir dheere-dheere full port scan chalao background mein.</p>
+    <pre>nmap -T4 -F target.com
+nmap -p- -T4 --min-rate 1000 -oG allports.txt target.com &</pre>
+  </div>
+
+  <div class="scenario">
+    <h3>🔹 Scenario: Firewall block kar raha hai, kuch response hi nahi aa raha</h3>
+    <p>Nmap ko bolo ki host ko "up" hi maan le (check mat kar), phir ACK scan se firewall kaise kaam kar raha hai wo samjho.</p>
+    <pre>nmap -Pn target.com
+nmap -sA -Pn target.com</pre>
+  </div>
+
+  <div class="scenario">
+    <h3>🔹 Scenario: Chhup ke scan karna hai, koi shor nahi machana</h3>
+    <p>Teen cheezein saath mein use karo — dheera scan, packet todna, aur trusted port se bhejna.</p>
+    <pre>nmap -sS -T1 -f --source-port 53 --data-length 20 target.com</pre>
+  </div>
+
+  <div class="scenario">
+    <h3>🔹 Scenario: Bahut saare hosts hain internal network mein, jaldi chahiye</h3>
+    <p>Pehle sirf ye pata karo konse hosts zinda hain, phir sirf unhi pe detailed scan chalao — jo hosts hain hi nahi unpe time waste mat karo.</p>
+    <pre>nmap -sn 10.10.10.0/24 -oG alive.txt
+grep "Up" alive.txt | cut -d " " -f2 > alive-ips.txt
+nmap -T4 -sC -sV -iL alive-ips.txt</pre>
+  </div>
+
+  <div class="scenario">
+    <h3>🔹 Scenario: Ek specific service ka exploit dhoondhna hai (jaise SMB)</h3>
+    <p>Us service ke liye bane hue specific scripts use karo — poora general scan chalana time waste hoga.</p>
+    <pre>nmap --script=smb-vuln* -p445 target.com
+nmap --script=smb-enum-shares,smb-enum-users -p445 target.com</pre>
+  </div>
+
+  <div class="scenario">
+    <h3>🔹 Scenario: Target ek website/web app hai</h3>
+    <p>Web se related scripts aur common web ports use karo.</p>
+    <pre>nmap -sV --script=http-enum,http-title,http-headers -p80,443,8080,8443 target.com</pre>
+  </div>
+
+  <div class="scenario">
+    <h3>🔹 Scenario: Lagta hai koi UDP port khula hai, confirm nahi hai</h3>
+    <p>UDP scan bahut slow hota hai — isliye sirf top ports tak simit rakho, poore 65535 UDP ports check karna ghanton lega.</p>
+    <pre>nmap -sU --top-ports 50 -T4 target.com</pre>
+  </div>
+
+</section>
+
+<section id="advtiming">
+  <h2>3. Advanced Timing Control</h2>
+  <p>-T templates ke alawa bhi kuch flags hain jinse tum speed aur timing ko aur bareeki se control kar sakte ho.</p>
+  <table>
+    <tr><th>Flag</th><th>Ye kya karta hai (easy words)</th></tr>
+    <tr><td><code class="inline">--min-rate &lt;n&gt;</code></td><td>Kam se kam itni speed pe packets bhejo — slow network mein bhi speed banaye rakhta hai</td></tr>
+    <tr><td><code class="inline">--max-rate &lt;n&gt;</code></td><td>Zyada se zyada itni speed — taaki security alarm na baje</td></tr>
+    <tr><td><code class="inline">--max-retries &lt;n&gt;</code></td><td>Packet miss hone par kitni baar dobara try kare (0 = sabse fast, but kabhi galat result de sakta hai)</td></tr>
+    <tr><td><code class="inline">--host-timeout &lt;time&gt;</code></td><td>Ek host pe kitna waqt lagana hai max — mare hue host pe time waste nahi hoga</td></tr>
+    <tr><td><code class="inline">--scan-delay &lt;time&gt;</code></td><td>Har packet ke beech thoda ruk ke bhejo — chhupne ke liye</td></tr>
+    <tr><td><code class="inline">--max-parallelism &lt;n&gt;</code></td><td>Ek time pe kitne packets ek saath bhejein</td></tr>
+  </table>
+  <div class="cmd-title">Custom fine-tuned scan example</div>
+  <pre>nmap --min-rate 500 --max-retries 2 --host-timeout 10m target.com</pre>
+</section>
+
+<section id="advscripts">
+  <h2>4. Advanced NSE Usage</h2>
+  <div class="cmd-title">Script categories combine karo</div>
+  <pre>nmap --script "default,safe" target.com
+nmap --script "not intrusive" target.com    # safe-only, production-safe</pre>
+  <div class="cmd-title">Script args pass karke brute-force NSE scripts</div>
+  <pre>nmap --script ftp-brute --script-args userdb=users.txt,passdb=pass.txt -p21 target.com</pre>
+  <div class="cmd-title">Multiple specific scripts ek saath</div>
+  <pre>nmap --script=smb-os-discovery,smb-enum-shares,smb-enum-users -p445 target.com</pre>
+  <div class="cmd-title">Custom script path use karna (apna khud ka .nse file)</div>
+  <pre>nmap --script=/path/to/custom-script.nse target.com</pre>
+  <div class="note">--script=vuln bahut saare vulnerability-check scripts ek saath chalata hai — pura check hota hai but time zyada lagta hai. Agar time kam hai to sirf wahi CVE scripts use karo jo tumhare target pe relevant hain.</div>
+</section>
+
+<section id="advevasion">
+  <h2>5. Advanced Evasion Tricks</h2>
+  <div class="cmd-title">Fragmentation + custom MTU combine</div>
+  <pre>nmap -f --mtu 16 target.com</pre>
+  <div class="cmd-title">Decoys + randomized order (attacker ko crowd mein chhupana)</div>
+  <pre>nmap -D RND:15 --randomize-hosts target.com</pre>
+  <div class="cmd-title">Bad checksum trick — kuch simple firewalls checksum verify nahi karte</div>
+  <pre>nmap --badsum target.com</pre>
+  <div class="cmd-title">Append random data taaki packet size signature match na ho</div>
+  <pre>nmap --data-length 50 -T2 target.com</pre>
+  <div class="cmd-title">Idle/zombie scan — poora blind scan, attacker IP kabhi expose nahi hoti</div>
+  <pre># Pehle ek zombie host dhoondo (predictable IPID sequence wala)
+nmap -sI zombie-ip:port target.com</pre>
+  <div class="warn">Idle scan aajkal ke networks mein kaam ka nahi rehta — ek aisa "zombie" host milna mushkil hai jiska IPID predictable ho. Ye zyada exam/theory samajhne ke liye hai, real use kam hota hai.</div>
+</section>
+
+<section id="chaining">
+  <h2>6. Output Chaining &amp; Automation</h2>
+  <div class="cmd-title">Grepable output se sirf open ports extract karna</div>
+  <pre>nmap -oG - target.com | grep open</pre>
+  <div class="cmd-title">XML output ko HTML report mein convert karna</div>
+  <pre>xsltproc scan.xml -o report.html</pre>
+  <div class="cmd-title">Open ports ko comma-separated list mein nikaalna (agle scan mein use ke liye)</div>
+  <pre>nmap -p- --min-rate 1000 -T4 target.com -oG - | grep -oP '\d+/open' | cut -d '/' -f1 | tr '\n' ',' </pre>
+  <div class="cmd-title">Extracted ports ko directly deep scan mein feed karna</div>
+  <pre>ports=$(nmap -p- --min-rate 1000 -T4 target.com | grep ^[0-9] | cut -d '/' -f1 | tr '\n' ',')
+nmap -sC -sV -p$ports target.com</pre>
+</section>
+
+<section id="specialcases">
+  <h2>7. Special Case Targets</h2>
+  <table>
+    <tr><th>Target type</th><th>Approach</th></tr>
+    <tr><td>Load balancer / CDN peeche</td><td>Direct IP find karo (crt.sh/Shodan se) — CDN scan karne se sirf CDN mile ga, real server nahi</td></tr>
+    <tr><td>IPv6-only service</td><td><code class="inline">nmap -6 target-ipv6</code></td></tr>
+    <tr><td>VPN pivot / internal target</td><td>proxychains ke through scan (TCP connect scan hi chalega, SYN scan proxy se nahi hota)</td></tr>
+    <tr><td>Rate-limited target (WAF/IPS drop kar raha)</td><td>--scan-delay badhao, -T1/-T0 use karo</td></tr>
+    <tr><td>Honeypot suspect</td><td>Response consistency check karo — bahut saare open ports with identical banners suspicious hai</td></tr>
+  </table>
+  <div class="cmd-title">Proxychains ke through scan (pivoted target)</div>
+  <pre>proxychains nmap -sT -Pn -p 445,3389 internal-target</pre>
+</section>
+
+<section id="pitfalls">
+  <h2>8. Common Mistakes / Pitfalls</h2>
+  <ul>
+    <li>Sirf top-1000 ports scan karke "no vulnerabilities" bol dena — non-standard port pe service miss ho sakti hai</li>
+    <li>UDP scan skip kar dena — SNMP/DNS/TFTP jaisi services yahin milti hain</li>
+    <li>-A flag har jagah use karna — bahut noisy hai, real engagement mein IDS flag karega</li>
+    <li>-Pn hamesha use karna bina reason ke — slow ho jaata hai jab actually host discovery kaam kar sakti thi</li>
+    <li>FIN/NULL/Xmas scans Windows targets pe trust karna — unreliable results</li>
+    <li>Single scan pe depend karna — ek scan miss kar sakta hai, TCP + UDP + full range teeno zaroori hain thorough assessment ke liye</li>
+  </ul>
+</section>
+
+<section id="workflow">
+  <h2>9. Full OSCP Recon Workflow</h2>
+  <pre># 1. Quick look
+nmap -T4 -F target.com
+
+# 2. Full TCP port discovery (background/parallel)
+nmap -p- -T4 --min-rate 1000 -oG allports.txt target.com
+
+# 3. Extract ports, deep scan with scripts+version
+ports=$(grep -oP '\d+(?=/open)' allports.txt | tr '\n' ',')
+nmap -sC -sV -p$ports -oA deep-scan target.com
+
+# 4. UDP top ports (parallel/background — slow hota hai)
+nmap -sU --top-ports 50 -T4 target.com
+
+# 5. Targeted vuln scripts on identified services
+nmap --script=vuln -p$ports target.com
+
+# 6. Manual verification of interesting findings
+dig, curl, nc, smbclient etc. — service-specific follow-up</pre>
+</section>
+
+<section id="cheatsheet">
+  <h2>10. Quick Decision Cheatsheet</h2>
+  <pre>Root access?          → -sS         | No root → -sT
+Time-limited?         → -F/--top-ports | Thorough → -p-
+IDS/firewall present? → -T1/-T2 + -f  | Lab/no IDS → -T4
+Need version info?    → -sV
+Need OS info?         → -O (ya -A for combined, noisy)
+UDP service suspect?  → -sU --top-ports 50
+Windows target?       → avoid -sF/-sN/-sX, stick to -sS/-sT
+Pivoted/internal?     → proxychains nmap -sT -Pn
+Firewall state check? → -sA (not port state, sirf filtering behavior)</pre>
+</section>
+
+<hr>
+<footer>OSCP Prep Notes — Nmap Scenario Guide &amp; Advanced Tricks • For authorized lab/engagement use only</footer>
+
+</div>
+</body>
+</html>

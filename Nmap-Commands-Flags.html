@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Nmap — Full Commands &amp; Flags — OSCP Notes</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --border:#30363d;
+    --text:#c9d1d9; --muted:#8b949e; --accent:#58a6ff;
+    --green:#3fb950; --red:#f85149; --yellow:#d29922; --purple:#bc8cff;
+  }
+  *{box-sizing:border-box;}
+  body{
+    background:var(--bg); color:var(--text); font-family:'Segoe UI',Consolas,sans-serif;
+    margin:0; padding:0 0 60px 0; line-height:1.6;
+  }
+  header{
+    background:linear-gradient(135deg,#161b22,#0d1117);
+    border-bottom:2px solid var(--accent); padding:30px 40px;
+  }
+  header h1{margin:0; font-size:28px; color:#fff;}
+  header p{color:var(--muted); margin-top:6px;}
+  .container{max-width:1100px; margin:0 auto; padding:0 30px;}
+  .badge{
+    display:inline-block; padding:2px 10px; border-radius:12px;
+    font-size:12px; font-weight:600; margin-right:6px;
+  }
+  .badge.high{background:#f8514933; color:#f85149; border:1px solid #f85149;}
+  .badge.med{background:#d2992233; color:#d29922; border:1px solid #d29922;}
+  .badge.low{background:#8b949e33; color:#8b949e; border:1px solid #8b949e;}
+  nav.toc{
+    background:var(--panel); border:1px solid var(--border); border-radius:8px;
+    padding:18px 24px; margin:30px 0;
+  }
+  nav.toc h2{margin-top:0; font-size:16px; color:var(--accent);}
+  nav.toc ul{columns:2; -webkit-columns:2; list-style:none; padding-left:0;}
+  nav.toc li{margin-bottom:6px;}
+  nav.toc a{color:var(--text); text-decoration:none; font-size:14px;}
+  nav.toc a:hover{color:var(--accent);}
+  section{margin:40px 0;}
+  h2{
+    color:#fff; border-left:4px solid var(--accent); padding-left:12px;
+    font-size:22px; margin-bottom:14px;
+  }
+  h3{color:var(--purple); font-size:17px; margin-top:26px;}
+  p{color:var(--text);}
+  .note{
+    background:#1f6feb1a; border-left:3px solid var(--accent);
+    padding:10px 16px; border-radius:4px; margin:14px 0; font-size:14px; color:var(--muted);
+  }
+  .warn{
+    background:#f851491a; border-left:3px solid var(--red);
+    padding:10px 16px; border-radius:4px; margin:14px 0; font-size:14px; color:#ffb4ab;
+  }
+  table{width:100%; border-collapse:collapse; margin:14px 0; font-size:14px;}
+  th, td{border:1px solid var(--border); padding:8px 12px; text-align:left; vertical-align:top;}
+  th{background:#1c2128; color:var(--accent);}
+  tr:nth-child(even){background:#12161c;}
+  code, pre{
+    font-family:'Fira Code',Consolas,monospace; color:#79c0ff;
+  }
+  pre{
+    background:#010409; border:1px solid var(--border); border-radius:6px;
+    padding:14px 16px; overflow-x:auto; font-size:13.5px; margin:10px 0;
+  }
+  code.inline{
+    background:#1c2128; padding:2px 6px; border-radius:4px; color:#79c0ff;
+  }
+  .cmd-title{color:var(--green); font-size:13px; font-weight:600; margin-bottom:-4px;}
+  footer{text-align:center; color:var(--muted); font-size:12px; margin-top:50px;}
+  hr{border:none; border-top:1px solid var(--border); margin:40px 0;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1>🛰️ Nmap — Full Commands &amp; Flags</h1>
+    <p>OSCP / Red Team reference — scan types, flags, scripting engine, timing &amp; real-world usage</p>
+  </div>
+</header>
+
+<div class="container">
+
+<nav class="toc">
+  <h2>Contents</h2>
+  <ul>
+    <li><a href="#basics">1. Nmap Basics</a></li>
+    <li><a href="#hostdisc">2. Host Discovery</a></li>
+    <li><a href="#scantypes">3. Scan Types (-s flags)</a></li>
+    <li><a href="#portspec">4. Port Specification</a></li>
+    <li><a href="#versionos">5. Version &amp; OS Detection</a></li>
+    <li><a href="#timing">6. Timing &amp; Performance</a></li>
+    <li><a href="#evasion">7. Firewall/IDS Evasion</a></li>
+    <li><a href="#nse">8. NSE — Scripting Engine</a></li>
+    <li><a href="#output">9. Output Formats</a></li>
+    <li><a href="#misc">10. Misc Useful Flags</a></li>
+    <li><a href="#combos">11. Real-World Combos (OSCP style)</a></li>
+    <li><a href="#cheatsheet">12. Quick Cheatsheet</a></li>
+  </ul>
+</nav>
+
+<section id="basics">
+  <h2>1. Nmap Basics</h2>
+  <p>Nmap (Network Mapper) network scanning ka industry-standard tool hai — hosts discover karna, open ports find karna, services/versions fingerprint karna, OS detect karna, aur NSE scripts se vulnerabilities/misconfig check karna, sab kuch isi se hota hai.</p>
+  <pre>nmap target.com
+nmap 10.10.10.5
+nmap 10.10.10.0/24
+nmap -iL targets.txt        # file se multiple targets</pre>
+</section>
+
+<section id="hostdisc">
+  <h2>2. Host Discovery</h2>
+  <table>
+    <tr><th>Flag</th><th>Kya karta hai</th></tr>
+    <tr><td><code class="inline">-sn</code></td><td>Ping scan only — port scan skip, sirf alive hosts find karo</td></tr>
+    <tr><td><code class="inline">-Pn</code></td><td>Host discovery skip — sabko "up" maan lo aur seedha scan karo (firewall ping block karta ho to zaroori)</td></tr>
+    <tr><td><code class="inline">-PS&lt;ports&gt;</code></td><td>TCP SYN ping specific ports par</td></tr>
+    <tr><td><code class="inline">-PA&lt;ports&gt;</code></td><td>TCP ACK ping</td></tr>
+    <tr><td><code class="inline">-PU&lt;ports&gt;</code></td><td>UDP ping</td></tr>
+    <tr><td><code class="inline">-PE</code></td><td>ICMP echo ping (normal ping)</td></tr>
+    <tr><td><code class="inline">-PR</code></td><td>ARP ping (local network — sabse reliable, fast)</td></tr>
+  </table>
+  <div class="cmd-title">Sirf alive hosts find karo, port scan mat karo</div>
+  <pre>nmap -sn 10.10.10.0/24</pre>
+  <div class="cmd-title">Firewall ping block kar raha ho to</div>
+  <pre>nmap -Pn target.com</pre>
+</section>
+
+<section id="scantypes">
+  <h2>3. Scan Types (-s flags)</h2>
+  <table>
+    <tr><th>Flag</th><th>Naam</th><th>Kaise kaam karta hai</th></tr>
+    <tr><td><code class="inline">-sS</code></td><td>SYN scan (stealth/half-open)</td><td>SYN bhejta hai, SYN/ACK aaye to RST bhejke connection complete nahi karta — fast, stealthy, default agar root ho</td></tr>
+    <tr><td><code class="inline">-sT</code></td><td>TCP connect scan</td><td>Full 3-way handshake complete karta hai — root nahi chahiye but zyada detectable/logged</td></tr>
+    <tr><td><code class="inline">-sU</code></td><td>UDP scan</td><td>UDP ports check karta hai (DNS, SNMP, DHCP) — slow, unreliable responses</td></tr>
+    <tr><td><code class="inline">-sA</code></td><td>ACK scan</td><td>Firewall rules map karta hai — statefulness detect (filtered vs unfiltered), port state nahi batata</td></tr>
+    <tr><td><code class="inline">-sF</code></td><td>FIN scan</td><td>Sirf FIN flag — stateless firewalls ko bypass kar sakta hai (closed port RST bhejta hai, open port silent)</td></tr>
+    <tr><td><code class="inline">-sN</code></td><td>NULL scan</td><td>Koi flag set nahi — same evasion logic FIN jaisa</td></tr>
+    <tr><td><code class="inline">-sX</code></td><td>Xmas scan</td><td>FIN+PSH+URG flags set — "christmas tree" packet, evasion technique</td></tr>
+    <tr><td><code class="inline">-sO</code></td><td>IP protocol scan</td><td>Konse IP protocols supported hain (TCP/UDP/ICMP/etc) host par</td></tr>
+    <tr><td><code class="inline">-sV</code></td><td>Version detection</td><td>Open ports par banner grab karke exact service/version identify karta hai</td></tr>
+  </table>
+  <div class="note">-sF/-sN/-sX Windows targets ke against reliably kaam nahi karte (RFC compliance nahi karta Windows TCP stack) — mostly Unix/Linux targets ke liye useful.</div>
+</section>
+
+<section id="portspec">
+  <h2>4. Port Specification</h2>
+  <table>
+    <tr><th>Flag</th><th>Kya karta hai</th></tr>
+    <tr><td><code class="inline">-p 80</code></td><td>Single port</td></tr>
+    <tr><td><code class="inline">-p 1-1000</code></td><td>Range</td></tr>
+    <tr><td><code class="inline">-p 80,443,8080</code></td><td>Multiple specific ports</td></tr>
+    <tr><td><code class="inline">-p-</code></td><td>All 65535 ports</td></tr>
+    <tr><td><code class="inline">-F</code></td><td>Fast mode — top 100 common ports</td></tr>
+    <tr><td><code class="inline">--top-ports 20</code></td><td>Top N most common ports</td></tr>
+    <tr><td><code class="inline">-p U:53,T:22</code></td><td>Mix UDP/TCP ports</td></tr>
+  </table>
+  <pre>nmap -p- target.com                  # sabhi ports, thorough OSCP recon
+nmap -F target.com                   # quick recon
+nmap -p 21,22,80,443 target.com</pre>
+</section>
+
+<section id="versionos">
+  <h2>5. Version &amp; OS Detection</h2>
+  <table>
+    <tr><th>Flag</th><th>Kya karta hai</th></tr>
+    <tr><td><code class="inline">-sV</code></td><td>Service version detection (banner grab + probe)</td></tr>
+    <tr><td><code class="inline">--version-intensity 0-9</code></td><td>Kitna aggressively probe kare (0=light, 9=all probes)</td></tr>
+    <tr><td><code class="inline">-O</code></td><td>OS detection — TCP/IP stack fingerprinting se guess karta hai</td></tr>
+    <tr><td><code class="inline">-A</code></td><td>Aggressive — OS detect + version detect + script scan + traceroute sab ek saath</td></tr>
+  </table>
+  <pre>nmap -sV -O target.com
+nmap -A target.com</pre>
+  <div class="warn">-A bahut noisy hai — logs mein turant flag ho jaata hai. Stealth chahiye to individually -sV/-O use karo controlled tarike se.</div>
+</section>
+
+<section id="timing">
+  <h2>6. Timing &amp; Performance</h2>
+  <table>
+    <tr><th>Flag</th><th>Naam</th><th>Speed</th></tr>
+    <tr><td><code class="inline">-T0</code></td><td>Paranoid</td><td>Sabse slow, IDS evasion ke liye (5 min/probe)</td></tr>
+    <tr><td><code class="inline">-T1</code></td><td>Sneaky</td><td>Bahut slow</td></tr>
+    <tr><td><code class="inline">-T2</code></td><td>Polite</td><td>Slow, bandwidth-friendly</td></tr>
+    <tr><td><code class="inline">-T3</code></td><td>Normal</td><td>Default</td></tr>
+    <tr><td><code class="inline">-T4</code></td><td>Aggressive</td><td>Fast — OSCP labs mein commonly used</td></tr>
+    <tr><td><code class="inline">-T5</code></td><td>Insane</td><td>Sabse fast, unreliable networks pe packet loss ho sakta hai</td></tr>
+  </table>
+  <pre>nmap -T4 target.com                          # OSCP default choice
+nmap --min-rate 1000 target.com              # min packets/sec force karo
+nmap --max-retries 1 target.com              # retransmission limit</pre>
+</section>
+
+<section id="evasion">
+  <h2>7. Firewall/IDS Evasion</h2>
+  <table>
+    <tr><th>Flag</th><th>Kya karta hai</th></tr>
+    <tr><td><code class="inline">-f</code></td><td>Packet fragmentation (8-byte fragments, -f -f = 16-byte)</td></tr>
+    <tr><td><code class="inline">--mtu &lt;n&gt;</code></td><td>Custom fragment size (multiple of 8)</td></tr>
+    <tr><td><code class="inline">-D decoy1,decoy2,ME</code></td><td>Decoy scanning — asli source ko hide karo fake IPs ke beech</td></tr>
+    <tr><td><code class="inline">-S &lt;spoofed-ip&gt;</code></td><td>Source IP spoof</td></tr>
+    <tr><td><code class="inline">-g &lt;port&gt; / --source-port</code></td><td>Fixed source port (trusted port jaise 53 use karke bypass)</td></tr>
+    <tr><td><code class="inline">--data-length &lt;n&gt;</code></td><td>Packet mein random data pad karo (signature detection avoid)</td></tr>
+    <tr><td><code class="inline">--spoof-mac &lt;mac&gt;</code></td><td>MAC address spoof (local network)</td></tr>
+    <tr><td><code class="inline">-sI &lt;zombie&gt;</code></td><td>Idle/zombie scan — poora anonymous, zombie host use karke</td></tr>
+  </table>
+  <pre>nmap -f --source-port 53 -T2 target.com
+nmap -D RND:10 target.com</pre>
+</section>
+
+<section id="nse">
+  <h2>8. NSE — Nmap Scripting Engine</h2>
+  <table>
+    <tr><th>Flag</th><th>Kya karta hai</th></tr>
+    <tr><td><code class="inline">-sC</code></td><td>Default safe scripts run karo (banner, basic enum)</td></tr>
+    <tr><td><code class="inline">--script=&lt;name&gt;</code></td><td>Specific script run karo</td></tr>
+    <tr><td><code class="inline">--script=vuln</code></td><td>Saare vulnerability-detection category scripts</td></tr>
+    <tr><td><code class="inline">--script-args=&lt;args&gt;</code></td><td>Script ko parameters pass karo</td></tr>
+    <tr><td><code class="inline">--script-updatedb</code></td><td>NSE script database update karo</td></tr>
+  </table>
+  <div class="cmd-title">Common useful scripts</div>
+  <pre>nmap --script=smb-enum-shares -p445 target.com
+nmap --script=http-enum -p80 target.com
+nmap --script=ftp-anon -p21 target.com
+nmap --script=ssl-heartbleed -p443 target.com
+nmap --script=vuln target.com</pre>
+</section>
+
+<section id="output">
+  <h2>9. Output Formats</h2>
+  <table>
+    <tr><th>Flag</th><th>Format</th></tr>
+    <tr><td><code class="inline">-oN file.txt</code></td><td>Normal readable output</td></tr>
+    <tr><td><code class="inline">-oX file.xml</code></td><td>XML (parsing/reporting tools ke liye)</td></tr>
+    <tr><td><code class="inline">-oG file.gnmap</code></td><td>Grepable format (grep se easily parse)</td></tr>
+    <tr><td><code class="inline">-oA basename</code></td><td>Sabhi 3 formats ek saath (basename.nmap/.xml/.gnmap)</td></tr>
+    <tr><td><code class="inline">-v / -vv</code></td><td>Verbose / more verbose</td></tr>
+    <tr><td><code class="inline">--reason</code></td><td>Port state ka reason bhi dikhao</td></tr>
+  </table>
+  <pre>nmap -oA scan-results target.com</pre>
+</section>
+
+<section id="misc">
+  <h2>10. Misc Useful Flags</h2>
+  <table>
+    <tr><th>Flag</th><th>Kya karta hai</th></tr>
+    <tr><td><code class="inline">-n</code></td><td>DNS resolution skip karo — faster scan</td></tr>
+    <tr><td><code class="inline">-R</code></td><td>Reverse DNS resolution force karo sabhi targets pe</td></tr>
+    <tr><td><code class="inline">--open</code></td><td>Sirf open ports dikhao (closed/filtered hide)</td></tr>
+    <tr><td><code class="inline">--reason</code></td><td>Port state kyu diya gaya wo reason batao</td></tr>
+    <tr><td><code class="inline">--traceroute</code></td><td>Traceroute bhi karo target tak</td></tr>
+    <tr><td><code class="inline">-6</code></td><td>IPv6 scanning</td></tr>
+    <tr><td><code class="inline">--packet-trace</code></td><td>Har packet sent/received dikhao (debugging)</td></tr>
+  </table>
+</section>
+
+<section id="combos">
+  <h2>11. Real-World Combos (OSCP Style)</h2>
+
+  <div class="cmd-title">Step 1 — Fast initial recon (top ports, quick)</div>
+  <pre>nmap -T4 -F target.com</pre>
+
+  <div class="cmd-title">Step 2 — Full TCP port scan (find everything)</div>
+  <pre>nmap -p- -T4 --min-rate 1000 -oG allports.txt target.com</pre>
+
+  <div class="cmd-title">Step 3 — Deep scan on discovered ports (version + scripts)</div>
+  <pre>nmap -sC -sV -p 21,22,80,445 -oN detailed.txt target.com</pre>
+
+  <div class="cmd-title">All-in-one standard OSCP scan</div>
+  <pre>nmap -sC -sV -p- -T4 -oA full-scan target.com</pre>
+
+  <div class="cmd-title">UDP top ports (often skipped, but important — SNMP/DNS leaks)</div>
+  <pre>nmap -sU --top-ports 20 target.com</pre>
+
+  <div class="cmd-title">Vulnerability scan pass</div>
+  <pre>nmap --script=vuln -p&lt;open-ports&gt; target.com</pre>
+</section>
+
+<section id="cheatsheet">
+  <h2>12. Quick Cheatsheet</h2>
+  <pre># Standard OSCP recon flow
+nmap -T4 -F target.com                                   # quick look
+nmap -p- -T4 --min-rate 1000 -oG allports.txt target.com # all ports
+nmap -sC -sV -p&lt;ports&gt; -oA final target.com             # deep dive
+
+# Stealthy / evasive
+nmap -sS -T2 -f --source-port 53 target.com
+
+# UDP + vuln check
+nmap -sU --top-ports 20 target.com
+nmap --script=vuln target.com</pre>
+</section>
+
+<hr>
+<footer>OSCP Prep Notes — Nmap Commands &amp; Flags • For authorized lab/engagement use only</footer>
+
+</div>
+</body>
+</html>
