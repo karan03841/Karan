@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>NSE — Nmap Scripting Engine — Full Reference — OSCP Notes</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --border:#30363d;
+    --text:#c9d1d9; --muted:#8b949e; --accent:#58a6ff;
+    --green:#3fb950; --red:#f85149; --yellow:#d29922; --purple:#bc8cff;
+  }
+  *{box-sizing:border-box;}
+  body{
+    background:var(--bg); color:var(--text); font-family:'Segoe UI',Consolas,sans-serif;
+    margin:0; padding:0 0 60px 0; line-height:1.6;
+  }
+  header{
+    background:linear-gradient(135deg,#161b22,#0d1117);
+    border-bottom:2px solid var(--accent); padding:30px 40px;
+  }
+  header h1{margin:0; font-size:28px; color:#fff;}
+  header p{color:var(--muted); margin-top:6px;}
+  .container{max-width:1100px; margin:0 auto; padding:0 30px;}
+  .badge{
+    display:inline-block; padding:2px 10px; border-radius:12px;
+    font-size:12px; font-weight:600; margin-right:6px;
+  }
+  .badge.high{background:#f8514933; color:#f85149; border:1px solid #f85149;}
+  .badge.med{background:#d2992233; color:#d29922; border:1px solid #d29922;}
+  .badge.low{background:#8b949e33; color:#8b949e; border:1px solid #8b949e;}
+  nav.toc{
+    background:var(--panel); border:1px solid var(--border); border-radius:8px;
+    padding:18px 24px; margin:30px 0;
+  }
+  nav.toc h2{margin-top:0; font-size:16px; color:var(--accent);}
+  nav.toc ul{columns:2; -webkit-columns:2; list-style:none; padding-left:0;}
+  nav.toc li{margin-bottom:6px;}
+  nav.toc a{color:var(--text); text-decoration:none; font-size:14px;}
+  nav.toc a:hover{color:var(--accent);}
+  section{margin:40px 0;}
+  h2{
+    color:#fff; border-left:4px solid var(--accent); padding-left:12px;
+    font-size:22px; margin-bottom:14px;
+  }
+  h3{color:var(--purple); font-size:17px; margin-top:26px;}
+  p{color:var(--text);}
+  .note{
+    background:#1f6feb1a; border-left:3px solid var(--accent);
+    padding:10px 16px; border-radius:4px; margin:14px 0; font-size:14px; color:var(--muted);
+  }
+  .warn{
+    background:#f851491a; border-left:3px solid var(--red);
+    padding:10px 16px; border-radius:4px; margin:14px 0; font-size:14px; color:#ffb4ab;
+  }
+  table{width:100%; border-collapse:collapse; margin:14px 0; font-size:14px;}
+  th, td{border:1px solid var(--border); padding:8px 12px; text-align:left; vertical-align:top;}
+  th{background:#1c2128; color:var(--accent);}
+  tr:nth-child(even){background:#12161c;}
+  code, pre{
+    font-family:'Fira Code',Consolas,monospace; color:#79c0ff;
+  }
+  pre{
+    background:#010409; border:1px solid var(--border); border-radius:6px;
+    padding:14px 16px; overflow-x:auto; font-size:13.5px; margin:10px 0;
+  }
+  code.inline{
+    background:#1c2128; padding:2px 6px; border-radius:4px; color:#79c0ff;
+  }
+  .cmd-title{color:var(--green); font-size:13px; font-weight:600; margin-bottom:-4px;}
+  footer{text-align:center; color:var(--muted); font-size:12px; margin-top:50px;}
+  hr{border:none; border-top:1px solid var(--border); margin:40px 0;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1>📜 NSE — Nmap Scripting Engine — Full Reference</h1>
+    <p>OSCP / Red Team reference — syntax signs, categories, sabhi useful scripts, aur combinations</p>
+  </div>
+</header>
+
+<div class="container">
+
+<nav class="toc">
+  <h2>Contents</h2>
+  <ul>
+    <li><a href="#syntax">1. Syntax Signs — Sab Samjho</a></li>
+    <li><a href="#terms">1.5 Script Naming Words Ka Matlab</a></li>
+    <li><a href="#categories">2. Script Categories</a></li>
+    <li><a href="#howrun">3. Scripts Chalane Ke Tarike</a></li>
+    <li><a href="#discovery">4. Discovery/Enum Scripts</a></li>
+    <li><a href="#vuln">5. Vulnerability Scripts</a></li>
+    <li><a href="#brute">6. Brute-force Scripts</a></li>
+    <li><a href="#http">7. HTTP/Web Scripts</a></li>
+    <li><a href="#combos">8. Kaunse Case Mein Kaunsa Combination</a></li>
+    <li><a href="#structure">9. Script Ke Andar Kya Hota Hai (Lua Basics)</a></li>
+    <li><a href="#cheatsheet">10. Quick Cheatsheet</a></li>
+  </ul>
+</nav>
+
+<section id="syntax">
+  <h2>1. Syntax Signs — Sab Samjho</h2>
+  <p>NSE commands mein kai symbols use hote hain — sabka apna matlab hai. Ek-ek karke samjho:</p>
+  <table>
+    <tr><th>Sign</th><th>Naam</th><th>Matlab</th><th>Example</th></tr>
+    <tr><td><code class="inline">--script</code></td><td>Double dash</td><td>Nmap ko bolta hai "ab script(s) chalao"</td><td><code class="inline">--script=vuln</code></td></tr>
+    <tr><td><code class="inline">=</code></td><td>Equals</td><td>Value assign karta hai flag ko</td><td><code class="inline">--script=ftp-anon</code></td></tr>
+    <tr><td><code class="inline">,</code></td><td>Comma</td><td>Multiple scripts/categories ko separate karta hai (bina space ke)</td><td><code class="inline">--script=ftp-anon,http-title</code></td></tr>
+    <tr><td><code class="inline">*</code></td><td>Wildcard/Asterisk</td><td>"Isse shuru hone wale sabhi scripts" — pattern match</td><td><code class="inline">--script=smb-vuln*</code></td></tr>
+    <tr><td><code class="inline">-script-args</code></td><td>Args flag</td><td>Script ko extra input/parameters deta hai</td><td><code class="inline">--script-args=userdb=users.txt</code></td></tr>
+    <tr><td><code class="inline">,</code> (args ke andar)</td><td>Args separator</td><td>Multiple arguments ek saath dene ke liye</td><td><code class="inline">--script-args=user=admin,pass=admin</code></td></tr>
+    <tr><td><code class="inline">not</code></td><td>Boolean NOT</td><td>Kisi category ko exclude karta hai</td><td><code class="inline">--script "not intrusive"</code></td></tr>
+    <tr><td><code class="inline">and</code></td><td>Boolean AND</td><td>Dono condition true honi chahiye</td><td><code class="inline">--script "default and safe"</code></td></tr>
+    <tr><td><code class="inline">or</code></td><td>Boolean OR</td><td>Koi ek bhi true ho to chalega</td><td><code class="inline">--script "vuln or exploit"</code></td></tr>
+    <tr><td><code class="inline">" "</code></td><td>Quotes</td><td>Jab expression mein space/boolean logic ho, poore expression ko quotes mein rakho</td><td><code class="inline">--script "default,safe"</code></td></tr>
+    <tr><td><code class="inline">/path/</code></td><td>File path</td><td>Apni custom script ya specific folder ka path</td><td><code class="inline">--script=/home/user/my.nse</code></td></tr>
+  </table>
+  <div class="note">Simple rule: <code class="inline">--script</code> = "kaunsa script/category chalana hai", <code class="inline">--script-args</code> = "usko kya extra jaankari deni hai". Dono alag flags hain, mix mat karo.</div>
+</section>
+
+<section id="terms">
+  <h2>1.5 Script Naming Ke Common Words — Matlab Samjho</h2>
+  <p>Nmap scripts ke naam ek pattern follow karte hain: <code class="inline">service-action</code> (jaise <code class="inline">ftp-anon</code> = ftp + anon). Har naam ke andar ek "action word" hota hai jo batata hai script kya kaam karega. Ye words baar baar repeat hote hain, isliye inka matlab yaad rakhna zaroori hai:</p>
+  <table>
+    <tr><th>Word</th><th>Poora naam</th><th>Matlab (kya karta hai)</th></tr>
+    <tr><td><code class="inline">enum</code></td><td>Enumeration</td><td>Cheezon ki poori list nikaalna — jaise "smb-enum-shares" = SMB ke saare shares ki list banao</td></tr>
+    <tr><td><code class="inline">anon</code></td><td>Anonymous</td><td>Bina login/password ke access milta hai kya, ye check karna — jaise "ftp-anon" = FTP pe bina username/password ke ghusne ki koshish</td></tr>
+    <tr><td><code class="inline">brute</code></td><td>Brute-force</td><td>Username/password guess karna ek list se — try-try karke sahi combo dhoondna</td></tr>
+    <tr><td><code class="inline">vuln</code></td><td>Vulnerability</td><td>Koi known kamzori (security hole) hai kya, ye check karna — sirf check karta hai, exploit nahi karta</td></tr>
+    <tr><td><code class="inline">discovery</code></td><td>Discovery</td><td>Naye/hidden cheezein dhoondna jo pehle nazar nahi aa rahi thi (jaise hidden web paths, extra hosts)</td></tr>
+    <tr><td><code class="inline">info</code></td><td>Information</td><td>Basic details nikaalna target service ke baare mein (version, banner, config)</td></tr>
+    <tr><td><code class="inline">os-discovery</code></td><td>OS Discovery</td><td>Target konsa operating system chala raha hai, ye guess karna</td></tr>
+    <tr><td><code class="inline">title</code></td><td>Title</td><td>Webpage ka <code class="inline">&lt;title&gt;</code> tag fetch karna — jaldi pata chal jaata hai website kis baare mein hai</td></tr>
+    <tr><td><code class="inline">headers</code></td><td>HTTP Headers</td><td>Server response ke headers dikhana (server type, cookies, security headers)</td></tr>
+    <tr><td><code class="inline">backdoor</code></td><td>Backdoor</td><td>Check karna ki us specific version mein koi jaana-mana secret/hidden access point (bug) hai kya</td></tr>
+    <tr><td><code class="inline">zone-transfer</code></td><td>Zone Transfer</td><td>DNS server se poori domain ki list nikaalne ki koshish (agar server misconfigured hai)</td></tr>
+    <tr><td><code class="inline">methods</code></td><td>HTTP Methods</td><td>Konse actions allowed hain server pe (GET, POST, PUT, DELETE)</td></tr>
+    <tr><td><code class="inline">waf-detect</code></td><td>WAF Detect</td><td>Website ke aage koi security filter (Web Application Firewall) laga hai kya, check karna</td></tr>
+    <tr><td><code class="inline">sql-injection</code></td><td>SQL Injection</td><td>Website ke input fields mein database attack possible hai kya, basic check</td></tr>
+    <tr><td><code class="inline">exploit</code></td><td>Exploit</td><td>Sirf check nahi, actually us weakness ka fayda uthane ki koshish karna</td></tr>
+    <tr><td><code class="inline">os</code></td><td>Operating System</td><td>Target ka OS (Windows/Linux/etc) pata karna</td></tr>
+  </table>
+  <div class="note">Isiliye naam se hi 80% samajh aa jaata hai script kya karega: <code class="inline">smb-enum-shares</code> = SMB ke shares ki list nikaalo. <code class="inline">ftp-anon</code> = FTP pe anonymous login try karo. <code class="inline">ssl-heartbleed</code> = SSL mein Heartbleed bug check karo.</div>
+</section>
+
+<section id="categories">
+  <h2>2. Script Categories</h2>
+  <table>
+    <tr><th>Category</th><th>Matlab</th><th>Kab use karo</th></tr>
+    <tr><td><code class="inline">safe</code></td><td>Target ko nuksaan nahi karta</td><td>Production/careful environment</td></tr>
+    <tr><td><code class="inline">default</code></td><td>Sabse common, balanced set (yehi <code class="inline">-sC</code> chalata hai)</td><td>Normal recon, first pass</td></tr>
+    <tr><td><code class="inline">discovery</code></td><td>Zyada deep info nikaalta hai (shares, users)</td><td>Enumeration phase</td></tr>
+    <tr><td><code class="inline">vuln</code></td><td>Known CVEs/vulnerabilities check</td><td>Exploit dhoondhne se pehle</td></tr>
+    <tr><td><code class="inline">exploit</code></td><td>Actual exploitation attempt karta hai (kabhi kabhi shell bhi de deta hai)</td><td>Jab confirm ho gaya vulnerable hai</td></tr>
+    <tr><td><code class="inline">brute</code></td><td>Username/password guess karta hai</td><td>Login panels, jab creds nahi pata</td></tr>
+    <tr><td><code class="inline">intrusive</code></td><td>Target crash/affect kar sakta hai</td><td>Sirf apne lab mein, production mein avoid</td></tr>
+    <tr><td><code class="inline">auth</code></td><td>Authentication bypass check karta hai</td><td>Login mechanism test karna ho</td></tr>
+    <tr><td><code class="inline">version</code></td><td>Version detection ko improve karta hai</td><td>Automatically -sV ke saath chalta hai</td></tr>
+    <tr><td><code class="inline">external</code></td><td>Internet pe third-party services se query karta hai (jaise VirusTotal)</td><td>Special cases, rarely use hota hai</td></tr>
+  </table>
+</section>
+
+<section id="howrun">
+  <h2>3. Scripts Chalane Ke Tarike</h2>
+  <div class="cmd-title">Ek category</div>
+  <pre>nmap --script=vuln target.com</pre>
+  <div class="cmd-title">Ek specific script</div>
+  <pre>nmap --script=ftp-anon -p21 target.com</pre>
+  <div class="cmd-title">Multiple specific scripts (comma se separate)</div>
+  <pre>nmap --script=ftp-anon,http-title,smb-os-discovery target.com</pre>
+  <div class="cmd-title">Wildcard — pattern se match karne wale sab scripts</div>
+  <pre>nmap --script="smb-vuln*" -p445 target.com</pre>
+  <div class="cmd-title">Boolean logic combine karna</div>
+  <pre>nmap --script "default and safe" target.com
+nmap --script "vuln and not intrusive" target.com</pre>
+  <div class="cmd-title">Script ko arguments/parameters dena</div>
+  <pre>nmap --script=http-brute --script-args userdb=users.txt,passdb=pass.txt -p80 target.com</pre>
+  <div class="cmd-title">Script ke baare mein jaanna (help)</div>
+  <pre>nmap --script-help=ftp-anon</pre>
+</section>
+
+<section id="discovery">
+  <h2>4. Discovery / Enumeration Scripts</h2>
+  <table>
+    <tr><th>Script</th><th>Port</th><th>Detail mein kya karta hai</th></tr>
+    <tr><td><code class="inline">smb-os-discovery</code></td><td>445</td><td>SMB service se poochta hai "tum kaunse OS pe chal rahe ho" — jawab mein OS version, computer/hostname, domain name mil jaata hai. Ye handshake-level info leak hoti hai jo normal user ko bhi mil jaati hai bina login kiye</td></tr>
+    <tr><td><code class="inline">smb-enum-shares</code></td><td>445</td><td>SMB (Windows file sharing) pe konse-konse shared folders (shares) available hain, uski poori list nikaalta hai — kabhi kabhi in shares mein sensitive files milte hain</td></tr>
+    <tr><td><code class="inline">smb-enum-users</code></td><td>445</td><td>System ke andar konse user accounts bane hue hain, unki list nikaalta hai — ye list phir brute-force attack mein username source ban sakti hai</td></tr>
+    <tr><td><code class="inline">dns-zone-transfer</code></td><td>53</td><td>DNS server se poochta hai "mujhe apni poori zone (saare domain records) de do" — agar server ne allow kar diya (misconfiguration), to saare internal hostnames mil jaate hain ek hi baar mein</td></tr>
+    <tr><td><code class="inline">ftp-anon</code></td><td>21</td><td>FTP server pe "anonymous" username se login try karta hai bina password ke — bahut FTP servers galti se ise allow chhod dete hain, jisse koi bhi files dekh/download kar sakta hai</td></tr>
+    <tr><td><code class="inline">http-enum</code></td><td>80/443</td><td>Website pe common folder/file names (jaise /admin, /login, /backup) ek wordlist se try karta hai — jo mil jaaye wo real path hai jo shayad hidden rakha gaya tha</td></tr>
+    <tr><td><code class="inline">http-title</code></td><td>80/443</td><td>Sirf webpage ka title tag padh ke dikhata hai — ek line mein pata chal jaata hai website kis baare mein hai bina browser khole</td></tr>
+    <tr><td><code class="inline">snmp-info</code></td><td>161</td><td>SNMP (network device management protocol) se system details poochta hai — agar default password "public" chal jaaye to device ka pura config leak ho sakta hai</td></tr>
+  </table>
+  <pre>nmap --script=smb-os-discovery,smb-enum-shares -p445 target.com</pre>
+</section>
+
+<section id="vuln">
+  <h2>5. Vulnerability Scripts</h2>
+  <table>
+    <tr><th>Script</th><th>Port</th><th>Detail mein kya check karta hai</th></tr>
+    <tr><td><code class="inline">smb-vuln-ms17-010</code></td><td>445</td><td>Ye check karta hai ki target us famous "EternalBlue" bug se affected hai kya (jisse WannaCry ransomware phaila tha) — agar haan, to bina password ke bhi system control mil sakta hai</td></tr>
+    <tr><td><code class="inline">ssl-heartbleed</code></td><td>443</td><td>SSL/TLS ke ek purane bug (Heartbleed) ko check karta hai — agar vulnerable hai to server ki memory se sensitive data (jaise passwords) chhoti-chhoti chunks mein leak ho sakta hai</td></tr>
+    <tr><td><code class="inline">http-vuln-cve2021-41773</code></td><td>80/443</td><td>Apache ke ek specific bug ko check karta hai jisse attacker file system ke un folders tak pahunch sakta hai jo usko allowed nahi hone chahiye (path traversal)</td></tr>
+    <tr><td><code class="inline">ftp-vsftpd-backdoor</code></td><td>21</td><td>vsftpd software ke ek purane version (2.3.4) mein jaan-boojh kar chhoda gaya secret backdoor check karta hai — agar mile to direct shell access mil jaata hai</td></tr>
+    <tr><td><code class="inline">rdp-vuln-ms12-020</code></td><td>3389</td><td>Windows Remote Desktop ke ek bug ko check karta hai jisse target ka RDP service crash ho sakta hai (denial of service)</td></tr>
+  </table>
+  <pre>nmap --script=smb-vuln-ms17-010 -p445 target.com
+nmap --script=vuln target.com    # sab vuln scripts ek saath</pre>
+</section>
+
+<section id="brute">
+  <h2>6. Brute-force Scripts</h2>
+  <table>
+    <tr><th>Script</th><th>Service</th><th>Kaise kaam karta hai</th></tr>
+    <tr><td><code class="inline">ftp-brute</code></td><td>FTP login</td><td>Username aur password list se ek-ek combination try karta hai jab tak sahi wala mil na jaaye</td></tr>
+    <tr><td><code class="inline">ssh-brute</code></td><td>SSH login</td><td>Same logic SSH ke liye — dhire hota hai kyunki SSH intentionally slow handshake karta hai</td></tr>
+    <tr><td><code class="inline">smb-brute</code></td><td>SMB login</td><td>Windows accounts ke against username/password try karta hai</td></tr>
+    <tr><td><code class="inline">http-brute</code></td><td>HTTP basic auth</td><td>Website ke login popup (basic authentication) pe creds try karta hai</td></tr>
+    <tr><td><code class="inline">mysql-brute</code></td><td>MySQL login</td><td>Database ke root/user account pe password guess karta hai</td></tr>
+  </table>
+  <pre>nmap --script=ssh-brute --script-args userdb=users.txt,passdb=pass.txt -p22 target.com</pre>
+  <div class="warn">Brute-force scripts slow hote hain aur account lockout trigger kar sakte hain — production environment mein bahut soch samajh ke use karo, sirf apne lab mein practice karo.</div>
+</section>
+
+<section id="http">
+  <h2>7. HTTP / Web Scripts</h2>
+  <table>
+    <tr><th>Script</th><th>Detail mein kya karta hai</th></tr>
+    <tr><td><code class="inline">http-headers</code></td><td>Server jo extra info bhejta hai response ke saath (server software, cookies, security settings) — dikhata hai, kabhi kabhi version leak ho jaata hai isse</td></tr>
+    <tr><td><code class="inline">http-methods</code></td><td>Server pe konse actions allowed hain check karta hai — agar PUT/DELETE jaise risky methods enabled hain to attacker files upload/delete kar sakta hai</td></tr>
+    <tr><td><code class="inline">http-robots.txt</code></td><td>Websites ke pass ek robots.txt file hoti hai jo search engines ko batati hai kya crawl na karein — kabhi kabhi isi file mein hidden/admin paths list ho jaate hain galti se</td></tr>
+    <tr><td><code class="inline">http-waf-detect</code></td><td>Check karta hai ki website ke aage koi protection layer (Web Application Firewall) laga hai kya — agar haan, to attacks zyada dhyan se karne padte hain</td></tr>
+    <tr><td><code class="inline">http-sql-injection</code></td><td>Website ke form/input fields mein basic malicious database queries daal ke dekhta hai ki koi error ya unexpected behavior aata hai kya — SQL injection ka pehla signal</td></tr>
+  </table>
+  <pre>nmap --script=http-headers,http-methods,http-robots.txt -p80,443 target.com</pre>
+</section>
+
+<section id="combos">
+  <h2>8. Kaunse Case Mein Kaunsa Combination</h2>
+  <table>
+    <tr><th>Situation</th><th>Command</th></tr>
+    <tr><td>Naya target, general recon</td><td><code class="inline">nmap -sC -sV target.com</code></td></tr>
+    <tr><td>SMB port khula mila</td><td><code class="inline">nmap --script=smb-os-discovery,smb-enum-shares,smb-vuln-ms17-010 -p445 target.com</code></td></tr>
+    <tr><td>Web server mila</td><td><code class="inline">nmap --script=http-enum,http-title,http-headers -p80,443 target.com</code></td></tr>
+    <tr><td>FTP mila</td><td><code class="inline">nmap --script=ftp-anon,ftp-vsftpd-backdoor -p21 target.com</code></td></tr>
+    <tr><td>Poora vuln check chahiye (thorough)</td><td><code class="inline">nmap --script=vuln -p&lt;ports&gt; target.com</code></td></tr>
+    <tr><td>Login panel, creds nahi pata</td><td><code class="inline">nmap --script=&lt;service&gt;-brute --script-args userdb=users.txt,passdb=pass.txt target.com</code></td></tr>
+    <tr><td>Safe/production environment</td><td><code class="inline">nmap --script "default and safe" target.com</code></td></tr>
+    <tr><td>Intrusive scripts avoid karne hain</td><td><code class="inline">nmap --script "not intrusive" target.com</code></td></tr>
+  </table>
+</section>
+
+<section id="structure">
+  <h2>9. Script Ke Andar Kya Hota Hai (Lua Basics)</h2>
+  <p>NSE scripts <strong>Lua</strong> language mein likhe jaate hain. Har script mein basic structure hota hai:</p>
+  <pre>description = [[
+  Ye script kya karta hai, uska explanation
+]]
+
+categories = {"safe", "discovery"}
+
+portrule = function(host, port)
+  return port.number == 21   -- sirf port 21 pe chalega
+end
+
+action = function(host, port)
+  -- yahan actual logic hota hai: connect karo, data bhejo, response padho
+  return "Result yahan return hota hai"
+end</pre>
+  <table>
+    <tr><th>Part</th><th>Kya karta hai</th></tr>
+    <tr><td><code class="inline">description</code></td><td>Script kya karta hai, iska explanation (--script-help mein dikhta hai)</td></tr>
+    <tr><td><code class="inline">categories</code></td><td>Ye script kaunsi category(s) mein aata hai</td></tr>
+    <tr><td><code class="inline">portrule</code></td><td>Decide karta hai script kis port/condition pe chalega</td></tr>
+    <tr><td><code class="inline">action</code></td><td>Actual kaam yahan hota hai — connection banana, data bhejna, response check karna</td></tr>
+  </table>
+  <div class="note">Scripts padhne ke liye: <code class="inline">ls /usr/share/nmap/scripts/</code> se list dekho, phir <code class="inline">cat /usr/share/nmap/scripts/ftp-anon.nse</code> se koi simple script khol ke padho — structure samajh aayega.</div>
+</section>
+
+<section id="cheatsheet">
+  <h2>10. Quick Cheatsheet</h2>
+  <pre># Syntax basics
+--script=&lt;name&gt;                     # ek script
+--script=&lt;a&gt;,&lt;b&gt;                    # multiple scripts
+--script=&lt;prefix&gt;*                  # wildcard match
+--script "not intrusive"            # exclude category
+--script "default and safe"         # combine categories
+--script-args key=value,key2=value2 # script ko parameters dena
+--script-help=&lt;name&gt;                # script ke baare mein jaano
+
+# Common real usage
+nmap -sC -sV target.com
+nmap --script=vuln -p&lt;ports&gt; target.com
+nmap --script=smb-vuln* -p445 target.com
+nmap --script=http-enum -p80,443 target.com
+nmap --script=ftp-brute --script-args userdb=u.txt,passdb=p.txt -p21 target.com</pre>
+</section>
+
+<hr>
+<footer>OSCP Prep Notes — NSE Scripting Engine Full Reference • For authorized lab/engagement use only</footer>
+
+</div>
+</body>
+</html>
