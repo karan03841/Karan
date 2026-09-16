@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kheyansh — Daily Schedule</title>
+<style>
+:root{
+  --bg:#080c10;--panel:#0f1820;--panel2:#131e2a;--border:#1c2c3c;
+  --text:#cfe0f0;--muted:#5e7d96;
+  --accent:#00e5a0;--accent2:#3ba7ff;--warn:#ffb454;
+  --danger:#ff5c7a;--purple:#b97fff;
+  --bg-g:#081c14;--bg-b:#081628;--bg-w:#1e1400;
+  --bg-p:#120a1e;--bg-r:#1e0814;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;line-height:1.6;padding-bottom:60px}
+
+/* HERO */
+.hero{background:radial-gradient(ellipse at 50% 0%,#0a1a2e,#080c10 65%);border-bottom:2px solid var(--border);padding:36px 20px 24px;text-align:center;position:relative}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--accent2),var(--purple),var(--accent),transparent)}
+.hero h1{font-size:1.6rem;color:var(--accent2);margin-bottom:4px}
+.hero p{color:var(--muted);font-size:.85rem}
+.hero-name{font-size:1rem;color:var(--purple);font-weight:700;margin-top:6px}
+
+.wrap{max-width:700px;margin:0 auto;padding:0 14px}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:20px 0}
+.stat{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center}
+.stat-num{font-size:1.4rem;font-weight:800}
+.stat-label{font-size:.7rem;color:var(--muted);margin-top:2px}
+
+/* STREAK */
+.streak-box{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:14px}
+.streak-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.streak-title{font-size:.85rem;color:var(--warn);font-weight:600}
+.streak-count{font-size:1.6rem;font-weight:800;color:var(--warn)}
+.streak-days{display:flex;gap:6px;flex-wrap:wrap}
+.day-dot{width:34px;height:34px;border-radius:8px;background:var(--panel2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.65rem;color:var(--muted);cursor:pointer;transition:all .15s;flex-direction:column;gap:1px}
+.day-dot.done{background:var(--bg-g);border-color:var(--accent);color:var(--accent)}
+.day-dot .day-label{font-size:.55rem;color:inherit}
+
+/* SLOT */
+.slot{background:var(--panel);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;overflow:hidden;transition:all .15s}
+.slot-inner{display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer;user-select:none;-webkit-user-select:none}
+.slot-inner:active{background:var(--panel2)}
+.slot-time{font-family:monospace;font-size:.78rem;color:var(--muted);min-width:90px;flex-shrink:0}
+.slot-icon{font-size:1.2rem;flex-shrink:0}
+.slot-info{flex:1}
+.slot-info h3{font-size:.88rem;margin-bottom:1px}
+.slot-info p{font-size:.73rem;color:var(--muted)}
+.tick-btn{width:32px;height:32px;border-radius:8px;border:2px solid var(--border);background:var(--panel2);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;transition:all .15s;cursor:pointer}
+.tick-btn.done{background:var(--accent);border-color:var(--accent);color:#000;font-weight:700}
+
+/* LOCKED */
+.locked{opacity:.45;pointer-events:none}
+.slot.rest-slot{border-color:#ffffff10}
+.slot.rest-slot .slot-info h3{color:var(--muted)}
+
+/* SECTION LABEL */
+.sec-label{font-size:.7rem;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin:16px 0 7px;display:flex;align-items:center;gap:8px}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* PROGRESS */
+.prog-wrap{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin:14px 0}
+.prog-top{display:flex;justify-content:space-between;margin-bottom:8px}
+.prog-label{font-size:.82rem;font-weight:600}
+.prog-pct{font-size:.82rem;color:var(--accent);font-weight:700}
+.prog-bar{height:8px;background:var(--panel2);border-radius:6px;overflow:hidden}
+.prog-fill{height:8px;background:linear-gradient(90deg,var(--accent2),var(--purple));border-radius:6px;transition:width .4s}
+
+/* CYBER TIME */
+.cyber-wrap{background:var(--bg-p);border:1px solid var(--purple);border-radius:12px;padding:14px 16px;margin:14px 0}
+.cyber-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.cyber-title{font-size:.85rem;color:var(--purple);font-weight:600}
+.cyber-total{font-size:1.2rem;font-weight:800;color:var(--purple)}
+.cyber-bars{display:flex;flex-direction:column;gap:6px}
+.cyber-bar-row{display:flex;align-items:center;gap:8px}
+.cyber-bar-label{font-size:.72rem;color:var(--muted);min-width:100px}
+.cyber-bar-track{flex:1;height:6px;background:var(--panel2);border-radius:4px;overflow:hidden}
+.cyber-bar-fill{height:6px;border-radius:4px}
+
+/* MOTIVATION */
+.moti{background:var(--bg-g);border:1px solid var(--accent);border-radius:12px;padding:14px 16px;margin:14px 0;text-align:center}
+.moti p{font-size:.84rem;color:#a8ddc0;font-style:italic;line-height:1.6}
+.moti .name{color:var(--accent);font-weight:700;font-style:normal}
+
+/* RESET */
+.reset-btn{display:block;width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;background:var(--panel);color:var(--muted);font-size:.78rem;cursor:pointer;font-family:inherit;margin-top:10px;transition:all .15s}
+.reset-btn:hover{border-color:var(--danger);color:var(--danger)}
+
+.footer{text-align:center;padding:28px 20px 0;color:var(--muted);font-size:.82rem}
+.footer span{color:var(--accent2)}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>📅 Daily Schedule</h1>
+  <div class="hero-name">⚡ Kheyansh — Bug Bounty Hunter</div>
+  <p>Consistency = Champion. Ek din ka kaam, ek din ka reward! 🔥</p>
+</div>
+
+<div class="wrap">
+
+<!-- MOTIVATION -->
+<div class="moti" id="motiBox">
+  <p id="motiText">Loading...</p>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat">
+    <div class="stat-num" id="statDone" style="color:var(--accent)">0</div>
+    <div class="stat-label">Tasks Done</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num" id="statStreak" style="color:var(--warn)">0🔥</div>
+    <div class="stat-label">Day Streak</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num" id="statPct" style="color:var(--purple)">0%</div>
+    <div class="stat-label">Today</div>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="prog-wrap">
+  <div class="prog-top">
+    <span class="prog-label">📊 Aaj Ka Progress</span>
+    <span class="prog-pct" id="progPct">0%</span>
+  </div>
+  <div class="prog-bar">
+    <div class="prog-fill" id="progFill" style="width:0%"></div>
+  </div>
+</div>
+
+<!-- CYBER TIME BREAKDOWN -->
+<div class="cyber-wrap">
+  <div class="cyber-top">
+    <span class="cyber-title">🔐 Cyber Time Today</span>
+    <span class="cyber-total">4.5 hrs</span>
+  </div>
+  <div class="cyber-bars">
+    <div class="cyber-bar-row">
+      <span class="cyber-bar-label">Morning Study</span>
+      <div class="cyber-bar-track"><div class="cyber-bar-fill" style="width:33%;background:var(--accent2)"></div></div>
+      <span style="font-size:.7rem;color:var(--muted);min-width:40px">1.5 hrs</span>
+    </div>
+    <div class="cyber-bar-row">
+      <span class="cyber-bar-label">Evening Hands-on</span>
+      <div class="cyber-bar-track"><div class="cyber-bar-fill" style="width:67%;background:var(--purple)"></div></div>
+      <span style="font-size:.7rem;color:var(--muted);min-width:40px">2 hrs</span>
+    </div>
+    <div class="cyber-bar-row">
+      <span class="cyber-bar-label">Night Deep Study</span>
+      <div class="cyber-bar-track"><div class="cyber-bar-fill" style="width:22%;background:var(--accent)"></div></div>
+      <span style="font-size:.7rem;color:var(--muted);min-width:40px">1 hr</span>
+    </div>
+  </div>
+</div>
+
+<!-- MORNING -->
+<div class="sec-label">🌅 Subah — 6:30 AM se 8:00 AM</div>
+
+<div class="slot" id="slot0">
+  <div class="slot-inner">
+    <div class="slot-time">6:30 - 7:00</div>
+    <div class="slot-icon">🧠</div>
+    <div class="slot-info">
+      <h3 style="color:var(--accent2)">Theory / Concept</h3>
+      <p>Kal jo seekha tha — review karo. Naya topic padho.</p>
+    </div>
+    <div class="tick-btn" id="tick0" onclick="toggleTick(0)"></div>
+  </div>
+</div>
+
+<div class="slot" id="slot1">
+  <div class="slot-inner">
+    <div class="slot-time">7:00 - 7:45</div>
+    <div class="slot-icon">📖</div>
+    <div class="slot-info">
+      <h3 style="color:var(--accent2)">Tool / File Study</h3>
+      <p>ffuf, curl, Burp — ek tool daily. Notes padho.</p>
+    </div>
+    <div class="tick-btn" id="tick1" onclick="toggleTick(1)"></div>
+  </div>
+</div>
+
+<div class="slot" id="slot2">
+  <div class="slot-inner">
+    <div class="slot-time">7:45 - 8:00</div>
+    <div class="slot-icon">✍️</div>
+    <div class="slot-info">
+      <h3 style="color:var(--accent2)">Notes + Revision</h3>
+      <p>Jo seekha — quick notes. School ke liye ready ho jao.</p>
+    </div>
+    <div class="tick-btn" id="tick2" onclick="toggleTick(2)"></div>
+  </div>
+</div>
+
+<!-- SCHOOL -->
+<div class="sec-label">🏫 School — 8:00 AM se 2:00 PM</div>
+<div class="slot rest-slot locked">
+  <div class="slot-inner">
+    <div class="slot-time">8:00 - 2:00</div>
+    <div class="slot-icon">📚</div>
+    <div class="slot-info">
+      <h3>School Time</h3>
+      <p>Boards important hai — poora focus school pe!</p>
+    </div>
+  </div>
+</div>
+
+<!-- REST -->
+<div class="sec-label">😴 Rest — 2:00 PM se 3:00 PM</div>
+<div class="slot rest-slot locked">
+  <div class="slot-inner">
+    <div class="slot-time">2:00 - 3:00</div>
+    <div class="slot-icon">🛌</div>
+    <div class="slot-info">
+      <h3>Rest / Khana</h3>
+      <p>Recharge karo — tuition ke liye energy chahiye!</p>
+    </div>
+  </div>
+</div>
+
+<!-- TUITION -->
+<div class="sec-label">📓 Tuition — 3:00 PM se 5:00 PM</div>
+<div class="slot rest-slot locked">
+  <div class="slot-inner">
+    <div class="slot-time">3:00 - 5:00</div>
+    <div class="slot-icon">✏️</div>
+    <div class="slot-info">
+      <h3>Tuition</h3>
+      <p>School + Tuition = Strong foundation!</p>
+    </div>
+  </div>
+</div>
+
+<!-- EVENING -->
+<div class="sec-label">🔥 Evening Grind — 5:00 PM se 8:00 PM</div>
+
+<div class="slot" id="slot3">
+  <div class="slot-inner">
+    <div class="slot-time">5:00 - 5:30</div>
+    <div class="slot-icon">🍵</div>
+    <div class="slot-info">
+      <h3 style="color:var(--warn)">Break + Fresh Ho Jao</h3>
+      <p>Chai, khana, 30 min relax — phir full focus!</p>
+    </div>
+    <div class="tick-btn" id="tick3" onclick="toggleTick(3)"></div>
+  </div>
+</div>
+
+<div class="slot" id="slot4">
+  <div class="slot-inner">
+    <div class="slot-time">5:30 - 7:00</div>
+    <div class="slot-icon">💻</div>
+    <div class="slot-info">
+      <h3 style="color:var(--danger)">Hands-on Practice 🔥</h3>
+      <p>TryHackMe / PortSwigger labs / CTF. Real karo!</p>
+    </div>
+    <div class="tick-btn" id="tick4" onclick="toggleTick(4)"></div>
+  </div>
+</div>
+
+<div class="slot" id="slot5">
+  <div class="slot-inner">
+    <div class="slot-time">7:00 - 7:30</div>
+    <div class="slot-icon">🏫</div>
+    <div class="slot-info">
+      <h3 style="color:var(--warn)">School Study</h3>
+      <p>Homework / Board prep — neglect mat karo!</p>
+    </div>
+    <div class="tick-btn" id="tick5" onclick="toggleTick(5)"></div>
+  </div>
+</div>
+
+<div class="slot" id="slot6">
+  <div class="slot-inner">
+    <div class="slot-time">7:30 - 8:00</div>
+    <div class="slot-icon">🍽️</div>
+    <div class="slot-info">
+      <h3 style="color:var(--muted)">Khana + Family Time</h3>
+      <p>Dinner — relax, family ke saath waqt bitao.</p>
+    </div>
+    <div class="tick-btn" id="tick6" onclick="toggleTick(6)"></div>
+  </div>
+</div>
+
+<!-- NIGHT -->
+<div class="sec-label">🌙 Night Grind — 8:00 PM se 9:30 PM</div>
+
+<div class="slot" id="slot7">
+  <div class="slot-inner">
+    <div class="slot-time">8:00 - 9:00</div>
+    <div class="slot-icon">🔐</div>
+    <div class="slot-info">
+      <h3 style="color:var(--purple)">Deep Cyber Study</h3>
+      <p>Videos dekho / writeups padho / Karan ke saath discuss karo!</p>
+    </div>
+    <div class="tick-btn" id="tick7" onclick="toggleTick(7)"></div>
+  </div>
+</div>
+
+<div class="slot" id="slot8">
+  <div class="slot-inner">
+    <div class="slot-time">9:00 - 9:20</div>
+    <div class="slot-icon">📝</div>
+    <div class="slot-info">
+      <h3 style="color:var(--accent)">Review + Notes</h3>
+      <p>Aaj kya seekha? Kal kya karna hai? Quick recap.</p>
+    </div>
+    <div class="tick-btn" id="tick8" onclick="toggleTick(8)"></div>
+  </div>
+</div>
+
+<div class="slot" id="slot9">
+  <div class="slot-inner">
+    <div class="slot-time">9:20 - 9:30</div>
+    <div class="slot-icon">😴</div>
+    <div class="slot-info">
+      <h3 style="color:var(--muted)">Sleep Prep</h3>
+      <p>Phone rakho, aankhein bando, kal fresh start! 💤</p>
+    </div>
+    <div class="tick-btn" id="tick9" onclick="toggleTick(9)"></div>
+  </div>
+</div>
+
+<!-- STREAK TRACKER -->
+<div class="streak-box" style="margin-top:14px">
+  <div class="streak-top">
+    <span class="streak-title">🔥 Week Streak</span>
+    <span class="streak-count" id="streakNum">0</span>
+  </div>
+  <div class="streak-days" id="streakDays"></div>
+</div>
+
+<!-- RESET -->
+<button class="reset-btn" onclick="resetDay()">🔄 Aaj Ka Din Reset Karo</button>
+
+<div class="footer">
+  <p>💪 <span>Kheyansh + Karan</span> — Dono milke bug bounty karenye! 🔥<br>
+  <span style="font-size:.72rem;color:var(--muted)">Same grind, same goal — alag time!</span></p>
+</div>
+
+</div>
+
+<script>
+const TOTAL = 10;
+const TICKABLE = [0,1,2,3,4,5,6,7,8,9];
+const TODAY = new Date().toDateString();
+
+const MOTIS = [
+  "Kheyansh, tu aaj bhi grind kar raha hai — Karan bhi kar raha hai! Dono milke ek din bug bounty kamaoge! 💰",
+  "Tuition ke baad thaka hua feel ho? Wahi time hota hai jab real hunters grind karte hain! 🔥",
+  "1 saal consistent raha toh — OSCP, red team job, bug bounty income. Sab possible hai! 💪",
+  "CyberBoy, NahamSec — inhone bhi aise hi shuru kiya tha. Ek din teri video bhi aayegi! 🎯",
+  "Har CTF challenge = ek naya weapon seekha. Har lab = ek naya skill. Keep going bhai! ⚡",
+  "School + Tuition + Cyber = Bahut kuch hai. But ye combo hi tujhe alag banayega! 🏆",
+  "Karan ke saath discuss karo — dono milke zyada seekhoge! Ek sala dusra sikhaate hain! 🤝"
+];
+
+function loadState(){
+  try{ return JSON.parse(localStorage.getItem('kheyansh_schedule')||'{}'); }
+  catch(e){ return {}; }
+}
+function saveState(s){
+  try{ localStorage.setItem('kheyansh_schedule', JSON.stringify(s)); }catch(e){}
+}
+
+function toggleTick(i){
+  var s = loadState();
+  var key = TODAY+'_'+i;
+  s[key] = !s[key];
+  saveState(s);
+  render();
+}
+
+function render(){
+  var s = loadState();
+  var done = 0;
+
+  TICKABLE.forEach(function(i){
+    var key = TODAY+'_'+i;
+    var btn = document.getElementById('tick'+i);
+    if(!btn) return;
+    var isDone = !!s[key];
+    if(isDone) done++;
+    btn.textContent = isDone ? '✓' : '';
+    btn.className = 'tick-btn' + (isDone?' done':'');
+    var slot = document.getElementById('slot'+i);
+    if(slot) slot.style.opacity = isDone ? '0.7' : '1';
+  });
+
+  var pct = Math.round(done/TOTAL*100);
+  document.getElementById('progPct').textContent = pct+'%';
+  document.getElementById('progFill').style.width = pct+'%';
+  document.getElementById('statDone').textContent = done+'/'+TOTAL;
+  document.getElementById('statPct').textContent = pct+'%';
+
+  // Streak
+  var streak = calcStreak(s);
+  document.getElementById('statStreak').textContent = streak+'🔥';
+  document.getElementById('streakNum').textContent = streak;
+
+  // Week dots
+  var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var container = document.getElementById('streakDays');
+  container.innerHTML = '';
+  for(var d=6;d>=0;d--){
+    var date = new Date(); date.setDate(date.getDate()-d);
+    var ds = date.toDateString();
+    var label = days[date.getDay()];
+    var dayDone = 0;
+    for(var i=0;i<TOTAL;i++){
+      if(s[ds+'_'+i]) dayDone++;
+    }
+    var dot = document.createElement('div');
+    dot.className = 'day-dot' + (dayDone>0?' done':'');
+    dot.innerHTML = '<span>'+label+'</span><span class="day-label">'+dayDone+'</span>';
+    container.appendChild(dot);
+  }
+
+  // Motivation
+  var motiIdx = Math.floor(Date.now()/86400000) % MOTIS.length;
+  document.getElementById('motiText').textContent = MOTIS[motiIdx];
+}
+
+function calcStreak(s){
+  var streak=0;
+  for(var d=0;d<30;d++){
+    var date=new Date(); date.setDate(date.getDate()-d);
+    var ds=date.toDateString();
+    var dayDone=0;
+    for(var i=0;i<TOTAL;i++){ if(s[ds+'_'+i]) dayDone++; }
+    if(dayDone >= Math.floor(TOTAL*0.6)) streak++;
+    else if(d>0) break;
+  }
+  return streak;
+}
+
+function resetDay(){
+  if(!confirm('Aaj ka din reset karo?')) return;
+  var s = loadState();
+  for(var i=0;i<TOTAL;i++) delete s[TODAY+'_'+i];
+  saveState(s);
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
