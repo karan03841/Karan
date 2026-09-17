@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kheyansh — Phone Se Hacker Bano</title>
+<style>
+:root{
+  --bg:#05080f;--panel:#0a0f1a;--panel2:#0f1628;--border:#151f35;
+  --text:#c8d8f0;--muted:#4a6080;
+  --c1:#ff3d7f;--c2:#00f5c0;--c3:#ffd700;
+  --c4:#bf5fff;--c5:#ff7b00;--c6:#00c8ff;
+  --c7:#39ff14;--c8:#ff4444;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;line-height:1.65;padding-bottom:80px}
+
+.hero{position:relative;padding:40px 20px 28px;text-align:center}
+.hero::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--c1),var(--c3),var(--c2),var(--c4))}
+.hero h1{font-size:1.6rem;color:var(--c2);margin-bottom:4px}
+.hero p{color:var(--muted);font-size:.85rem;max-width:400px;margin:0 auto}
+
+.wrap{max-width:860px;margin:0 auto;padding:0 14px}
+
+/* PROGRESS BAR */
+.overall{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin:18px 0}
+.ov-top{display:flex;justify-content:space-between;margin-bottom:8px}
+.ov-title{font-size:.85rem;font-weight:600}
+.ov-pct{font-size:.85rem;color:var(--c2);font-weight:700}
+.ov-bar{height:8px;background:var(--panel2);border-radius:6px;overflow:hidden}
+.ov-fill{height:8px;background:linear-gradient(90deg,var(--c1),var(--c4),var(--c2));border-radius:6px;transition:width .4s}
+
+/* LEVEL CARD */
+.level{border-radius:14px;margin-bottom:12px;overflow:hidden;border:1px solid}
+.level-head{padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none;-webkit-user-select:none;transition:background .15s}
+.level-head:hover,.level-head:active{background:var(--panel2)}
+.lv-badge{width:50px;height:50px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;border:2px solid;font-weight:800}
+.lv-num{font-size:.65rem;letter-spacing:.5px;text-transform:uppercase}
+.lv-n{font-size:1.3rem;line-height:1}
+.lv-info{flex:1}
+.lv-info h2{font-size:.95rem;margin-bottom:2px;font-family:monospace}
+.lv-info p{font-size:.73rem;color:var(--muted)}
+.lv-prog{display:flex;align-items:center;gap:6px;margin-top:5px}
+.lv-bar{flex:1;height:4px;background:var(--panel2);border-radius:3px;overflow:hidden}
+.lv-fill{height:4px;border-radius:3px;transition:width .3s}
+.lv-pct{font-size:.68rem;color:var(--muted);min-width:28px}
+.chev{margin-left:auto;transition:transform .2s;flex-shrink:0;color:var(--muted)}
+.chev.open{transform:rotate(90deg)}
+.level-body{display:none;border-top:1px solid;padding:16px}
+.level-body.open{display:block}
+
+/* Level colors */
+.l1{background:#1a0510;border-color:#ff3d7f44}
+.l1 .lv-badge{background:#ff3d7f15;border-color:var(--c1);color:var(--c1)}
+.l1 .lv-fill{background:var(--c1)}
+.l1 .level-body{border-color:#ff3d7f22}
+
+.l2{background:#071a07;border-color:#39ff1444}
+.l2 .lv-badge{background:#39ff1415;border-color:var(--c7);color:var(--c7)}
+.l2 .lv-fill{background:var(--c7)}
+.l2 .level-body{border-color:#39ff1422}
+
+.l3{background:#081628;border-color:#00c8ff44}
+.l3 .lv-badge{background:#00c8ff15;border-color:var(--c6);color:var(--c6)}
+.l3 .lv-fill{background:var(--c6)}
+.l3 .level-body{border-color:#00c8ff22}
+
+.l4{background:#1a1500;border-color:#ffd70044}
+.l4 .lv-badge{background:#ffd70015;border-color:var(--c3);color:var(--c3)}
+.l4 .lv-fill{background:var(--c3)}
+.l4 .level-body{border-color:#ffd70022}
+
+.l5{background:#120a1e;border-color:#bf5fff44}
+.l5 .lv-badge{background:#bf5fff15;border-color:var(--c4);color:var(--c4)}
+.l5 .lv-fill{background:var(--c4)}
+.l5 .level-body{border-color:#bf5fff22}
+
+/* CODE BLOCK */
+.code-wrap{background:#020610;border-radius:8px;border:1px solid #0d1428;margin:8px 0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:var(--c2) #020610}
+.code-wrap::-webkit-scrollbar{height:3px}
+.code-wrap::-webkit-scrollbar-thumb{background:var(--c2);border-radius:2px}
+.code-wrap pre{padding:11px 14px;font-family:'Courier New',monospace;font-size:.78rem;line-height:1.8;white-space:pre;min-width:max-content}
+.p{color:var(--c1)} .c{color:var(--c2)} .y{color:var(--c3)}
+.v{color:var(--c4)} .o{color:var(--c5)} .b{color:var(--c6)}
+.g{color:var(--c7)} .r{color:var(--c8)} .m{color:var(--muted)}
+
+/* TASK LIST */
+.tasks{margin:10px 0}
+.task{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px dashed var(--border);cursor:pointer;user-select:none;-webkit-user-select:none}
+.task:last-child{border-bottom:none}
+.task-cb{width:22px;height:22px;border-radius:6px;border:1.5px solid var(--muted);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all .15s;font-size:.85rem;min-width:22px}
+.task-cb.done{border-color:var(--c2);background:var(--c2);color:#000;font-weight:700}
+.task-text{font-size:.83rem;line-height:1.5;flex:1}
+.task-text.done{text-decoration:line-through;color:var(--muted)}
+.task-badge{font-size:.66rem;padding:2px 7px;border-radius:8px;flex-shrink:0;font-weight:600;white-space:nowrap;margin-top:2px}
+.tb-video{background:#1a0510;color:var(--c1);border:1px solid var(--c1)}
+.tb-termux{background:#071a07;color:var(--c7);border:1px solid var(--c7)}
+.tb-read{background:#081628;color:var(--c6);border:1px solid var(--c6)}
+.tb-practice{background:#0f0520;color:var(--c4);border:1px solid var(--c4)}
+
+/* VIDEO LINK */
+.vid-link{display:flex;align-items:center;gap:8px;background:#1a050f;border:1px solid var(--c1);border-radius:8px;padding:9px 12px;margin:6px 0;text-decoration:none;transition:background .15s}
+.vid-link:hover{background:#250818}
+.vid-icon{font-size:1.1rem;flex-shrink:0}
+.vid-info{flex:1}
+.vid-title{font-size:.8rem;color:var(--c1);font-weight:600}
+.vid-sub{font-size:.7rem;color:var(--muted)}
+
+/* TERMUX BOX */
+.termux{background:#020a04;border:1px solid var(--c7);border-radius:10px;padding:12px 14px;margin:10px 0}
+.termux h4{font-size:.78rem;color:var(--c7);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.termux h4::before{content:'📱'}
+
+/* TIP BOX */
+.tip{background:#1a1500;border-left:3px solid var(--c3);padding:9px 13px;border-radius:0 7px 7px 0;font-size:.81rem;color:#ffe88a;margin:8px 0}
+
+/* SLABEL */
+.slabel{font-size:.69rem;font-weight:700;letter-spacing:.6px;text-transform:uppercase;margin:14px 0 7px;display:flex;align-items:center;gap:8px;color:var(--muted)}
+.slabel::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* INSTALL BOX */
+.install-box{background:#07100a;border:1px solid var(--c2);border-radius:10px;padding:14px 16px;margin:16px 0}
+.install-box h3{color:var(--c2);font-size:.88rem;margin-bottom:10px}
+
+.ctrl{display:flex;gap:8px;margin:16px 0 12px;flex-wrap:wrap}
+.cbtn{padding:7px 14px;border:1px solid var(--border);border-radius:8px;background:var(--panel);color:var(--muted);font-size:.76rem;cursor:pointer;font-family:inherit;transition:all .15s}
+.cbtn:hover,.cbtn:active{color:var(--c2);border-color:var(--c2)}
+
+.footer{text-align:center;padding:32px 20px 0;color:var(--muted);font-size:.83rem}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>📱 Phone Se Hacker Bano</h1>
+  <p><strong style="color:var(--c4)">Kheyansh</strong> — Laptop nahi hai? Koi baat nahi! Phone + Termux = Complete Lab! 🔥</p>
+</div>
+
+<div class="wrap">
+
+<!-- TERMUX SETUP -->
+<div class="install-box">
+  <h3>📱 Pehle Ye Setup Karo — Ek Baar!</h3>
+  <div class="code-wrap"><pre><span class="m"># Step 1: F-Droid se Termux download karo</span>
+<span class="m"># (Play Store wala outdated hai!)</span>
+<span class="m"># https://f-droid.org → search "Termux"</span>
+
+<span class="m"># Step 2: Termux open karo, ye commands chalaao</span>
+<span class="c">pkg update && pkg upgrade -y</span>
+<span class="c">pkg install curl wget git python nmap -y</span>
+<span class="c">pkg install ncat openssl dnsutils -y</span>
+<span class="c">pkg install python-pip -y</span>
+<span class="c">pip install requests beautifulsoup4</span>
+
+<span class="m"># Step 3: Storage permission do</span>
+<span class="c">termux-setup-storage</span>
+
+<span class="m"># Check karo sab install hua?</span>
+<span class="c">curl --version && nmap --version</span>
+<span class="m"># Version numbers aaye = DONE! ✅</span></pre></div>
+</div>
+
+<!-- OVERALL PROGRESS -->
+<div class="overall">
+  <div class="ov-top">
+    <span class="ov-title">🗺️ Overall Journey Progress</span>
+    <span class="ov-pct" id="ovPct">0%</span>
+  </div>
+  <div class="ov-bar"><div class="ov-fill" id="ovFill" style="width:0%"></div></div>
+</div>
+
+<div class="ctrl">
+  <button class="cbtn" onclick="expandAll()">⬇ Sab Kholo</button>
+  <button class="cbtn" onclick="collapseAll()">⬆ Sab Bando</button>
+  <button class="cbtn" onclick="resetAll()" style="margin-left:auto">🔄 Reset</button>
+</div>
+
+<!-- ═══════════════════════════ -->
+<!-- LEVEL 1 — NETWORKING       -->
+<!-- ═══════════════════════════ -->
+<div class="level l1">
+  <div class="level-head">
+    <div class="lv-badge">
+      <span class="lv-num">LEVEL</span>
+      <span class="lv-n">1</span>
+    </div>
+    <div class="lv-info">
+      <h2 style="color:var(--c1)">Networking Basics</h2>
+      <p>IP, Port, Protocol, DNS, HTTP — Internet kaise kaam karta hai</p>
+      <div class="lv-prog">
+        <div class="lv-bar"><div class="lv-fill" id="fill_l1" style="width:0%"></div></div>
+        <span class="lv-pct" id="pct_l1">0%</span>
+      </div>
+    </div>
+    <span class="chev">▶</span>
+  </div>
+  <div class="level-body">
+    <div class="tip">🎭 <strong>Analogy:</strong> Internet = Duniya ki sabse badi daak seva. IP = ghar ka address. Port = darwaaza number. Protocol = bhasha jisme baat karte hain!</div>
+
+    <div class="slabel" style="color:var(--c1)">📺 Pehle Videos Dekho</div>
+    <a class="vid-link" href="https://www.youtube.com/watch?v=qiQR5rTSshw" target="_blank">
+      <span class="vid-icon">▶️</span>
+      <div class="vid-info">
+        <div class="vid-title">Networking Fundamentals — Hindi</div>
+        <div class="vid-sub">IP Address, Subnet, DNS sab explain</div>
+      </div>
+    </a>
+    <a class="vid-link" href="https://www.youtube.com/watch?v=L3ZzkOTDirs" target="_blank">
+      <span class="vid-icon">▶️</span>
+      <div class="vid-info">
+        <div class="vid-title">How Internet Works — Hindi Mein</div>
+        <div class="vid-sub">HTTP, DNS, TCP/IP full explanation</div>
+      </div>
+    </a>
+
+    <div class="slabel" style="color:var(--c1)">📖 Concepts — Ye Yaad Karo</div>
+    <div class="tasks" id="tasks_l1">
+      <div class="task" onclick="tick('l1',0)">
+        <div class="task-cb" id="cb_l1_0"></div>
+        <div class="task-text" id="tx_l1_0">IP Address kya hai — Public vs Private samjho (192.168.x.x = private)</div>
+        <span class="task-badge tb-read">Concept</span>
+      </div>
+      <div class="task" onclick="tick('l1',1)">
+        <div class="task-cb" id="cb_l1_1"></div>
+        <div class="task-text" id="tx_l1_1">Ports kya hote hain — 80=HTTP, 443=HTTPS, 22=SSH, 3306=MySQL</div>
+        <span class="task-badge tb-read">Concept</span>
+      </div>
+      <div class="task" onclick="tick('l1',2)">
+        <div class="task-cb" id="cb_l1_2"></div>
+        <div class="task-text" id="tx_l1_2">DNS kya karta hai — Domain ko IP mein convert karta hai</div>
+        <span class="task-badge tb-read">Concept</span>
+      </div>
+      <div class="task" onclick="tick('l1',3)">
+        <div class="task-cb" id="cb_l1_3"></div>
+        <div class="task-text" id="tx_l1_3">HTTP vs HTTPS — Request aur Response ka structure samjho</div>
+        <span class="task-badge tb-read">Concept</span>
+      </div>
+      <div class="task" onclick="tick('l1',4)">
+        <div class="task-cb" id="cb_l1_4"></div>
+        <div class="task-text" id="tx_l1_4">TCP vs UDP — TCP = reliable, UDP = fast samjho</div>
+        <span class="task-badge tb-read">Concept</span>
+      </div>
+    </div>
+
+    <div class="termux">
+      <h4>Termux Practice — Ye Karo!</h4>
+      <div class="code-wrap"><pre><span class="m"># Apna IP dekho</span>
+<span class="c">curl ifconfig.me</span>
+
+<span class="m"># Google ka IP dekho</span>
+<span class="c">nslookup google.com</span>
+
+<span class="m"># Ping karo — connected hai?</span>
+<span class="c">ping google.com -c 4</span>
+
+<span class="m"># DNS trace — kaise resolve hota hai</span>
+<span class="c">nslookup -type=any google.com 8.8.8.8</span>
+
+<span class="m"># HTTP request dekho</span>
+<span class="c">curl -v http://example.com 2>&1 | head -30</span>
+<span class="m"># Headers aur response dono dikh jaayenge!</span>
+
+<span class="m"># Port check karo</span>
+<span class="c">nmap -p 80,443,22 google.com</span></pre></div>
+    </div>
+
+    <div class="tasks">
+      <div class="task" onclick="tick('l1',5)">
+        <div class="task-cb" id="cb_l1_5"></div>
+        <div class="task-text" id="tx_l1_5">Termux mein curl ifconfig.me chalaaya — apna IP dekha ✅</div>
+        <span class="task-badge tb-termux">Termux</span>
+      </div>
+      <div class="task" onclick="tick('l1',6)">
+        <div class="task-cb" id="cb_l1_6"></div>
+        <div class="task-text" id="tx_l1_6">nslookup google.com chalaaya — IP aaya ✅</div>
+        <span class="task-badge tb-termux">Termux</span>
+      </div>
+      <div class="task" onclick="tick('l1',7)">
+        <div class="task-cb" id="cb_l1_7"></div>
+        <div class="task-text" id="tx_l1_7">curl -v http://example.com chalaaya — HTTP headers dekhe ✅</div>
+        <span class="task-badge tb-termux">Termux</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ -->
+<!-- LEVEL 2 — LINUX            -->
+<!-- ═══════════════════════════ -->
+<div class="level l2">
+  <div class="level-head">
+    <div class="lv-badge">
+      <span class="lv-num">LEVEL</span>
+      <span class="lv-n">2</span>
+    </div>
+    <div class="lv-info">
+      <h2 style="color:var(--c7)">Linux Commands</h2>
+      <p>Terminal master karo — Termux = Linux hi hai!</p>
+      <div class="lv-prog">
+        <div class="lv-bar"><div class="lv-fill" id="fill_l2" style="width:0%"></div></div>
+        <span class="lv-pct" id="pct_l2">0%</span>
+      </div>
+    </div>
+    <span class="chev">▶</span>
+  </div>
+  <div class="level-body">
+    <div class="tip">🎭 <strong>Analogy:</strong> Linux terminal = Ghar mein seedha chef se baat karo. GUI = waiter ke through. Terminal mein direct = zyada control!</div>
+
+    <a class="vid-link" href="https://www.youtube.com/watch?v=iwolPf6kN-k" target="_blank">
+      <span class="vid-icon">▶️</span>
+      <div class="vid-info">
+        <div class="vid-title">Linux Commands for Beginners — Hindi</div>
+        <div class="vid-sub">Sabse important commands with examples</div>
+      </div>
+    </a>
+    <a class="vid-link" href="https://www.youtube.com/watch?v=b5NmtmNwMgU" target="_blank">
+      <span class="vid-icon">▶️</span>
+      <div class="vid-info">
+        <div class="vid-title">Termux Tutorial for Beginners — Hindi</div>
+        <div class="vid-sub">Phone pe Linux — complete guide</div>
+      </div>
+    </a>
+
+    <div class="termux">
+      <h4>Level 2A — Navigation Commands</h4>
+      <div class="code-wrap"><pre><span class="m"># Kahan hoon?</span>
+<span class="c">pwd</span>
+
+<span class="m"># Files list karo</span>
+<span class="c">ls</span>
+<span class="c">ls -la</span>        <span class="m">← Hidden files bhi</span>
+
+<span class="m"># Folder mein jao</span>
+<span class="c">cd Downloads</span>
+<span class="c">cd ..</span>          <span class="m">← Ek peeche</span>
+<span class="c">cd ~</span>           <span class="m">← Home folder</span>
+
+<span class="m"># Folder banao</span>
+<span class="c">mkdir hacking</span>
+<span class="c">cd hacking</span>
+
+<span class="m"># File banao</span>
+<span class="c">touch notes.txt</span>
+<span class="c">echo "Hello Hacker" > notes.txt</span>
+<span class="c">cat notes.txt</span>     <span class="m">← Content padho</span>
+
+<span class="m"># Copy, Move, Delete</span>
+<span class="c">cp notes.txt backup.txt</span>
+<span class="c">mv notes.txt mynotes.txt</span>
+<span class="c">rm backup.txt</span></pre></div>
+    </div>
+
+    <div class="termux">
+      <h4>Level 2B — Powerful Commands</h4>
+      <div class="code-wrap"><pre><span class="m"># Text mein search karo</span>
+<span class="c">grep "password" file.txt</span>
+<span class="c">grep -r "api_key" ./folder/</span>   <span class="m">← Recursive!</span>
+<span class="c">grep -i "admin" file.txt</span>      <span class="m">← Case insensitive</span>
+
+<span class="m"># File dhundho</span>
+<span class="c">find . -name "*.txt"</span>
+<span class="c">find . -name ".env"</span>
+
+<span class="m"># Download karo</span>
+<span class="c">wget https://example.com/file.txt</span>
+<span class="c">curl -O https://example.com/file.zip</span>
+
+<span class="m"># Pipe — ek ka output doosre mein</span>
+<span class="c">cat file.txt | grep "password"</span>
+<span class="c">curl -s https://example.com | grep "admin"</span>
+
+<span class="m"># Loop — automation!</span>
+<span class="c">for i in 1 2 3 4 5; do</span>
+<span class="c">  echo "Number: $i"</span>
+<span class="c">done</span>
+
+<span class="m"># Output file mein save</span>
+<span class="c">nmap google.com > scan_results.txt</span>
+<span class="c">cat scan_results.txt</span></pre></div>
+    </div>
+
+    <div class="tasks" id="tasks_l2">
+      <div class="task" onclick="tick('l2',0)">
+        <div class="task-cb" id="cb_l2_0"></div>
+        <div class="task-text" id="tx_l2_0">mkdir, cd, ls, pwd — navigation master kiya</div>
+        <span class="task-badge tb-termux">Termux</span>
+      </div>
+      <div class="task" onclick="tick('l2',1)">
+        <div class="task-cb" id="cb_l2_1"></div>
+        <div class="task-text" id="tx_l2_1">touch, cat, echo, grep — file operations kiye</div>
+        <span class="task-badge tb-termux">Termux</span>
+      </div>
+      <div class="task" onclick="tick('l2',2)">
+        <div class="task-cb" id="cb_l2_2"></div>
+        <div class="task-text" id="tx_l2_2">Pipe (|) use kiya — grep se search kiya</div>
+        <span class="task-badge tb-termux">Termux</span>
+      </div>
+      <div class="task" onclick="tick('l2',3)">
+        <div class="task-cb" id="cb_l2_3"></div>
+        <div class="task-text" id="tx_l2_3">for loop likha — automation samjha</div>
+        <span class="task-badge tb-termux">Termux</span>
+      </div>
+      <div class="task" onclick="tick('l2',4)">
+        <div class="task-cb" id="cb_l2_4"></div>
+        <div class="task-text" id="tx_l2_4">wget/curl se file download kiya</div>
+        <span class="task-badge tb-termux">Termux</span>
+      </div>
+      <div class="task" onclick="tick('l2',5)">
+        <div class="task-cb" id="cb_l2_5"></div>
+        <div class="task-text" id="tx_l2_5">OverTheWire Bandit Level 0-5 complete kiya (bandit.labs.overthewire.org)</div>
+        <span class="task-badge tb-practice">Practice</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ -->
+<!-- LEVEL 3 — WEB SECURITY     -->
+<!-- ═══════════════════════════ -->
+<div class="level l3">
+  <div class="level-head">
+    <div class="lv-badge">
+      <span class="lv-num">LEVEL</span>
+      <span class="lv-n">3</span>
+    </div>
+    <div class="lv-info">
+      <h2 style="color:var(--c6)">Web Security Basics</h2>
+      <p>Website kaise kaam karti hai, kahan bugs hote hain</p>
+      <div class="lv-prog">
+        <div class="lv-bar"><div class="lv-fill" id="fill_l3" style="width:0%"></div></div>
+        <span class="lv-pct" id="pct_l3">0%</span>
+      </div>
+    </div>
+    <span class="chev">▶</span>
+  </div>
+  <div class="level-body">
+    <div class="tip">🎭 <strong>Analogy:</strong> Website = ek restaurant. URL = address. Request = order. Response = khana. Vulnerability = chef ne kuch galat kar diya!</div>
+
+    <a class="vid-link" href="https://www.youtube.com/watch?v=WtHnT73NaaQ" target="_blank">
+      <span class="vid-icon">▶️</span>
+      <div class="vid-info">
+        <div class="vid-title">Web Security Basics — Hindi</div>
+        <div class="vid-sub">HTTP, Cookies, Sessions, Headers explain</div>
+      </div>
+    </a>
+    <a class="vid-link" href="https://www.youtube.com/watch?v=ZxMnBEbWxM8" target="_blank">
+      <span class="vid-icon">▶️</span>
+      <div class="vid-info">
+        <div class="vid-title">OWASP Top 10 — Hindi Mein</div>
+        <div class="vid-sub">Top 10 web vulnerabilities explained simply</div>
+      </div>
+    </a>
+
+    <div class="slabel" style="color:var(--c6)">🌐 Concepts</div>
+    <div class="tasks" id="tasks_l3">
+      <div class="task" onclick="tick('l3',0)">
+        <div class="task-cb" id="cb_l3_0"></div>
+        <div class="task-text" id="tx_l3_0">HTTP Methods samjho — GET, POST, PUT, DELETE kya karte hain</div>
+        <span class="task-badge tb-read">Concept</span>
+      </div>
+      <div class="task" onclick="tick('l3',1)">
+        <div class="task-cb" id="cb_l3_1"></div>
+        <div class="task-text" id="tx_l3_1">HTTP Status Codes — 200, 301, 401, 403, 404, 500 ka matlab</div>
+        <span class="task-badge tb-read">Concept</span>
+      </div>
+      <div class="task" onclick="tick('l3',2)">
+        <div class="task-cb" id="cb_l3_2"></div>
+        <div class="task-text" id="tx_l3_2">Cookies kya hote hain — Session kaise kaam karta hai</div>
+        <span class="task-badge tb-read">Concept</span>
+      </div>
+      <div class="task" onclick="tick('l3',3)">
+        <div class="task-cb" id="cb_l3_3"></div>
+        <div class="task-text" id="tx_l3_3">SQL Injection kya hai — database attack samjho</div>
+        <span class="task-badge tb-read">Concept</span>
+      </div>
+      <div class="task" onclick="tick('l3',4)">
+        <div class="task-cb" id="cb_l3_4"></div>
+        <div class="task-text" id="tx_l3_4">XSS kya hai — JavaScript inject karna samjho</div>
+        <span class="task-badge tb-read">Concept</span>
+      </div>
+      <div class="task" onclick="tick('l3',5)">
+        <div class="task-cb" id="cb_l3_5"></div>
+        <div class="task-text" id="tx_l3_5">IDOR kya hai — ID change karke doosre ka data access</div>
+        <span class="task-badge tb-read">Concept</span>
+      </div>
+    </div>
+
+    <div class="termux">
+      <h4>Phone Pe Web Testing — Browser + curl</h4>
+      <div class="code-wrap"><pre><span class="m"># curl se HTTP request bhejo</span>
+<span class="c">curl -i https://example.com</span>
+<span class="m"># -i = headers bhi dikhao</span>
+
+<span class="m"># POST request bhejo</span>
+<span class="c">curl -X POST https://httpbin.org/post \</span>
+<span class="c">  -d "username=test&password=1234"</span>
+
+<span class="m"># Headers dekho</span>
+<span class="c">curl -sI https://example.com</span>
+
+<span class="m"># JSON bhejo</span>
+<span class="c">curl -X POST https://httpbin.org/post \</span>
+<span class="c">  -H "Content-Type: application/json" \</span>
+<span class="c">  -d '{"user":"admin","pass":"1234"}'</span>
+
+<span class="m"># httpbin.org se practice karo!</span>
+<span class="m"># Ye site specially HTTP testing ke liye hai</span>
+<span class="c">curl https://httpbin.org/get</span>
+<span class="c">curl https://httpbin.org/headers</span></pre></div>
+    </div>
+
+    <div class="slabel" style="color:var(--c6)">📱 Phone Pe Practice Sites</div>
+    <div class="tasks">
+      <div class="task" onclick="tick('l3',6)">
+        <div class="task-cb" id="cb_l3_6"></div>
+        <div class="task-text" id="tx_l3_6">PortSwigger Web Academy — phone browser mein kholo, pehle 5 SQLi labs karo (portswigger.net/web-security)</div>
+        <span class="task-badge tb-practice">Practice</span>
+      </div>
+      <div class="task" onclick="tick('l3',7)">
+        <div class="task-cb" id="cb_l3_7"></div>
+        <div class="task-text" id="tx_l3_7">DVWA (Damn Vulnerable Web App) — TryHackMe pe free room hai, phone browser se karo</div>
+        <span class="task-badge tb-practice">Practice</span>
+      </div>
+      <div class="task" onclick="tick('l3',8)">
+        <div class="task-cb" id="cb_l3_8"></div>
+        <div class="task-text" id="tx_l3_8">PicoCTF — web category ke easy challenges phone pe solve karo (picoctf.org)</div>
+        <span class="task-badge tb-practice">Practice</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ -->
+<!-- LEVEL 4 — TOOLS            -->
+<!-- ═══════════════════════════ -->
+<div class="level l4">
+  <div class="level-head">
+    <div class="lv-badge">
+      <span class="lv-num">LEVEL</span>
+      <span class="lv-n">4</span>
+    </div>
+    <div class="lv-info">
+      <h2 style="color:var(--c3)">Tools — Termux Arsenal</h2>
+      <p>Nmap, curl, subfinder, nuclei — phone pe install karo</p>
+      <div class="lv-prog">
+        <div class="lv-bar"><div class="lv-fill" id="fill_l4" style="width:0%"></div></div>
+        <span class="lv-pct" id="pct_l4">0%</span>
+      </div>
+    </div>
+    <span class="chev">▶</span>
+  </div>
+  <div class="level-body">
+    <div class="tip">🎭 <strong>Analogy:</strong> Tools = Hacker ki toolkit. Carpenter ke paas hammer, saw hoti hai. Hacker ke paas nmap, curl, subfinder hota hai!</div>
+
+    <a class="vid-link" href="https://www.youtube.com/watch?v=4t4kBkMsdbQ" target="_blank">
+      <span class="vid-icon">▶️</span>
+      <div class="vid-info">
+        <div class="vid-title">Nmap Tutorial — Hindi Mein</div>
+        <div class="vid-sub">Port scanning complete guide</div>
+      </div>
+    </a>
+
+    <div class="termux">
+      <h4>Tool 1 — Nmap (Port Scanner)</h4>
+      <div class="code-wrap"><pre><span class="m"># Already installed hai! Try karo:</span>
+<span class="c">nmap google.com</span>            <span class="m">← Basic scan</span>
+<span class="c">nmap -sV google.com</span>        <span class="m">← Service version</span>
+<span class="c">nmap -p 80,443 google.com</span>  <span class="m">← Specific ports</span>
+<span class="c">nmap --top-ports 100 target.com</span>
+
+<span class="m"># Results file mein save karo</span>
+<span class="c">nmap target.com -oN scan.txt</span>
+<span class="c">cat scan.txt</span></pre></div>
+    </div>
+
+    <div class="termux">
+      <h4>Tool 2 — curl (Sabka Baap)</h4>
+      <div class="code-wrap"><pre><span class="m"># Ye pehle se hai — practice karo</span>
+<span class="c">curl https://target.com</span>           <span class="m">← GET</span>
+<span class="c">curl -I https://target.com</span>        <span class="m">← Sirf headers</span>
+<span class="c">curl -v https://target.com</span>        <span class="m">← Verbose</span>
+<span class="c">curl -X POST -d "a=b" target.com</span>  <span class="m">← POST</span>
+<span class="c">curl -H "Authorization: Bearer X" target.com</span>
+<span class="c">curl -o file.html target.com</span>      <span class="m">← Save karo</span>
+
+<span class="m"># Loop se IDOR test!</span>
+<span class="c">for i in $(seq 1 10); do</span>
+<span class="c">  echo "ID $i:"</span>
+<span class="c">  curl -s "https://httpbin.org/get?id=$i"</span>
+<span class="c">done</span></pre></div>
+    </div>
+
+    <div class="termux">
+      <h4>Tool 3 — Go Tools Install (Subfinder, httpx, nuclei)</h4>
+      <div class="code-wrap"><pre><span class="m"># Go install karo pehle</span>
+<span class="c">pkg install golang -y</span>
+
+<span class="m"># Subfinder — subdomains</span>
+<span class="c">go install github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest</span>
+<span class="c">subfinder -d google.com -silent</span>
+
+<span class="m"># httpx — live hosts check</span>
+<span class="c">go install github.com/projectdiscovery/httpx/cmd/httpx@latest</span>
+<span class="c">echo "google.com" | httpx -silent</span>
+
+<span class="m"># nuclei — auto vulnerability scanner</span>
+<span class="c">go install github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest</span>
+<span class="c">nuclei -u https://example.com -t exposures/</span>
+
+<span class="m"># ffuf — fuzzer</span>
+<span class="c">go install github.com/ffuf/ffuf/v2@latest</span>
+<span class="c">ffuf -u https://example.com/FUZZ -w wordlist.txt</span></pre></div>
+    </div>
+
+    <div class="termux">
+      <h4>Tool 4 — Python Scripts</h4>
+      <div class="code-wrap"><pre><span class="m"># Python already hai! Simple web scanner:</span>
+<span class="c">python3 - << 'EOF'</span>
+<span class="y">import requests
+url = "https://httpbin.org"
+paths = ["get", "post", "headers", "ip", "anything"]
+for path in paths:
+    r = requests.get(f"{url}/{path}")
+    print(f"{path}: {r.status_code}")
+EOF</span>
+
+<span class="m"># Ye output dega:</span>
+<span class="g">get: 200</span>
+<span class="g">post: 200</span>
+<span class="g">headers: 200</span></pre></div>
+    </div>
+
+    <div class="tasks" id="tasks_l4">
+      <div class="task" onclick="tick('l4',0)">
+        <div class="task-cb" id="cb_l4_0"></div>
+        <div class="task-text" id="tx_l4_0">Nmap se google.com scan kiya — ports dekhe ✅</div>
+        <span class="task-badge tb-termux">Termux</span>
+      </div>
+      <div class="task" onclick="tick('l4',1)">
+        <div class="task-cb" id="cb_l4_1"></div>
+        <div class="task-text" id="tx_l4_1">curl se POST request bheja httpbin.org pe ✅</div>
+        <span class="task-badge tb-termux">Termux</span>
+      </div>
+      <div class="task" onclick="tick('l4',2)">
+        <div class="task-cb" id="cb_l4_2"></div>
+        <div class="task-text" id="tx_l4_2">Go install kiya + subfinder chalaya ✅</div>
+        <span class="task-badge tb-termux">Termux</span>
+      </div>
+      <div class="task" onclick="tick('l4',3)">
+        <div class="task-cb" id="cb_l4_3"></div>
+        <div class="task-text" id="tx_l4_3">Python script likha — requests library use kiya ✅</div>
+        <span class="task-badge tb-termux">Termux</span>
+      </div>
+      <div class="task" onclick="tick('l4',4)">
+        <div class="task-cb" id="cb_l4_4"></div>
+        <div class="task-text" id="tx_l4_4">ffuf install + pehla fuzz run kiya ✅</div>
+        <span class="task-badge tb-termux">Termux</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ -->
+<!-- LEVEL 5 — ATTACKS          -->
+<!-- ═══════════════════════════ -->
+<div class="level l5">
+  <div class="level-head">
+    <div class="lv-badge">
+      <span class="lv-num">LEVEL</span>
+      <span class="lv-n">5</span>
+    </div>
+    <div class="lv-info">
+      <h2 style="color:var(--c4)">Attacks — Practice Labs</h2>
+      <p>SQLi, XSS, IDOR — authorized labs mein practice!</p>
+      <div class="lv-prog">
+        <div class="lv-bar"><div class="lv-fill" id="fill_l5" style="width:0%"></div></div>
+        <span class="lv-pct" id="pct_l5">0%</span>
+      </div>
+    </div>
+    <span class="chev">▶</span>
+  </div>
+  <div class="level-body">
+    <div class="tip">⚠️ <strong>Important:</strong> Sirf authorized platforms pe practice karo! TryHackMe, PortSwigger, PicoCTF — ye sab safe hain. Real websites pe kabhi nahi!</div>
+
+    <a class="vid-link" href="https://www.youtube.com/watch?v=ciNHn38EyRc" target="_blank">
+      <span class="vid-icon">▶️</span>
+      <div class="vid-info">
+        <div class="vid-title">SQL Injection Tutorial — Hindi</div>
+        <div class="vid-sub">Practical demo with explanation</div>
+      </div>
+    </a>
+    <a class="vid-link" href="https://www.youtube.com/watch?v=EoaDgUgS6QA" target="_blank">
+      <span class="vid-icon">▶️</span>
+      <div class="vid-info">
+        <div class="vid-title">XSS Attack Tutorial — Hindi</div>
+        <div class="vid-sub">Cross-Site Scripting complete guide</div>
+      </div>
+    </a>
+
+    <div class="slabel" style="color:var(--c4)">Attack 1 — SQL Injection</div>
+    <div class="code-wrap"><pre><span class="m"># SQLi test karo — PortSwigger labs pe</span>
+<span class="m"># Basic payloads:</span>
+
+<span class="y">' OR 1=1--</span>         <span class="m">← Classic bypass</span>
+<span class="y">admin'--</span>            <span class="m">← Login bypass</span>
+<span class="y">' ORDER BY 1--</span>     <span class="m">← Column count</span>
+<span class="y">' UNION SELECT 1,2--</span> <span class="m">← Data extract</span>
+
+<span class="m"># curl se test karo (authorized labs):</span>
+<span class="c">curl -s "https://LAB_URL/product?id=1' OR 1=1--"</span>
+<span class="c">curl -s "https://LAB_URL/login" \</span>
+<span class="c">  -X POST \</span>
+<span class="c">  -d "username=admin'--&password=anything"</span></pre></div>
+
+    <div class="slabel" style="color:var(--c4)">Attack 2 — XSS</div>
+    <div class="code-wrap"><pre><span class="m"># XSS payloads — labs pe try karo</span>
+
+<span class="y">&lt;script&gt;alert(1)&lt;/script&gt;</span>           <span class="m">← Basic</span>
+<span class="y">&lt;img src=x onerror=alert(1)&gt;</span>         <span class="m">← IMG tag</span>
+<span class="y">&lt;svg onload=alert(document.cookie)&gt;</span>  <span class="m">← Cookie steal</span>
+
+<span class="m"># curl se test:</span>
+<span class="c">curl -s "https://LAB_URL/search?q=&lt;script&gt;alert(1)&lt;/script&gt;"</span>
+<span class="m"># Response mein script tag wapas aaya? = Reflected XSS!</span></pre></div>
+
+    <div class="slabel" style="color:var(--c4)">Attack 3 — IDOR</div>
+    <div class="code-wrap"><pre><span class="m"># IDOR — ID change karke doosra data</span>
+<span class="m"># Termux mein loop:</span>
+
+<span class="c">for i in $(seq 1 20); do</span>
+<span class="c">  echo "=== User ID: $i ==="</span>
+<span class="c">  curl -s "https://LAB_URL/api/users/$i" \</span>
+<span class="c">    -H "Authorization: Bearer YOUR_TOKEN"</span>
+<span class="c">  echo ""</span>
+<span class="c">done</span>
+
+<span class="m"># Different user data aaya? = IDOR found!</span></pre></div>
+
+    <div class="tasks" id="tasks_l5">
+      <div class="task" onclick="tick('l5',0)">
+        <div class="task-cb" id="cb_l5_0"></div>
+        <div class="task-text" id="tx_l5_0">TryHackMe account banao — "OWASP Top 10" room shuru karo</div>
+        <span class="task-badge tb-practice">Practice</span>
+      </div>
+      <div class="task" onclick="tick('l5',1)">
+        <div class="task-cb" id="cb_l5_1"></div>
+        <div class="task-text" id="tx_l5_1">PortSwigger — SQLi Lab 1 solve kiya (phone browser se)</div>
+        <span class="task-badge tb-practice">Practice</span>
+      </div>
+      <div class="task" onclick="tick('l5',2)">
+        <div class="task-cb" id="cb_l5_2"></div>
+        <div class="task-text" id="tx_l5_2">PortSwigger — XSS Lab 1 solve kiya</div>
+        <span class="task-badge tb-practice">Practice</span>
+      </div>
+      <div class="task" onclick="tick('l5',3)">
+        <div class="task-cb" id="cb_l5_3"></div>
+        <div class="task-text" id="tx_l5_3">Termux se curl loop chalaya — IDOR concept practice kiya</div>
+        <span class="task-badge tb-termux">Termux</span>
+      </div>
+      <div class="task" onclick="tick('l5',4)">
+        <div class="task-cb" id="cb_l5_4"></div>
+        <div class="task-text" id="tx_l5_4">PicoCTF — 3 web challenges solve kiye</div>
+        <span class="task-badge tb-practice">Practice</span>
+      </div>
+      <div class="task" onclick="tick('l5',5)">
+        <div class="task-cb" id="cb_l5_5"></div>
+        <div class="task-text" id="tx_l5_5">Karan ke saath ek bug discuss kiya — explain kar saka? ✅</div>
+        <span class="task-badge tb-read">Milestone</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FINAL -->
+<div style="background:linear-gradient(135deg,#0f0520,#051a14);border:1px solid #ffffff15;border-radius:14px;padding:22px;margin:22px 0;text-align:center">
+  <div style="font-size:1.5rem;margin-bottom:10px">🚀</div>
+  <h2 style="color:var(--c2);margin-bottom:10px;font-size:1rem">Phone Pe Possible Hai — Kheyansh!</h2>
+  <p style="color:var(--muted);font-size:.85rem;line-height:2.1">
+    <span style="color:var(--c1)">📱 Termux = Tera lab</span><br>
+    <span style="color:var(--c7)">🔐 PortSwigger = Teri training</span><br>
+    <span style="color:var(--c3)">💪 Karan = Tera study partner</span><br>
+    <span style="color:var(--c4)">🎯 Bug Bounty = Tera goal</span>
+  </p>
+</div>
+
+<div class="footer">
+  <p style="color:var(--c4)">📱 Kheyansh — Laptop nahi tha Steve Jobs ke paas bhi starting mein. <br><span style="color:var(--muted)">Phone se shuru karo, laptop baad mein aayega — bounty se! 💰🔥</span></p>
+</div>
+
+</div>
+
+<script>
+var STATE = {};
+var TASKS = {
+  l1: 8, l2: 6, l3: 9, l4: 5, l5: 6
+};
+
+function load(){
+  try{ STATE = JSON.parse(localStorage.getItem('kheyansh_road')||'{}'); }
+  catch(e){ STATE={}; }
+}
+function save(){
+  try{ localStorage.setItem('kheyansh_road', JSON.stringify(STATE)); }catch(e){}
+}
+
+function tick(level, i){
+  var key = level+'_'+i;
+  STATE[key] = !STATE[key];
+  save();
+  render();
+}
+
+function render(){
+  var totalDone=0, totalAll=0;
+  Object.keys(TASKS).forEach(function(lv){
+    var n = TASKS[lv];
+    var done=0;
+    for(var i=0;i<n;i++){
+      var key=lv+'_'+i;
+      var isDone=!!STATE[key];
+      if(isDone) done++;
+      var cb=document.getElementById('cb_'+lv+'_'+i);
+      var tx=document.getElementById('tx_'+lv+'_'+i);
+      if(cb){ cb.className='task-cb'+(isDone?' done':''); cb.textContent=isDone?'✓':''; }
+      if(tx){ tx.className='task-text'+(isDone?' done':''); }
+    }
+    totalDone+=done; totalAll+=n;
+    var pct=n?Math.round(done/n*100):0;
+    var f=document.getElementById('fill_'+lv);
+    var p=document.getElementById('pct_'+lv);
+    if(f) f.style.width=pct+'%';
+    if(p) p.textContent=pct+'%';
+  });
+  var ov=totalAll?Math.round(totalDone/totalAll*100):0;
+  var f=document.getElementById('ovFill');
+  var p=document.getElementById('ovPct');
+  if(f) f.style.width=ov+'%';
+  if(p) p.textContent=ov+'%';
+}
+
+function toggleLevel(head){
+  var body=head.nextElementSibling;
+  var chev=head.querySelector('.chev');
+  if(!body)return;
+  var open=body.classList.contains('open');
+  body.classList.toggle('open',!open);
+  if(chev)chev.classList.toggle('open',!open);
+}
+document.addEventListener('DOMContentLoaded',function(){
+  document.querySelectorAll('.level-head').forEach(function(h){
+    h.style.cursor='pointer';
+    h.style.userSelect='none';
+    h.style.webkitUserSelect='none';
+    var t=false;
+    h.addEventListener('touchend',function(e){e.preventDefault();t=true;toggleLevel(this);});
+    h.addEventListener('click',function(){if(t){t=false;return;}toggleLevel(this);});
+  });
+  load(); render();
+});
+function expandAll(){
+  document.querySelectorAll('.level-body').forEach(function(b){b.classList.add('open');});
+  document.querySelectorAll('.chev').forEach(function(c){c.classList.add('open');});
+}
+function collapseAll(){
+  document.querySelectorAll('.level-body').forEach(function(b){b.classList.remove('open');});
+  document.querySelectorAll('.chev').forEach(function(c){c.classList.remove('open');});
+}
+function resetAll(){
+  if(!confirm('Poori progress reset karo?')) return;
+  STATE={};save();render();
+}
+</script>
+</body>
+</html>
