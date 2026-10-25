@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Phantom Lure — 8 Phishing Types Lab</title>
+<style>
+  :root{
+    --bg:#060a12; --panel:#0f1420; --panel2:#141b2c; --border:#20283d;
+    --text:#d9deeb; --muted:#848fa8; --phantom:#00ffe0; --phantom2:#7c4dff;
+    --gold:#ffd166; --crit:#ff3b5c; --high:#ff8a3d; --med:#ffd166; --good:#4ade80;
+  }
+  *{box-sizing:border-box; min-width:0;}
+  html,body{overflow-x:hidden; max-width:100%;}
+  body{margin:0; background:radial-gradient(circle at 15% -10%, rgba(124,77,255,0.12), transparent 40%), radial-gradient(circle at 85% 10%, rgba(0,255,224,0.08), transparent 35%), var(--bg); color:var(--text); font-family:'Segoe UI', Roboto, system-ui, sans-serif; line-height:1.6; padding-bottom:70px; word-wrap:break-word;}
+  .hero{padding:48px 20px 26px; text-align:center; border-bottom:1px solid var(--border); position:relative; overflow:hidden;}
+  .hero::before{content:""; position:absolute; inset:0; background-image:linear-gradient(rgba(0,255,224,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,224,0.03) 1px, transparent 1px); background-size:34px 34px; pointer-events:none;}
+  .hero .eyebrow{display:inline-block; padding:5px 16px; border-radius:20px; background:rgba(0,255,224,0.08); border:1px solid var(--phantom); color:var(--phantom); font-size:11px; letter-spacing:2px; font-weight:700; margin-bottom:14px; position:relative;}
+  .hero h1{font-size:clamp(22px,5vw,38px); margin:0 0 8px; letter-spacing:1px; background:linear-gradient(90deg, var(--phantom), var(--phantom2)); -webkit-background-clip:text; background-clip:text; color:transparent; position:relative;}
+  .hero .subtitle{color:var(--muted); font-size:13px; max-width:640px; margin:0 auto; position:relative;}
+  .container{max-width:960px; margin:0 auto; padding:0 16px; overflow-x:hidden;}
+
+  .warn{background:rgba(255,59,92,0.08); border:1px solid rgba(255,59,92,0.4); color:var(--crit); border-radius:10px; padding:14px 16px; font-size:12.8px; margin-top:-6px;}
+  .warn b{color:#fff;}
+
+  .toc{margin-top:16px; background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:16px 18px;}
+  .toc h2{font-size:11px; letter-spacing:1px; color:var(--phantom); margin:0 0 10px; text-transform:uppercase;}
+  .toc ol{margin:0; padding-left:18px; columns:2; column-gap:20px;}
+  .toc li{margin-bottom:5px; font-size:12px;}
+  .toc a{color:var(--text); text-decoration:none; border-bottom:1px dashed var(--border);}
+  @media(max-width:480px){.toc ol{columns:1;}}
+
+  .svc{background:var(--panel); border:1px solid var(--border); border-radius:14px; margin-top:18px; overflow:hidden;}
+  .svc-head{display:flex; align-items:center; gap:10px; padding:13px 16px; background:var(--panel2); border-bottom:1px solid var(--border); flex-wrap:wrap;}
+  .svc-head .num{min-width:26px; height:26px; border-radius:7px; display:flex; align-items:center; justify-content:center; background:rgba(0,255,224,0.1); border:1px solid var(--phantom); color:var(--phantom); font-weight:800; font-size:12px;}
+  .svc-head h3{margin:0; font-size:15px; color:#fff;}
+  .svc-head .mid{margin-left:auto; color:var(--gold); font-size:10.5px; font-weight:700; white-space:nowrap;}
+  .svc-body{padding:14px 16px;}
+  .svc-body h4{font-size:11px; color:var(--phantom); text-transform:uppercase; letter-spacing:0.5px; margin:14px 0 6px;}
+  .svc-body h4:first-child{margin-top:0;}
+  .svc-body p{font-size:12.8px; margin:0 0 8px;}
+  .step-box{background:#0a0f1a; border:1px solid var(--border); border-left:3px solid var(--phantom); border-radius:8px; padding:9px 12px; margin-bottom:7px; font-size:12.5px;}
+  code{font-family:'Consolas','Courier New',monospace; font-size:12px; color:var(--phantom); background:#0a0f1a; padding:2px 7px; border-radius:5px; border:1px solid var(--border);}
+  .tools-row{margin-top:6px;}
+  .tools-row span{display:inline-block; background:#0a0f1a; border:1px solid var(--border); color:var(--phantom); padding:3px 9px; border-radius:6px; margin:2px 4px 2px 0; font-size:11.5px; font-family:'Consolas','Courier New',monospace;}
+
+  .footer-note{text-align:center; color:var(--muted); font-size:11.5px; margin-top:30px; padding:0 16px;}
+  .psy{background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:16px 18px; margin-top:16px;}
+  .psy h2{font-size:13px; color:var(--gold); margin:0 0 10px;}
+  .psy-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  @media(max-width:560px){.psy-grid{grid-template-columns:1fr;}}
+  .psy-item{background:#0a0f1a; border:1px solid var(--border); border-radius:8px; padding:10px 12px;}
+  .psy-item b{color:var(--phantom); font-size:12.5px;}
+  .psy-item p{font-size:12px; margin:4px 0 0; color:var(--muted);}
+  .variant-box{background:#0a0f1a; border:1px dashed var(--phantom2); border-radius:8px; padding:9px 12px; margin-bottom:6px; font-size:12px;}
+  .variant-box b{color:var(--phantom2);}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="eyebrow">🎣 PHANTOM LURE · T1598</div>
+  <h1>8 PHISHING TYPES — PRACTICAL LAB</h1>
+  <p class="subtitle">Kheyansh ke saath, consent-based, apne resources pe — har type ka setup, tool aur exact steps.</p>
+</div>
+
+<div class="container">
+
+  <div class="warn">⚠️ <b>Har test se pehle Kheyansh se verbal/written consent zaroor lena</b> — "main tujhpe ye specific test try kar raha hoon, theek hai?" Consent ke bina koi bhi social engineering test, chahe friend pe ho, galat hai. Har test ke baad debrief zaroor karna — kya suspicious laga, kya kaam kiya.</div>
+
+  <div class="toc">
+    <h2>8 Types</h2>
+    <ol>
+      <li><a href="#p1">1. Email Phishing (Basic)</a></li>
+      <li><a href="#p2">2. Spearphishing Attachment</a></li>
+      <li><a href="#p3">3. Spearphishing Link</a></li>
+      <li><a href="#p4">4. Vishing (Voice)</a></li>
+      <li><a href="#p5">5. Smishing (SMS)</a></li>
+      <li><a href="#p6">6. Spearphishing Service</a></li>
+      <li><a href="#p7">7. Quishing (QR Code)</a></li>
+      <li><a href="#p8">8. Clone Phishing</a></li>
+    </ol>
+  </div>
+
+  <div class="psy">
+    <h2>🧠 PSYCHOLOGY PLAYBOOK — Ye sab har type ke pretext ke peeche kaam karta hai</h2>
+    <div class="psy-grid">
+      <div class="psy-item"><b>Authority</b><p>Koi bada naam/designation bol dena ("IT Admin", "Bank Officer", "College Office") — log authority ko challenge nahi karte, directly comply karte hain.</p></div>
+      <div class="psy-item"><b>Urgency / Scarcity</b><p>"24 ghante mein," "aaj hi," "limited slots" — sochne ka time nahi milta, panic mein decision leta hai target.</p></div>
+      <div class="psy-item"><b>Fear</b><p>"Account suspend ho jayega," "paisa kat jayega" — loss ka dar gain ke excitement se zyada strong motivator hota hai.</p></div>
+      <div class="psy-item"><b>Curiosity</b><p>"Tumhara naam kisi list mein aaya hai," "ye dekho kya mila" — insaan apne baare mein kuch bhi jaanne ko curious hota hai.</p></div>
+      <div class="psy-item"><b>Social Proof</b><p>"Baaki sab already verify kar chuke hain," "500+ students ne fill kiya" — doosre kar rahe hain to main bhi karu wala feel.</p></div>
+      <div class="psy-item"><b>Reciprocity / Liking</b><p>Pehle ek chhota "favor" ya friendly tone — phir request karna. Familiar/friendly lagne wale se log kam doubt karte hain.</p></div>
+    </div>
+    <p style="font-size:11.5px;color:var(--muted);margin:10px 0 0;">Har pretext likhte waqt khud se poochh — "ye kaunsa principle use kar raha hoon?" Jitna clearly pata hoga, utna better pretext likhega.</p>
+  </div>
+
+  <!-- 1 -->
+  <div class="svc" id="p1">
+    <div class="svc-head"><span class="num">1</span><h3>Email Phishing (Basic)</h3><span class="mid">T1598.002</span></div>
+    <div class="svc-body">
+      <h4>Setup Chahiye</h4>
+      <p>2 test Gmail accounts (ek "attacker," ek "Kheyansh ko bhejne ke liye" uski real/test email)</p>
+      <h4>Steps</h4>
+      <div class="step-box"><b>1.</b> Pretext decide kar (jaise "Account Verification," "College Form Reminder")</div>
+      <div class="step-box"><b>2.</b> Attacker Gmail account se ek email likh — urgency create kar ("24 ghante mein respond karo")</div>
+      <div class="step-box"><b>3.</b> Email bhej, dekh kitni der mein reply aata hai aur kya info milti hai</div>
+      <h4>Tools</h4>
+      <div class="tools-row"><span>Gmail</span></div>
+      <h4>Real-World Format (sample)</h4>
+      <div class="step-box">
+        <b>Subject:</b> Action Required: Unusual Sign-in Activity Detected<br><br>
+        Hi [Name],<br><br>
+        We noticed a sign-in attempt from a new device on your account. If this wasn't you, your account may be at risk.<br><br>
+        Please confirm your identity within 24 hours by replying with your registered phone number and date of birth, or your account access will be temporarily restricted.<br><br>
+        Regards,<br>
+        Security Team
+      </div>
+      <h4>Pro Tool Setup — GoPhish</h4>
+      <div class="step-box"><b>1.</b> Install: <code>wget https://github.com/gophish/gophish/releases/latest</code> → zip extract kar</div>
+      <div class="step-box"><b>2.</b> Run: <code>./gophish</code> — admin panel khulega <code>https://127.0.0.1:3333</code> pe</div>
+      <div class="step-box"><b>3.</b> Login kar (first-run pe console mein admin password print hota hai)</div>
+      <div class="step-box"><b>4.</b> "Email Templates" mein upar wala pretext paste kar</div>
+      <div class="step-box"><b>5.</b> "Sending Profiles" mein apna Gmail SMTP add kar (ya GoPhish ka test SMTP)</div>
+      <div class="step-box"><b>6.</b> "Users & Groups" mein Kheyansh ki email add kar</div>
+      <div class="step-box"><b>7.</b> "Campaigns" → New Campaign → sab link kar → Launch</div>
+      <div class="step-box"><b>8.</b> Dashboard mein live dekh — kaun open kiya, kaun click kiya, kitne der mein</div>
+      <h4>Pretext Variations (try alag-alag din)</h4>
+      <div class="variant-box"><b>v2 — Reward:</b> "Congratulations! Aapko [College/Club] ki ek exclusive opportunity ke liye select kiya gaya hai. Apni seat confirm karne ke liye 24 ghante mein reply karo."</div>
+      <div class="variant-box"><b>v3 — Internal:</b> "Hi, ye HR se — appraisal/scholarship form abhi tak incomplete hai aapka, jaldi complete karo warna deadline miss ho jayega."</div>
+      <div class="variant-box"><b>v4 — Fake Error:</b> "Your last payment of ₹499 could not be processed. Click below to update payment details and avoid subscription cancellation."</div>
+      <h4>Pro Tricks</h4>
+      <p>1. Sender name ko kisi real-sounding department se match kar ("IT Support", "Accounts Team") — random naam se trust kam aata hai.<br>
+      2. Email <b>Monday subah 9-11 AM</b> ya <b>Friday evening</b> bhej — log busy/thake hote hain, detail se padhte nahi.<br>
+      3. Display name mein real company ka naam rakh, lekin reply-to address alag rakh ("From: Google Security" but reply jaata hai apni email pe) — ye dikhata hai ki sirf display name pe log bharosa karte hain, actual email address nahi dekhte.<br>
+      4. Ek chhota typo/grammar mistake jaanbhoojke mat rakh (real orgs clean likhte hain) — jitna professional, utna believable.</p>
+    </div>
+  </div>
+
+  <!-- 2 -->
+  <div class="svc" id="p2">
+    <div class="svc-head"><span class="num">2</span><h3>Spearphishing Attachment</h3><span class="mid">T1598.002</span></div>
+    <div class="svc-body">
+      <h4>Setup Chahiye</h4>
+      <p>Ek harmless test file (PDF/DOC) jo "important document" jaisa dikhe</p>
+      <h4>Steps</h4>
+      <div class="step-box"><b>1.</b> Ek normal PDF/Word file bana, naam rakh "Invoice_Urgent.pdf" ya "Exam_Form.docx" jaisa</div>
+      <div class="step-box"><b>2.</b> Isko pretext email ke saath attach kar bhej ("Attached form fill karke bhejo")</div>
+      <div class="step-box"><b>3.</b> Dekh file open hoti hai ya nahi, kitni der mein</div>
+      <h4>Tools</h4>
+      <div class="tools-row"><span>LibreOffice/Word</span><span>Gmail</span></div>
+      <p style="margin-top:8px;color:var(--muted)">Note: File sirf naam/look se "suspicious" honi chahiye, andar koi actual malicious code mat daalna — sirf social engineering test hai, malware test nahi.</p>
+      <h4>Real-World Format (sample)</h4>
+      <div class="step-box">
+        <b>Subject:</b> Invoice #4471 — Payment Overdue<br><br>
+        Dear [Name],<br><br>
+        Please find attached the overdue invoice for your recent order. Kindly review and process payment at the earliest to avoid late fees.<br><br>
+        <i>📎 Invoice_4471_Urgent.pdf</i><br><br>
+        Thank you,<br>
+        Billing Department
+      </div>
+      <h4>Pro Tool Setup — GoPhish Attachment</h4>
+      <div class="step-box"><b>1.</b> GoPhish "Email Templates" mein naya template bana</div>
+      <div class="step-box"><b>2.</b> "Add Attachment" button se apni test PDF/DOC upload kar</div>
+      <div class="step-box"><b>3.</b> Baaki steps Type 1 jaise hi — campaign launch kar, dashboard pe track kar</div>
+      <h4>File-Name Ideas</h4>
+      <div class="variant-box">Invoice_4471_Urgent.pdf · Salary_Slip_Oct.pdf · Exam_Seating_Plan.docx · Scholarship_Form_FINAL.docx · HR_Policy_Update_2026.pdf</div>
+      <h4>Pro Tricks</h4>
+      <p>1. File ka naam "Urgent", "Invoice", "Confidential" jaisa rakhna click-rate badhata hai — curiosity + urgency dono combine hoti hai.<br>
+      2. Filename mein target ka naam ya context daal ("Kheyansh_Exam_Form.docx") — personalized file generic se zyada trust leta hai.<br>
+      3. Ek screenshot/thumbnail preview attach kar jo file ke andar hone wali cheez jaisa dikhe — log preview dekh ke hi bharosa kar lete hain, poora padhte nahi.<br>
+      4. Real attacks mein double-extension trick hoti hai (jaise "Invoice.pdf.exe" jo Windows mein sirf ".pdf" dikhta hai agar extensions hidden hain) — ye sirf <i>awareness ke liye samajhna</i> hai, apne lab mein sirf real safe PDF/DOCX hi bhejna, kabhi executable mat bhejna.</p>
+    </div>
+  </div>
+
+  <!-- 3 -->
+  <div class="svc" id="p3">
+    <div class="svc-head"><span class="num">3</span><h3>Spearphishing Link</h3><span class="mid">T1598.003</span></div>
+    <div class="svc-body">
+      <h4>Setup Chahiye</h4>
+      <p>Google Form (fake login/verification form)</p>
+      <h4>Steps</h4>
+      <div class="step-box"><b>1.</b> <code>forms.google.com</code> khol → naya form bana</div>
+      <div class="step-box"><b>2.</b> Title pretext ke hisaab se ("Account Re-Verification")</div>
+      <div class="step-box"><b>3.</b> Fields add kar: Name, Email, Phone — official jaisa dikhne ke liye</div>
+      <div class="step-box"><b>4.</b> "Send" → link copy kar</div>
+      <div class="step-box"><b>5.</b> Pretext message ke saath Kheyansh ko link bhej</div>
+      <h4>Tools</h4>
+      <div class="tools-row"><span>Google Forms</span></div>
+      <h4>Real-World Format (sample)</h4>
+      <div class="step-box">
+        <b>Email/Message:</b><br><br>
+        Subject: Your Account Will Be Suspended Soon<br><br>
+        Hi [Name],<br><br>
+        We've detected that your profile information is incomplete. To avoid suspension, please verify your details here within 48 hours:<br>
+        👉 <i>https://forms.gle/xxxxxxx</i><br><br>
+        This is a routine security check.
+      </div>
+      <h4>Pro Tool Setup — Evilginx2 (Advanced)</h4>
+      <div class="step-box"><b>1.</b> Clone: <code>git clone https://github.com/kgretzky/evilginx2.git && cd evilginx2 && make</code></div>
+      <div class="step-box"><b>2.</b> Domain + VPS zaroori (jo abhi parked hai — isse pehle manual Google Form se practice kar)</div>
+      <div class="step-box"><b>3.</b> Run: <code>./evilginx</code> → config mein apna domain set kar</div>
+      <div class="step-box"><b>4.</b> Phishlet enable kar (template jis service ke liye proxy banana hai)</div>
+      <div class="step-box"><b>5.</b> `lures create` se tracking link generate kar — wahi link pretext email mein jaata hai</div>
+      <div class="step-box"><b>6.</b> Jaise hi victim login kare proxy page pe, credentials + session cookie dono tere dashboard pe aa jaate hain</div>
+      <h4>Pretext Variations</h4>
+      <div class="variant-box"><b>v2 — Password Expiry:</b> "Your password expires in 24 hours. Reset now to avoid being locked out: [link]"</div>
+      <div class="variant-box"><b>v3 — Shared Document:</b> "[Name] has shared a document with you: 'Group Project Final.docx' — Click to view."</div>
+      <div class="variant-box"><b>v4 — Prize/Giveaway:</b> "You've been selected in our student giveaway! Claim your reward within 48 hrs: [link]"</div>
+      <h4>Pro Tricks</h4>
+      <p>1. Link ko URL shortener (bit.ly/tinyurl) se chhota kar — real domain chhup jaata hai, suspicion kam hoti hai.<br>
+      2. <b>Typosquatting concept</b> (samajhne ke liye, actual malicious domain mat banana): real attackers domain ka ek letter swap/add karte hain jaise "gooogle.com" ya "paypa1.com" — visually similar, brain fast scan mein miss kar jaata hai.<br>
+      3. Mobile pe link preview chhota/truncated dikhta hai — isliye mobile users desktop se zyada vulnerable hote hain is type mein, agar apna test target mostly phone pe check karta hai to vishwas zyada milega.<br>
+      4. Link ke text ko URL se alag dikha ("Click here" hyperlinked, actual URL hidden) — social engineering mein ye "visual mismatch" hi sabse common trick hai.</p>
+    </div>
+  </div>
+
+  <!-- 4 -->
+  <div class="svc" id="p4">
+    <div class="svc-head"><span class="num">4</span><h3>Vishing (Voice)</h3><span class="mid">T1598.004</span></div>
+    <div class="svc-body">
+      <h4>Setup Chahiye</h4>
+      <p>Kuch nahi — apna normal phone number hi use kar (caller ID spoofing illegal hai, skip)</p>
+      <h4>Steps</h4>
+      <div class="step-box"><b>1.</b> Ek pretext script pehle se soch le (jaise "main college se bol raha hoon, verification ke liye")</div>
+      <div class="step-box"><b>2.</b> Call kar, calmly/confidently baat kar (hesitation se suspicion badhta hai)</div>
+      <div class="step-box"><b>3.</b> Koi harmless info nikaalne ki koshish kar (jaise uska pet ka naam, birth city)</div>
+      <h4>Tools</h4>
+      <div class="tools-row"><span>Apna phone</span></div>
+      <h4>Real-World Format (sample script)</h4>
+      <div class="step-box">
+        "Hi, main [College/Organization] se bol raha hoon, IT department se. Hum ek routine verification kar rahe hain students ka — aapka registration number confirm kar sakte hain? Aur jo email aapne diya tha registration ke time, wo bhi confirm kar dein please, kyunki kuch records mismatch dikh rahe hain hamare system mein."
+      </div>
+      <p style="margin-top:6px;color:var(--muted)">Key trick: calm/official tone, ek chhota "problem" bata ke urgency create karna, aur casually info maangna jaise ye routine ho.</p>
+      <h4>Tool</h4>
+      <p>Koi special tool nahi — bas apna phone. (Caller-ID spoofing tools illegal hain, isliye skip, jaisa pehle discuss kiya.)</p>
+      <h4>Pretext Script Variations</h4>
+      <div class="variant-box"><b>v2 — Delivery:</b> "Hi, main courier service se bol raha hoon, aapka package deliver karne aaya tha but address incomplete tha — kya aap apna exact address aur landmark confirm kar sakte hain?"</div>
+      <div class="variant-box"><b>v3 — Survey:</b> "Hum ek chhota student feedback survey kar rahe hain college ke liye — 2 min lagenge, pehle apna roll number/branch confirm kar sakte hain?"</div>
+      <div class="variant-box"><b>v4 — Tech Support:</b> "Hi, main tech support se — aapke account pe kuch unusual activity dikhi hai, confirm karne ke liye last login location bata sakte hain?"</div>
+      <h4>Pro Tricks</h4>
+      <p>1. Thoda background noise (jaise office jaisa) help karta hai believability mein.<br>
+      2. Agar target thoda resist kare, "koi baat nahi, main dusre department se confirm kar leta hoon" bol ke politely peecha chhod dena — isse genuine lagta hai, pressure nahi.<br>
+      3. Target ki <b>speech speed aur tone mirror kar</b> (agar wo slow bol raha hai, tu bhi thoda slow bol) — rapport build hota hai subconsciously, "mirroring" ek proven social-engineering technique hai.<br>
+      4. Call ke start mein ek chhota "non-threatening" sawal pooch (jaise "sahi time hai baat karne ka?") — chhota "yes" milne ke baad bade request pe bhi "yes" milne ke chances badh jaate hain (commitment/consistency principle).</p>
+    </div>
+  </div>
+
+  <!-- 5 -->
+  <div class="svc" id="p5">
+    <div class="svc-head"><span class="num">5</span><h3>Smishing (SMS)</h3><span class="mid">T1598.003</span></div>
+    <div class="svc-body">
+      <h4>Setup Chahiye</h4>
+      <p>WhatsApp/SMS + wahi Google Form link (#3 se reuse kar sakta hai)</p>
+      <h4>Steps</h4>
+      <div class="step-box"><b>1.</b> Short, urgent message likh ("Tera order deliver nahi hua, yahan confirm kar: [link]")</div>
+      <div class="step-box"><b>2.</b> WhatsApp/SMS se bhej</div>
+      <div class="step-box"><b>3.</b> Response time + behavior note kar</div>
+      <h4>Tools</h4>
+      <div class="tools-row"><span>WhatsApp</span></div>
+      <h4>Real-World Format (sample)</h4>
+      <div class="step-box">
+        "Hi [Name], your order #REF9923 could not be delivered due to incomplete address. Update your details within 24 hrs to avoid return: https://forms.gle/xxxxxxx — Courier Team"
+      </div>
+      <h4>Tool</h4>
+      <p>WhatsApp hi — koi bulk/spoofing tool legal nahi hai is scale pe, jaisa discuss kiya.</p>
+      <h4>Message Variations</h4>
+      <div class="variant-box"><b>v2 — Bank/Wallet style:</b> "Your a/c has been temp. restricted due to unusual activity. Verify now to restore access: [link] — Do not ignore."</div>
+      <div class="variant-box"><b>v3 — OTP/Reward trap:</b> "You've won a ₹500 cashback! Claim before midnight: [link]"</div>
+      <div class="variant-box"><b>v4 — College style:</b> "Reminder: Fee submission deadline tomorrow. Pay now to avoid late fine: [link]"</div>
+      <h4>Pro Tricks</h4>
+      <p>1. Fake "order number" ya "reference ID" daalna message mein — random numbers bhi authenticity ka feel deti hain.<br>
+      2. Message <b>raat 9-11 PM</b> bhej — log relaxed/distracted hote hain, jaldi react karte hain bina soche.<br>
+      3. WhatsApp mein sender ka naam agar contact mein save nahi hai to sirf number dikhta hai — isliye ek "official-sounding" number format bhi thoda trust badhata hai (jaise short-code jaisa dikhne wala).<br>
+      4. SMS short aur to-the-point rakh — jitna lamba message, utna "read later" hoke ignore hone ka chance zyada.</p>
+    </div>
+  </div>
+
+  <!-- 6 -->
+  <div class="svc" id="p6">
+    <div class="svc-head"><span class="num">6</span><h3>Spearphishing Service</h3><span class="mid">T1598.001</span></div>
+    <div class="svc-body">
+      <h4>Setup Chahiye</h4>
+      <p>Instagram/LinkedIn DM (apne hi account se, ya test account bana ke)</p>
+      <h4>Steps</h4>
+      <div class="step-box"><b>1.</b> Ek "professional" pretext bana (jaise "internship opportunity," "verify your profile")</div>
+      <div class="step-box"><b>2.</b> DM bhej, link ya info request kar</div>
+      <div class="step-box"><b>3.</b> Observe kar kaise react karta hai social platform pe (zyada casual environment hota hai, trust bhi zyada hota hai)</div>
+      <h4>Tools</h4>
+      <div class="tools-row"><span>Instagram</span><span>LinkedIn</span></div>
+      <h4>Real-World Format (sample DM)</h4>
+      <div class="step-box">
+        "Hey! We came across your profile and think you'd be a great fit for our student ambassador program at [Company]. Spots are limited — fill this quick form to apply before slots close: https://forms.gle/xxxxxxx 🚀"
+      </div>
+      <h4>Tool</h4>
+      <p>Direct app se DM (Instagram/LinkedIn) — koi automation tool nahi chahiye, manual bhejna hi realistic hota hai.</p>
+      <h4>Pretext Variations</h4>
+      <div class="variant-box"><b>v2 — Collab/Shoutout:</b> "Hey! Love your content, we'd love to collaborate — fill this quick form to get started: [link]"</div>
+      <div class="variant-box"><b>v3 — Job/Internship:</b> "We're hiring for a remote internship, your profile matched our criteria. Apply here before spots fill: [link]"</div>
+      <div class="variant-box"><b>v4 — Verification badge:</b> "Your account is eligible for the blue verification badge. Complete this form to apply: [link]"</div>
+      <h4>Pro Tricks</h4>
+      <p>1. Profile ko thoda professional dikhao (agar test account use kar raha hai) — ek profile photo, bio, 2-3 posts — khali profile se DM aaye to turant suspicious lagta hai.<br>
+      2. Mutual-connection illusion bana — "mera dost bhi aapko follow karta hai" type reference de (agar genuinely koi mutual ho to use kar, warna skip) — social proof strongest trigger hai DM phishing mein.<br>
+      3. Platform choose karne mein smart ban: LinkedIn pe "professional opportunity" pretext best chalta hai, Instagram pe "collab/giveaway" pretext best chalta hai — platform ka context match karna zaroori hai.<br>
+      4. Pehla message kabhi direct link mat bhej — pehle ek-do normal messages se conversation start kar, phir link de — isse "cold spam" jaisa nahi lagta.</p>
+    </div>
+  </div>
+
+  <!-- 7 -->
+  <div class="svc" id="p7">
+    <div class="svc-head"><span class="num">7</span><h3>Quishing (QR Code)</h3><span class="mid">T1598.003 variant</span></div>
+    <div class="svc-body">
+      <h4>Setup Chahiye</h4>
+      <p>QR code generator + wahi Google Form link</p>
+      <h4>Steps</h4>
+      <div class="step-box"><b>1.</b> Free QR generator use kar (<code>qr-code-generator.com</code>) — Google Form link daal</div>
+      <div class="step-box"><b>2.</b> QR code ko ek "official" context mein present kar (jaise "scan karke attendance mark karo")</div>
+      <div class="step-box"><b>3.</b> Kheyansh ko scan karwa, dekh wo verify karta hai link kaha jaa raha hai ya directly scan karke daal deta hai</div>
+      <h4>Tools</h4>
+      <div class="tools-row"><span>qr-code-generator.com</span></div>
+      <h4>Real-World Format (sample label)</h4>
+      <div class="step-box">
+        "📋 Scan to Mark Today's Attendance" ya "🎁 Scan for Free Entry — Limited Offer" — QR code ke saath ek chhota poster/sticker-type text, jo kisi public/shared jagah pe lagaya ho jaata hai real attacks mein.
+      </div>
+      <h4>Pro Tool Setup</h4>
+      <div class="step-box"><b>1.</b> <code>qr-code-generator.com</code> khol, apni Google Form link paste kar</div>
+      <div class="step-box"><b>2.</b> QR code download kar (PNG)</div>
+      <div class="step-box"><b>3.</b> (Optional) Canva se ek chhota poster bana QR ke saath ("Scan Here" text)</div>
+      <div class="step-box"><b>4.</b> Kheyansh ko photo/screenshot bhej, ya print karke dikha</div>
+      <h4>Label Variations</h4>
+      <div class="variant-box">"📶 Scan to Connect — Free Campus WiFi" · "💳 Scan to Pay — Canteen QR" · "📝 Scan to Register — Event Entry" · "🎓 Scan for Result/Notice Update"</div>
+      <h4>Pro Tricks</h4>
+      <p>1. QR code mein "destination preview" nahi dikhta jaise normal link mein dikh sakta hai — isliye ye sabse "blind trust" wala type hota hai, log bina soche scan kar lete hain.<br>
+      2. QR ko kisi <b>real, expected context</b> mein place kar — jaise canteen ke paas "payment QR" ya notice board pe "result QR" — context jitna natural, scan rate utna high.<br>
+      3. Google Form khud hi "response count" track karta hai — isse tujhe pata chalega kitne log sach mein scan karke submit kiye (quantifiable result Kheyansh ke saath debrief ke liye).<br>
+      4. Do QR variants bana (ek officially-worded, ek casual) aur compare kar kaunsa zyada scan hota hai — ye asli red-team testing jaisा A/B approach hai.</p>
+    </div>
+  </div>
+
+  <!-- 8 -->
+  <div class="svc" id="p8">
+    <div class="svc-head"><span class="num">8</span><h3>Clone Phishing</h3><span class="mid">T1598 variant</span></div>
+    <div class="svc-body">
+      <h4>Setup Chahiye</h4>
+      <p>Koi real, pehle se bheji gayi legitimate email (jaise koi college notice, order confirmation)</p>
+      <h4>Steps</h4>
+      <div class="step-box"><b>1.</b> Ek real email dhoond jo Kheyansh ko already mil chuki ho (ya tujhe bhi mili ho, similar type ki)</div>
+      <div class="step-box"><b>2.</b> Usi email ka format/content copy kar, bas link/attachment ko apne test link se replace kar de</div>
+      <div class="step-box"><b>3.</b> "Resend" ke pretext se bhej ("Pehle wala link kaam nahi kiya, dobara try karo")</div>
+      <h4>Tools</h4>
+      <div class="tools-row"><span>Gmail</span></div>
+      <p style="margin-top:8px;color:var(--muted)">Ye sabse effective type hota hai real-world mein — kyunki victim ne already asli email dekhi hoti hai, isliye clone pe trust jaldi aata hai.</p>
+      <h4>Real-World Format (sample)</h4>
+      <div class="step-box">
+        <b>Subject:</b> Re: Your Order Confirmation — Link Update Needed<br><br>
+        Hi [Name],<br><br>
+        We noticed the confirmation link in our previous email wasn't working for some users. Please use this updated link to confirm your order:<br>
+        👉 <i>https://forms.gle/xxxxxxx</i><br><br>
+        Sorry for the inconvenience.
+      </div>
+      <h4>Pro Tool Setup — SET (Social-Engineer Toolkit)</h4>
+      <div class="step-box"><b>1.</b> Kali/Termux-Kali mein check kar: <code>setoolkit</code></div>
+      <div class="step-box"><b>2.</b> Agar nahi hai: <code>sudo apt install set -y</code></div>
+      <div class="step-box"><b>3.</b> Menu mein: <code>1) Social-Engineering Attacks → 2) Website Attack Vectors → 3) Credential Harvester Attack Method → 2) Site Cloner</code></div>
+      <div class="step-box"><b>4.</b> Koi bhi real login page ka URL de (jaise apni hi test site), SET usko clone kar lega aur local server pe host kar dega</div>
+      <div class="step-box"><b>5.</b> Jo bhi "credentials" us cloned page pe daale, wo terminal mein capture ho jaayenge</div>
+      <h4>Pretext Variations</h4>
+      <div class="variant-box"><b>v2 — Attachment Missing:</b> "Apologies, the attachment didn't go through in our last email. Please find it attached here again."</div>
+      <div class="variant-box"><b>v3 — Format Issue:</b> "Some users reported the form wasn't loading correctly. We've fixed the issue — please use the updated link below."</div>
+      <h4>Pro Tricks</h4>
+      <p>1. Clone wali email mein ek valid reason do ki link badla kyun ("purana link expire ho gaya") — "resend" wala pretext bohot believable hota hai kyunki victim ne already original dekha hota hai.<br>
+      2. Original email ke <b>exact time ke aas-paas</b> clone bhej (agar original Monday subah aaya tha to clone bhi usi pattern pe bhej) — pattern match se suspicion aur kam hoti hai.<br>
+      3. Subject line mein "Re:" prefix rakh — isse email thread jaisa dikhta hai, naya/random email jaisa nahi.<br>
+      4. Signature aur formatting original ke bilkul jaisi rakh (same font, same closing line) — chhoti si visual mismatch bhi suspicion trigger kar sakti hai.</p>
+    </div>
+  </div>
+
+  <div class="psy">
+    <h2>📋 DEBRIEF TEMPLATE — har test ke baad ye fill kar (apne attack log ke liye)</h2>
+    <div class="variant-box"><b>Type:</b> ______ &nbsp; <b>Date/Time sent:</b> ______ &nbsp; <b>Pretext used:</b> ______</div>
+    <div class="variant-box"><b>Clicked/Responded?</b> Yes/No &nbsp; <b>Time to respond:</b> ______ &nbsp; <b>Info disclosed:</b> ______</div>
+    <div class="variant-box"><b>What worked:</b> ______ &nbsp; <b>What felt suspicious (Kheyansh's feedback):</b> ______</div>
+    <div class="variant-box"><b>Psychology principle used:</b> (authority/urgency/fear/curiosity/social proof/reciprocity) ______</div>
+    <div class="variant-box"><b>Next-time improvement:</b> ______ &nbsp; <b>Screenshot saved?</b> Yes/No</div>
+    <p style="font-size:11.5px;color:var(--muted);margin:10px 0 0;">Ye template har type ke liye copy kar apne attack-log notebook/file mein — 8 types ke baad pattern dikhega kaunsi psychology principle Kheyansh pe sabse zyada kaam karti hai, jo khud ek valuable red-team insight hai.</p>
+  </div>
+
+  <p class="footer-note">Har test ke baad: debrief Kheyansh ke saath, note kar kya kaam kiya, kya laga suspicious, aur agli baar kaise aur behtar banaya ja sakta hai.</p>
+
+</div>
+
+</body>
+</html>

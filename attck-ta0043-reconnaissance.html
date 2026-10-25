@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATT&CK Mastery — TA0043 Reconnaissance</title>
+<style>
+  :root{
+    --bg:#060a12; --panel:#0f1420; --panel2:#141b2c; --border:#20283d;
+    --text:#d9deeb; --muted:#848fa8; --phantom:#00ffe0; --phantom2:#7c4dff;
+    --gold:#ffd166; --crit:#ff3b5c; --high:#ff8a3d; --med:#ffd166; --good:#4ade80;
+  }
+  *{box-sizing:border-box; min-width:0;}
+  html,body{overflow-x:hidden; max-width:100%;}
+  body{margin:0; background:radial-gradient(circle at 15% -10%, rgba(124,77,255,0.12), transparent 40%), radial-gradient(circle at 85% 10%, rgba(0,255,224,0.08), transparent 35%), var(--bg); color:var(--text); font-family:'Segoe UI', Roboto, system-ui, sans-serif; line-height:1.6; padding-bottom:70px; word-wrap:break-word;}
+  .hero{padding:48px 20px 26px; text-align:center; border-bottom:1px solid var(--border); position:relative; overflow:hidden;}
+  .hero::before{content:""; position:absolute; inset:0; background-image:linear-gradient(rgba(0,255,224,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,224,0.03) 1px, transparent 1px); background-size:34px 34px; pointer-events:none;}
+  .hero .eyebrow{display:inline-block; padding:5px 16px; border-radius:20px; background:rgba(0,255,224,0.08); border:1px solid var(--phantom); color:var(--phantom); font-size:11px; letter-spacing:2px; font-weight:700; margin-bottom:14px; position:relative;}
+  .hero h1{font-size:clamp(22px,5vw,38px); margin:0 0 8px; letter-spacing:1px; background:linear-gradient(90deg, var(--phantom), var(--phantom2)); -webkit-background-clip:text; background-clip:text; color:transparent; position:relative;}
+  .hero .subtitle{color:var(--muted); font-size:13px; max-width:640px; margin:0 auto; position:relative;}
+  .container{max-width:960px; margin:0 auto; padding:0 16px; overflow-x:hidden;}
+  .toc{margin-top:-14px; background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:16px 18px; position:relative; z-index:2;}
+  .toc h2{font-size:11px; letter-spacing:1px; color:var(--phantom); margin:0 0 10px; text-transform:uppercase;}
+  .toc ol{margin:0; padding-left:18px; columns:2; column-gap:20px;}
+  .toc li{margin-bottom:5px; font-size:12px;}
+  .toc a{color:var(--text); text-decoration:none; border-bottom:1px dashed var(--border);}
+  @media(max-width:480px){.toc ol{columns:1;}}
+
+  .tactic-card{background:linear-gradient(135deg, rgba(0,255,224,0.06), rgba(124,77,255,0.06)); border:1px solid var(--phantom2); border-radius:16px; padding:20px; margin-top:20px;}
+  .tactic-card h2{color:var(--phantom); margin:0 0 8px; font-size:16px;}
+  .tactic-card .id{color:var(--gold); font-size:12px; font-weight:700; margin-bottom:6px;}
+  .tactic-card p{font-size:13px; margin:0;}
+
+  .svc{background:var(--panel); border:1px solid var(--border); border-radius:14px; margin-top:16px; overflow:hidden;}
+  .svc-head{display:flex; align-items:center; gap:10px; padding:12px 16px; background:var(--panel2); border-bottom:1px solid var(--border); flex-wrap:wrap;}
+  .svc-head .tid{padding:4px 10px; border-radius:8px; background:rgba(0,255,224,0.1); border:1px solid var(--phantom); color:var(--phantom); font-weight:800; font-size:11.5px; white-space:nowrap;}
+  .svc-head h3{margin:0; font-size:14.5px; color:#fff;}
+  .svc-body{padding:4px 0;}
+  .svc-desc{padding:10px 16px; font-size:12.5px; color:var(--muted); border-bottom:1px solid rgba(255,255,255,0.04);}
+
+  .sub{padding:11px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:12.5px;}
+  .sub:last-child{border-bottom:none;}
+  .sub .top{display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; margin-bottom:4px;}
+  .sub .sid{color:var(--gold); font-weight:700; font-size:11.5px; white-space:nowrap;}
+  .sub .sname{color:#fff; font-weight:600;}
+  .sub .desc{color:var(--text); margin-bottom:5px;}
+  .sub .tool{color:var(--phantom); font-size:11.5px; word-break:break-word; overflow-wrap:anywhere;}
+  .sub .tool b{color:var(--muted); font-weight:600;}
+  code{font-family:'Consolas','Courier New',monospace; font-size:12px; color:var(--phantom); background:#0a0f1a; padding:2px 7px; border-radius:5px; border:1px solid var(--border);}
+
+  details.quiz{background:var(--panel2); border:1px solid var(--phantom2); border-radius:10px; padding:10px 14px; margin-top:20px; font-size:13px;}
+  details.quiz summary{cursor:pointer; color:var(--gold); font-weight:600;}
+  details.quiz .ans{margin-top:8px; color:var(--text); border-top:1px dashed var(--border); padding-top:8px;}
+
+  .checklist{margin-top:26px; background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:18px 20px;}
+  .checklist h2{font-size:15px; color:var(--phantom); margin-top:0;}
+  .checklist label{display:flex; align-items:flex-start; gap:10px; font-size:12.8px; margin-bottom:8px; color:var(--text); cursor:pointer;}
+  .checklist input{margin-top:3px; accent-color:var(--phantom);}
+  .footer-note{text-align:center; color:var(--muted); font-size:11.5px; margin-top:30px; padding:0 16px;}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="eyebrow">🧩 ATT&CK MASTERY · TACTIC 1 of 14</div>
+  <h1>TA0043 — RECONNAISSANCE</h1>
+  <p class="subtitle">Directly attack.mitre.org se — 12 techniques, 34 sub-techniques, exact IDs. Jahan possible, tere already-seekhe tools se map kiya gaya.</p>
+</div>
+
+<div class="container">
+
+  <div class="tactic-card">
+    <div class="id">TA0043</div>
+    <h2>Reconnaissance</h2>
+    <p>Attacker apne future operations plan karne ke liye target ke baare mein information jama karta hai — active ya passive dono tarike se, target ki organization, infrastructure aur logon (employees) ke baare mein. Ye info baad ke phases (Initial Access, aur uske aage) mein use hoti hai, ya aur deeper recon guide karne ke liye.</p>
+  </div>
+
+  <div class="toc">
+    <h2>12 Techniques</h2>
+    <ol>
+      <li><a href="#t1595">T1595 Active Scanning</a></li>
+      <li><a href="#t1592">T1592 Gather Victim Host Info</a></li>
+      <li><a href="#t1589">T1589 Gather Victim Identity Info</a></li>
+      <li><a href="#t1590">T1590 Gather Victim Network Info</a></li>
+      <li><a href="#t1591">T1591 Gather Victim Org Info</a></li>
+      <li><a href="#t1598">T1598 Phishing for Information</a></li>
+      <li><a href="#t1682">T1682 Query Public AI Services</a></li>
+      <li><a href="#t1597">T1597 Search Closed Sources</a></li>
+      <li><a href="#t1596">T1596 Search Open Tech Databases</a></li>
+      <li><a href="#t1593">T1593 Search Open Websites/Domains</a></li>
+      <li><a href="#t1681">T1681 Search Threat Vendor Data</a></li>
+      <li><a href="#t1594">T1594 Search Victim-Owned Websites</a></li>
+    </ol>
+  </div>
+
+  <!-- T1595 -->
+  <div class="svc" id="t1595">
+    <div class="svc-head"><span class="tid">T1595</span><h3>Active Scanning</h3></div>
+    <div class="svc-desc">Attacker khud directly network traffic bhejta hai target ki infrastructure ko probe karne ke liye (passive nahi, direct interaction hoti hai) — yahi wo cheez hai jo tu abhi Nmap se practically kar raha hai.</div>
+    <div class="svc-body">
+      <div class="sub">
+        <div class="top"><span class="sid">T1595.001</span><span class="sname">Scanning IP Blocks</span></div>
+        <div class="desc">Poore IP range ko scan karna dekhne ke liye konse IPs active/live hain</div>
+        <div class="tool"><b>Tu kaise karega:</b> <code>nmap -sn 192.168.X.0/24</code></div>
+      </div>
+      <div class="sub">
+        <div class="top"><span class="sid">T1595.002</span><span class="sname">Vulnerability Scanning</span></div>
+        <div class="desc">Target ko probe karna weaknesses dhoondne ke liye (software bugs, misconfigurations)</div>
+        <div class="tool"><b>Tu kaise karega:</b> <code>nmap --script vuln</code></div>
+      </div>
+      <div class="sub">
+        <div class="top"><span class="sid">T1595.003</span><span class="sname">Wordlist Scanning</span></div>
+        <div class="desc">Common naam/paths ki list use karke hidden resources (directories, subdomains) dhoondna</div>
+        <div class="tool"><b>Tu kaise karega:</b> ffuf/gobuster (web ke liye), ya DNS brute-force wordlists</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- T1592 -->
+  <div class="svc" id="t1592">
+    <div class="svc-head"><span class="tid">T1592</span><h3>Gather Victim Host Information</h3></div>
+    <div class="svc-desc">Target ki individual machines ke baare mein details jama karna — hardware, software, firmware, aur unki settings.</div>
+    <div class="svc-body">
+      <div class="sub"><div class="top"><span class="sid">T1592.001</span><span class="sname">Hardware</span></div><div class="desc">Device types, models, specs ke baare mein info</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1592.002</span><span class="sname">Software</span></div><div class="desc">Konse applications/versions install hain — yahi tera CVE-hunting ka base hai</div><div class="tool"><b>Tu kaise karega:</b> <code>nmap -sV</code></div></div>
+      <div class="sub"><div class="top"><span class="sid">T1592.003</span><span class="sname">Firmware</span></div><div class="desc">Device ka firmware version (routers, IoT) — tere UPnP recon jaisa</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1592.004</span><span class="sname">Client Configurations</span></div><div class="desc">System settings, language, timezone, installed security tools</div></div>
+    </div>
+  </div>
+
+  <!-- T1589 -->
+  <div class="svc" id="t1589">
+    <div class="svc-head"><span class="tid">T1589</span><h3>Gather Victim Identity Information</h3></div>
+    <div class="svc-desc">Target organization ke logon (people) ke baare mein info — credentials, emails, naam.</div>
+    <div class="svc-body">
+      <div class="sub"><div class="top"><span class="sid">T1589.001</span><span class="sname">Credentials</span></div><div class="desc">Leaked/breached credentials dhoondna (data breach dumps mein)</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1589.002</span><span class="sname">Email Addresses</span></div><div class="desc">Company email format/addresses collect karna</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1589.003</span><span class="sname">Employee Names</span></div><div class="desc">Employee naam collect karna (social engineering ke liye useful)</div></div>
+    </div>
+  </div>
+
+  <!-- T1590 -->
+  <div class="svc" id="t1590">
+    <div class="svc-head"><span class="tid">T1590</span><h3>Gather Victim Network Information</h3></div>
+    <div class="svc-desc">Target ki network infrastructure ke baare mein — ye tera sabse relevant technique hai network-attacks ke liye.</div>
+    <div class="svc-body">
+      <div class="sub"><div class="top"><span class="sid">T1590.001</span><span class="sname">Domain Properties</span></div><div class="desc">Domain registration details</div><div class="tool"><b>Tool:</b> <code>whois domain.com</code></div></div>
+      <div class="sub"><div class="top"><span class="sid">T1590.002</span><span class="sname">DNS</span></div><div class="desc">DNS records — subdomains, mail servers, etc.</div><div class="tool"><b>Tool:</b> <code>dnsrecon</code>, <code>dig</code></div></div>
+      <div class="sub"><div class="top"><span class="sid">T1590.003</span><span class="sname">Network Trust Dependencies</span></div><div class="desc">Third-party/partner networks jo target ke saath trust relationship rakhte hain</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1590.004</span><span class="sname">Network Topology</span></div><div class="desc">Network ka layout — kaunsi machines kaise connected hain</div><div class="tool"><b>Tool:</b> <code>traceroute</code>, <code>nmap --traceroute</code></div></div>
+      <div class="sub"><div class="top"><span class="sid">T1590.005</span><span class="sname">IP Addresses</span></div><div class="desc">Target ke IP ranges collect karna</div><div class="tool"><b>Tool:</b> <code>nmap -sn</code></div></div>
+      <div class="sub"><div class="top"><span class="sid">T1590.006</span><span class="sname">Network Security Appliances</span></div><div class="desc">Firewall/IDS/IPS ki jaankari — jo tu abhi apne Phantom Shield mein practically dekh raha hai</div></div>
+    </div>
+  </div>
+
+  <!-- T1591 -->
+  <div class="svc" id="t1591">
+    <div class="svc-head"><span class="tid">T1591</span><h3>Gather Victim Org Information</h3></div>
+    <div class="svc-desc">Target company ke business details — locations, relationships, roles.</div>
+    <div class="svc-body">
+      <div class="sub"><div class="top"><span class="sid">T1591.001</span><span class="sname">Determine Physical Locations</span></div><div class="desc">Office/facility addresses</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1591.002</span><span class="sname">Business Relationships</span></div><div class="desc">Vendors/partners jo target se connected hain (supply-chain attack ka base)</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1591.003</span><span class="sname">Identify Business Tempo</span></div><div class="desc">Operating hours, business cycles</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1591.004</span><span class="sname">Identify Roles</span></div><div class="desc">Kis role ka kaun hai (IT admin, finance, etc.) — targeting ke liye</div></div>
+    </div>
+  </div>
+
+  <!-- T1598 -->
+  <div class="svc" id="t1598">
+    <div class="svc-head"><span class="tid">T1598</span><h3>Phishing for Information</h3></div>
+    <div class="svc-desc">Fake messages bhejke target se khud hi sensitive info nikalwana (abhi access lena goal nahi, sirf info).</div>
+    <div class="svc-body">
+      <div class="sub"><div class="top"><span class="sid">T1598.001</span><span class="sname">Spearphishing Service</span></div><div class="desc">Social media/professional platform (LinkedIn) ke through targeted message</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1598.002</span><span class="sname">Spearphishing Attachment</span></div><div class="desc">Malicious attachment wala targeted email</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1598.003</span><span class="sname">Spearphishing Link</span></div><div class="desc">Malicious link wala targeted email</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1598.004</span><span class="sname">Spearphishing Voice</span></div><div class="desc">Phone call ke through social engineering (vishing)</div></div>
+    </div>
+  </div>
+
+  <!-- T1682 -->
+  <div class="svc" id="t1682">
+    <div class="svc-head"><span class="tid">T1682</span><h3>Query Public AI Services</h3></div>
+    <div class="svc-desc">Public AI tools/chatbots se target ke baare mein info nikalwana (naya technique, 2025 mein add hua ATT&CK mein — isme koi sub-technique nahi hai abhi).</div>
+  </div>
+
+  <!-- T1597 -->
+  <div class="svc" id="t1597">
+    <div class="svc-head"><span class="tid">T1597</span><h3>Search Closed Sources</h3></div>
+    <div class="svc-desc">Paid/private data sources se info lena.</div>
+    <div class="svc-body">
+      <div class="sub"><div class="top"><span class="sid">T1597.001</span><span class="sname">Threat Intel Vendors</span></div><div class="desc">Commercial threat intelligence providers se data</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1597.002</span><span class="sname">Purchase Technical Data</span></div><div class="desc">Dark web/markets se leaked technical data khareedna</div></div>
+    </div>
+  </div>
+
+  <!-- T1596 -->
+  <div class="svc" id="t1596">
+    <div class="svc-head"><span class="tid">T1596</span><h3>Search Open Technical Databases</h3></div>
+    <div class="svc-desc">Public technical databases search karna — ye tera OSINT skill ka core hai.</div>
+    <div class="svc-body">
+      <div class="sub"><div class="top"><span class="sid">T1596.001</span><span class="sname">DNS/Passive DNS</span></div><div class="desc">Historical DNS records</div><div class="tool"><b>Tool:</b> <code>dnsrecon</code>, SecurityTrails</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1596.002</span><span class="sname">WHOIS</span></div><div class="desc">Domain registration info</div><div class="tool"><b>Tool:</b> <code>whois</code></div></div>
+      <div class="sub"><div class="top"><span class="sid">T1596.003</span><span class="sname">Digital Certificates</span></div><div class="desc">SSL certs se subdomains discover karna (Certificate Transparency logs)</div><div class="tool"><b>Tool:</b> crt.sh</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1596.004</span><span class="sname">CDNs</span></div><div class="desc">Content Delivery Network info se real IP leak dhoondna</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1596.005</span><span class="sname">Scan Databases</span></div><div class="desc">Pehle se available public scan results (Shodan/Censys) use karna</div><div class="tool"><b>Tool:</b> Shodan, Censys</div></div>
+    </div>
+  </div>
+
+  <!-- T1593 -->
+  <div class="svc" id="t1593">
+    <div class="svc-head"><span class="tid">T1593</span><h3>Search Open Websites/Domains</h3></div>
+    <div class="svc-desc">Free, public websites se info nikalna.</div>
+    <div class="svc-body">
+      <div class="sub"><div class="top"><span class="sid">T1593.001</span><span class="sname">Social Media</span></div><div class="desc">Social media profiles se info</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1593.002</span><span class="sname">Search Engines</span></div><div class="desc">Google dorking jaisi techniques</div><div class="tool"><b>Tool:</b> Google dorks</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1593.003</span><span class="sname">Code Repositories</span></div><div class="desc">GitHub jaisi jagah accidentally leaked credentials/code</div><div class="tool"><b>Tool:</b> GitHub dorking</div></div>
+    </div>
+  </div>
+
+  <!-- T1681 -->
+  <div class="svc" id="t1681">
+    <div class="svc-head"><span class="tid">T1681</span><h3>Search Threat Vendor Data</h3></div>
+    <div class="svc-desc">Security vendors ki public threat intel reports search karna (naya technique, isme koi sub-technique nahi hai abhi).</div>
+  </div>
+
+  <!-- T1594 -->
+  <div class="svc" id="t1594">
+    <div class="svc-head"><span class="tid">T1594</span><h3>Search Victim-Owned Websites</h3></div>
+    <div class="svc-desc">Target ki apni website browse karke info nikalna (page source, metadata, job listings, etc. — koi sub-technique nahi hai).</div>
+  </div>
+
+  <details class="quiz">
+    <summary>Quiz: Tune jo nmap scan Windows VM pe kiya tha, wo konsi exact technique + sub-technique ID thi?</summary>
+    <div class="ans">T1595.001 (Scanning IP Blocks) jab tune `-sn` se discovery kiya, aur T1592.002 (Software) jab `-sV` se version detect kiya — ek hi scan session mein tune 2 alag sub-techniques use ki!</div>
+  </details>
+
+  <div class="checklist">
+    <h2>🎯 TA0043 Mastery Checklist</h2>
+    <label><input type="checkbox"> Saare 12 techniques ke naam + ID yaad hain bina dekhe</label>
+    <label><input type="checkbox"> Kam se kam 1 sub-technique apne lab mein practically try ki</label>
+    <label><input type="checkbox"> Pata hai konsi technique "active" hai aur konsi "passive" (defender detect kar sakta hai ki nahi)</label>
+    <label><input type="checkbox"> Apne pehle hi kiye gaye attacks ko in technique IDs se map kar liya</label>
+  </div>
+
+  <p class="footer-note">Source: <a href="https://attack.mitre.org/tactics/TA0043/" style="color:var(--phantom)">attack.mitre.org/tactics/TA0043</a> — Agla tactic: TA0042 Resource Development.</p>
+
+</div>
+
+</body>
+</html>

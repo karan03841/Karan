@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATT&CK Mastery — TA0042 Resource Development</title>
+<style>
+  :root{
+    --bg:#060a12; --panel:#0f1420; --panel2:#141b2c; --border:#20283d;
+    --text:#d9deeb; --muted:#848fa8; --phantom:#00ffe0; --phantom2:#7c4dff;
+    --gold:#ffd166;
+  }
+  *{box-sizing:border-box; min-width:0;}
+  html,body{overflow-x:hidden; max-width:100%;}
+  body{margin:0; background:radial-gradient(circle at 15% -10%, rgba(124,77,255,0.12), transparent 40%), radial-gradient(circle at 85% 10%, rgba(0,255,224,0.08), transparent 35%), var(--bg); color:var(--text); font-family:'Segoe UI', Roboto, system-ui, sans-serif; line-height:1.6; padding-bottom:70px; word-wrap:break-word;}
+  .hero{padding:48px 20px 26px; text-align:center; border-bottom:1px solid var(--border); position:relative; overflow:hidden;}
+  .hero::before{content:""; position:absolute; inset:0; background-image:linear-gradient(rgba(0,255,224,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,224,0.03) 1px, transparent 1px); background-size:34px 34px; pointer-events:none;}
+  .hero .eyebrow{display:inline-block; padding:5px 16px; border-radius:20px; background:rgba(0,255,224,0.08); border:1px solid var(--phantom); color:var(--phantom); font-size:11px; letter-spacing:2px; font-weight:700; margin-bottom:14px; position:relative;}
+  .hero h1{font-size:clamp(22px,5vw,38px); margin:0 0 8px; letter-spacing:1px; background:linear-gradient(90deg, var(--phantom), var(--phantom2)); -webkit-background-clip:text; background-clip:text; color:transparent; position:relative;}
+  .hero .subtitle{color:var(--muted); font-size:13px; max-width:640px; margin:0 auto; position:relative;}
+  .container{max-width:960px; margin:0 auto; padding:0 16px; overflow-x:hidden;}
+  .toc{margin-top:-14px; background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:16px 18px; position:relative; z-index:2;}
+  .toc h2{font-size:11px; letter-spacing:1px; color:var(--phantom); margin:0 0 10px; text-transform:uppercase;}
+  .toc ol{margin:0; padding-left:18px; columns:2; column-gap:20px;}
+  .toc li{margin-bottom:5px; font-size:12px;}
+  .toc a{color:var(--text); text-decoration:none; border-bottom:1px dashed var(--border);}
+  @media(max-width:480px){.toc ol{columns:1;}}
+
+  .tactic-card{background:linear-gradient(135deg, rgba(0,255,224,0.06), rgba(124,77,255,0.06)); border:1px solid var(--phantom2); border-radius:16px; padding:20px; margin-top:20px;}
+  .tactic-card h2{color:var(--phantom); margin:0 0 8px; font-size:16px;}
+  .tactic-card .id{color:var(--gold); font-size:12px; font-weight:700; margin-bottom:6px;}
+  .tactic-card p{font-size:13px; margin:0;}
+
+  .svc{background:var(--panel); border:1px solid var(--border); border-radius:14px; margin-top:16px; overflow:hidden;}
+  .svc-head{display:flex; align-items:center; gap:10px; padding:12px 16px; background:var(--panel2); border-bottom:1px solid var(--border); flex-wrap:wrap;}
+  .svc-head .tid{padding:4px 10px; border-radius:8px; background:rgba(0,255,224,0.1); border:1px solid var(--phantom); color:var(--phantom); font-weight:800; font-size:11.5px; white-space:nowrap;}
+  .svc-head h3{margin:0; font-size:14.5px; color:#fff;}
+  .svc-body{padding:4px 0;}
+  .svc-desc{padding:10px 16px; font-size:12.5px; color:var(--muted); border-bottom:1px solid rgba(255,255,255,0.04);}
+
+  .sub{padding:11px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:12.5px;}
+  .sub:last-child{border-bottom:none;}
+  .sub .top{display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; margin-bottom:4px;}
+  .sub .sid{color:var(--gold); font-weight:700; font-size:11.5px; white-space:nowrap;}
+  .sub .sname{color:#fff; font-weight:600;}
+  .sub .desc{color:var(--text); margin-bottom:5px;}
+  .sub .tool{color:var(--phantom); font-size:11.5px; word-break:break-word; overflow-wrap:anywhere;}
+  .sub .tool b{color:var(--muted); font-weight:600;}
+  code{font-family:'Consolas','Courier New',monospace; font-size:12px; color:var(--phantom); background:#0a0f1a; padding:2px 7px; border-radius:5px; border:1px solid var(--border);}
+
+  .checklist{margin-top:26px; background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:18px 20px;}
+  .checklist h2{font-size:15px; color:var(--phantom); margin-top:0;}
+  .checklist label{display:flex; align-items:flex-start; gap:10px; font-size:12.8px; margin-bottom:8px; color:var(--text); cursor:pointer;}
+  .checklist input{margin-top:3px; accent-color:var(--phantom);}
+  .footer-note{text-align:center; color:var(--muted); font-size:11.5px; margin-top:30px; padding:0 16px;}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="eyebrow">🧩 ATT&CK MASTERY · TACTIC 2 of 14</div>
+  <h1>TA0042 — RESOURCE DEVELOPMENT</h1>
+  <p class="subtitle">Attacker apna "weapon shed" taiyar karta hai is tactic mein — infrastructure, accounts, capabilities — isse pehle ki asli attack shuru ho.</p>
+</div>
+
+<div class="container">
+
+  <div class="tactic-card">
+    <div class="id">TA0042</div>
+    <h2>Resource Development</h2>
+    <p>Attacker aise resources banata/haasil karta hai jo uske operations ko support karein — infrastructure (servers, domains), accounts, aur capabilities (malware, exploits, tools). Ye sab aage ke phases mein use hoti hain — jaise Command and Control, Initial Access, Defense Evasion.</p>
+  </div>
+
+  <div class="toc">
+    <h2>9 Techniques</h2>
+    <ol>
+      <li><a href="#t1650">T1650 Acquire Access</a></li>
+      <li><a href="#t1583">T1583 Acquire Infrastructure</a></li>
+      <li><a href="#t1586">T1586 Compromise Accounts</a></li>
+      <li><a href="#t1584">T1584 Compromise Infrastructure</a></li>
+      <li><a href="#t1587">T1587 Develop Capabilities</a></li>
+      <li><a href="#t1585">T1585 Establish Accounts</a></li>
+      <li><a href="#t1683">T1683 Generate Content</a></li>
+      <li><a href="#t1588">T1588 Obtain Capabilities</a></li>
+      <li><a href="#t1608">T1608 Stage Capabilities</a></li>
+    </ol>
+  </div>
+
+  <!-- T1650 -->
+  <div class="svc" id="t1650">
+    <div class="svc-head"><span class="tid">T1650</span><h3>Acquire Access</h3></div>
+    <div class="svc-desc">Koi aur (third-party broker/criminal) jo already target tak access rakhta hai, uss access ko khareedna — attacker khud break-in nahi karta, already-khuli hui chaabi kharidta hai. Koi sub-technique nahi hai.</div>
+  </div>
+
+  <!-- T1583 -->
+  <div class="svc" id="t1583">
+    <div class="svc-head"><span class="tid">T1583</span><h3>Acquire Infrastructure</h3></div>
+    <div class="svc-desc">Naya infrastructure banana/khareedna attack ke liye use karne ke liye (apna khud ka, legally registered).</div>
+    <div class="svc-body">
+      <div class="sub"><div class="top"><span class="sid">T1583.001</span><span class="sname">Domains</span></div><div class="desc">Naya domain register karna (phishing/C2 ke liye)</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1583.002</span><span class="sname">DNS Server</span></div><div class="desc">Apna DNS server setup karna</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1583.003</span><span class="sname">Virtual Private Server</span></div><div class="desc">VPS rent karna (C2 hosting ke liye)</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1583.004</span><span class="sname">Server</span></div><div class="desc">Dedicated server rent/khareedna</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1583.005</span><span class="sname">Botnet</span></div><div class="desc">Pehle se compromised machines ka network rent/khareedna</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1583.006</span><span class="sname">Web Services</span></div><div class="desc">Legitimate cloud/web services (jaise GitHub Pages) attack hosting ke liye use karna</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1583.007</span><span class="sname">Serverless</span></div><div class="desc">Serverless cloud functions (AWS Lambda jaisa) attack infra ke liye</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1583.008</span><span class="sname">Malvertising</span></div><div class="desc">Malicious ad space khareedna (victims ko malicious page pe redirect karne ke liye)</div></div>
+    </div>
+  </div>
+
+  <!-- T1586 -->
+  <div class="svc" id="t1586">
+    <div class="svc-head"><span class="tid">T1586</span><h3>Compromise Accounts</h3></div>
+    <div class="svc-desc">Kisi aur ke already-existing accounts ko hack karke apne operations ke liye use karna (trust factor milta hai — victim ko real lagta hai).</div>
+    <div class="svc-body">
+      <div class="sub"><div class="top"><span class="sid">T1586.001</span><span class="sname">Social Media Accounts</span></div><div class="desc">Kisi real insaan ka social media account compromise karna</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1586.002</span><span class="sname">Email Accounts</span></div><div class="desc">Real email accounts compromise karna (phishing yahin se zyada believable lagti hai)</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1586.003</span><span class="sname">Cloud Accounts</span></div><div class="desc">Cloud service accounts (AWS/Azure/GCP) compromise karna</div></div>
+    </div>
+  </div>
+
+  <!-- T1584 -->
+  <div class="svc" id="t1584">
+    <div class="svc-head"><span class="tid">T1584</span><h3>Compromise Infrastructure</h3></div>
+    <div class="svc-desc">Kisi aur ka already-existing infrastructure hack karke apne liye use karna (apna naya banane ki jagah) — zyada stealthy hota hai, kyunki attribution attacker tak nahi, compromised owner tak jaati hai.</div>
+    <div class="svc-body">
+      <div class="sub"><div class="top"><span class="sid">T1584.001</span><span class="sname">Domains</span></div><div class="desc">Kisi aur ka domain hijack karna</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1584.002</span><span class="sname">DNS Server</span></div><div class="desc">Kisi aur ka DNS server compromise karna</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1584.003</span><span class="sname">Virtual Private Server</span></div><div class="desc">Kisi aur ka VPS hack karna</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1584.004</span><span class="sname">Server</span></div><div class="desc">Kisi aur ka server compromise karna</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1584.005</span><span class="sname">Botnet</span></div><div class="desc">Apna khud ka botnet banana (devices compromise karke)</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1584.006</span><span class="sname">Web Services</span></div><div class="desc">Kisi aur ka legitimate web service account hack karna</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1584.007</span><span class="sname">Serverless</span></div><div class="desc">Kisi aur ki serverless infrastructure compromise karna</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1584.008</span><span class="sname">Network Devices</span></div><div class="desc">Routers/switches jaise network devices compromise karna infra ke liye — tera UPnP/router recon isi se related hai</div></div>
+    </div>
+  </div>
+
+  <!-- T1587 -->
+  <div class="svc" id="t1587">
+    <div class="svc-head"><span class="tid">T1587</span><h3>Develop Capabilities</h3></div>
+    <div class="svc-desc">Apne khud ke attack tools banana (ready-made use karne ki jagah) — yahi wo jagah hai jahan tera "Go mein khud likhna" wala goal fit hota hai.</div>
+    <div class="svc-body">
+      <div class="sub"><div class="top"><span class="sid">T1587.001</span><span class="sname">Malware</span></div><div class="desc">Custom malware likhna</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1587.002</span><span class="sname">Code Signing Certificates</span></div><div class="desc">Apna code-signing certificate banana (malware ko "trusted" dikhane ke liye)</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1587.003</span><span class="sname">Digital Certificates</span></div><div class="desc">SSL/TLS certs banana apni fake infrastructure ke liye</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1587.004</span><span class="sname">Exploits</span></div><div class="desc">Khud ka exploit likhna kisi CVE ke liye — <b>exactly tera Go-exploit-writing goal yahi hai</b></div></div>
+    </div>
+  </div>
+
+  <!-- T1585 -->
+  <div class="svc" id="t1585">
+    <div class="svc-head"><span class="tid">T1585</span><h3>Establish Accounts</h3></div>
+    <div class="svc-desc">Naye, fresh accounts banana operations ke liye (fake persona banana) — Compromise Accounts (T1586) se alag hai, yahan naya banaya jaata hai.</div>
+    <div class="svc-body">
+      <div class="sub"><div class="top"><span class="sid">T1585.001</span><span class="sname">Social Media Accounts</span></div><div class="desc">Fake social media persona banana</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1585.002</span><span class="sname">Email Accounts</span></div><div class="desc">Naya fake email account banana phishing ke liye</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1585.003</span><span class="sname">Cloud Accounts</span></div><div class="desc">Naya cloud account banana infra hosting ke liye</div></div>
+    </div>
+  </div>
+
+  <!-- T1683 -->
+  <div class="svc" id="t1683">
+    <div class="svc-head"><span class="tid">T1683</span><h3>Generate Content</h3></div>
+    <div class="svc-desc">AI ya automation tools se fake content banana social engineering ke liye support karne ke liye.</div>
+    <div class="svc-body">
+      <div class="sub"><div class="top"><span class="sid">T1683.001</span><span class="sname">Written Content</span></div><div class="desc">AI se fake text/articles/messages generate karna (believable phishing content)</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1683.002</span><span class="sname">Audio-Visual Content</span></div><div class="desc">Deepfake audio/video banana (voice cloning jaisa)</div></div>
+    </div>
+  </div>
+
+  <!-- T1588 -->
+  <div class="svc" id="t1588">
+    <div class="svc-head"><span class="tid">T1588</span><h3>Obtain Capabilities</h3></div>
+    <div class="svc-desc">Khud banane ki jagah, pehle se bani hui cheezein khareedna/lena — tera abhi tak ka Metasploit module use karna isi mein aata hai (though tu khud attacker nahi, learner hai).</div>
+    <div class="svc-body">
+      <div class="sub"><div class="top"><span class="sid">T1588.001</span><span class="sname">Malware</span></div><div class="desc">Pehle se bana malware khareedna/download karna</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1588.002</span><span class="sname">Tool</span></div><div class="desc">Public tools use karna (Metasploit, Hydra — <b>yahi tu abhi kar raha hai</b>)</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1588.003</span><span class="sname">Code Signing Certificates</span></div><div class="desc">Stolen/khareede hue code-signing certs use karna</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1588.004</span><span class="sname">Digital Certificates</span></div><div class="desc">Khareede hue SSL certs use karna</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1588.005</span><span class="sname">Exploits</span></div><div class="desc">Public exploits use karna (ExploitDB/searchsploit se — <b>yahi tera current workflow hai</b>)</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1588.006</span><span class="sname">Vulnerabilities</span></div><div class="desc">Vulnerability info khareedna/haasil karna (private bug markets se)</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1588.007</span><span class="sname">Artificial Intelligence</span></div><div class="desc">AI models/tools haasil karna attack support ke liye</div></div>
+    </div>
+  </div>
+
+  <!-- T1608 -->
+  <div class="svc" id="t1608">
+    <div class="svc-head"><span class="tid">T1608</span><h3>Stage Capabilities</h3></div>
+    <div class="svc-desc">Apne resources ko attack ke liye "ready" position mein rakhna — infrastructure pe upload/install karna, use karne se pehle.</div>
+    <div class="svc-body">
+      <div class="sub"><div class="top"><span class="sid">T1608.001</span><span class="sname">Upload Malware</span></div><div class="desc">Malware ko apni infra pe upload karna</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1608.002</span><span class="sname">Upload Tool</span></div><div class="desc">Tools ko apni infra pe staged karna</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1608.003</span><span class="sname">Install Digital Certificate</span></div><div class="desc">Certificate ko apni infra pe install karna (HTTPS trust ke liye)</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1608.004</span><span class="sname">Drive-by Target</span></div><div class="desc">Ek legitimate-dikhne wali site ko malicious bana ke victims ko wait karna</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1608.005</span><span class="sname">Link Target</span></div><div class="desc">Malicious link ko ready karna phishing mein use karne ke liye</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1608.006</span><span class="sname">SEO Poisoning</span></div><div class="desc">Search engine results mein apni malicious site ko top pe rank karwana</div></div>
+      <div class="sub"><div class="top"><span class="sid">T1608.007</span><span class="sname">AI Result Poisoning</span></div><div class="desc">AI chatbots/assistants ke answers ko manipulate karna apni malicious content suggest karwane ke liye</div></div>
+    </div>
+  </div>
+
+  <div class="checklist">
+    <h2>🎯 TA0042 Mastery Checklist</h2>
+    <label><input type="checkbox"> Saare 9 techniques ke naam + ID yaad hain</label>
+    <label><input type="checkbox"> Farak samajh gaya "Acquire" (naya banana) vs "Compromise" (kisi aur ka lena) ke beech</label>
+    <label><input type="checkbox"> Pehchaan li jo techniques tera current lab-practice workflow se match karti hain (T1588.002, T1588.005)</label>
+  </div>
+
+  <p class="footer-note">Source: <a href="https://attack.mitre.org/tactics/TA0042/" style="color:var(--phantom)">attack.mitre.org/tactics/TA0042</a> — Agla tactic: TA0001 Initial Access.</p>
+
+</div>
+
+</body>
+</html>
