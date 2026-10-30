@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Go Standard Library — Complete Reference — The Network Phantom</title>
+<style>
+  :root{
+    --bg:#0a0e14; --panel:#111722; --panel2:#161d2b; --line:#232d40;
+    --text:#d9e2f1; --muted:#7c8aa3; --neon:#00e5a0; --neon2:#ff6b35;
+    --warn:#ffb300; --danger:#ff4d5e; --blue:#4fb3ff; --purple:#b084ff;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:'Segoe UI',Roboto,Arial,sans-serif;line-height:1.6;}
+  header{background:linear-gradient(135deg,#0a0e14,#121a28);border-bottom:2px solid var(--neon);
+         padding:30px 24px;text-align:center;}
+  header h1{margin:0 0 6px;font-size:1.9em;color:var(--neon);letter-spacing:.5px;}
+  header p{margin:0;color:var(--muted);}
+  main{max-width:1040px;margin:0 auto;padding:30px 20px 80px;}
+  .toc{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 22px;margin-bottom:30px;}
+  .toc h3{margin-top:0;color:var(--neon);}
+  .toc a{display:block;color:var(--blue);text-decoration:none;padding:4px 0;font-size:.9em;}
+  .toc a:hover{text-decoration:underline;}
+  .level{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:26px;margin-bottom:26px;}
+  .level h2{color:var(--neon);font-size:1.4em;margin-top:0;display:flex;align-items:center;gap:10px;}
+  .badge{display:inline-block;background:var(--neon2);color:#111;font-weight:700;font-size:.7em;
+         padding:3px 10px;border-radius:20px;}
+  .badge.blue{background:var(--blue);} .badge.purple{background:var(--purple);} .badge.warn{background:var(--warn);color:#111;} .badge.danger{background:var(--danger);}
+  .why{background:var(--panel2);border-left:3px solid var(--blue);padding:10px 14px;border-radius:6px;
+       font-size:.92em;margin:12px 0;}
+  .pkgname{display:block;font-family:monospace;color:var(--neon);font-size:1em;background:#000;
+           padding:6px 12px;border-radius:6px;margin:10px 0 18px;}
+  .fn{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin:16px 0;}
+  .fn .fname{display:block;font-family:monospace;color:var(--warn);font-size:1.05em;font-weight:700;margin-bottom:8px;}
+  .fn .row{margin:6px 0;font-size:.92em;}
+  .fn .row b{color:var(--blue);}
+  code{background:#000;color:#9cffd0;padding:2px 6px;border-radius:4px;font-size:.87em;}
+  pre{background:#000;color:#9cffd0;padding:12px;border-radius:8px;overflow-x:auto;font-size:.83em;white-space:pre-wrap;word-break:break-word;}
+  details{background:var(--panel2);border:1px solid var(--line);border-radius:8px;margin:14px 0;}
+  summary{cursor:pointer;padding:12px 16px;font-weight:700;color:var(--warn);}
+  details[open] summary{border-bottom:1px solid var(--line);}
+  .qbody{padding:14px 16px;}
+  footer{text-align:center;color:var(--muted);padding:30px;font-size:.85em;}
+</style>
+</head>
+<body>
+<header>
+  <h1>📦 Go Standard Library — Complete Reference</h1>
+  <p>Har function ka full breakdown: parameters ka matlab, return kya milta hai, kab use hoga, poora example</p>
+</header>
+<main>
+
+<div class="why"><b>Kaise padho:</b> har function ka apna chhota box hai — "kya karta hai", "parameters", "return", "kab use hoga (real scenario)", aur ek chalne-layak example. Ek package khatam karke hi agle pe jana, beech mein mat kudo.</p>
+
+<div class="toc">
+  <h3>Categories</h3>
+  <a href="#p1">1. fmt</a>
+  <a href="#p2">2. strings</a>
+  <a href="#p2b">2b. strconv</a>
+  <a href="#p3">3. os</a>
+  <a href="#p3b">3b. io + bufio</a>
+  <a href="#p4">4. net/http</a>
+  <a href="#p4b">4b. net</a>
+  <a href="#p5">5. time</a>
+  <a href="#p6">6. sync + context</a>
+  <a href="#p7">7. encoding/json + base64</a>
+  <a href="#p8">8. crypto</a>
+  <a href="#p9">9. errors</a>
+  <a href="#p10">10. flag</a>
+  <a href="#p11">11. regexp</a>
+  <a href="#p12">12. sort + math/rand</a>
+  <a href="#p13">13. bytes</a>
+  <a href="#quiz">Mini self-check</a>
+</div>
+
+<div class="level" id="p1">
+  <h2>1 <span class="badge">fmt</span> Print karna, format karna, input lena</h2>
+  <span class="pkgname">import "fmt"</span>
+
+  <div class="fn">
+    <span class="fname">fmt.Println(a, b, c, ...)</span>
+    <div class="row"><b>Kya karta hai:</b> Jo bhi values do, unhe space se separate karke print karta hai, aur end mein khud-ba-khud ek naya line (Enter) daal deta hai.</div>
+    <div class="row"><b>Parameters:</b> kitni bhi values, kisi bhi type ki (string, int, bool — sabko handle kar leta hai)</div>
+    <div class="row"><b>Return:</b> kuch nahi (bas screen pe print karta hai)</div>
+    <div class="row"><b>Kab use hoga:</b> Debugging ke liye ("ye value kya aa rahi hai dekhni hai"), ya final result dikhane ke liye</div>
+    <pre>fmt.Println("Port:", 80, "Status:", true)
+// Output: Port: 80 Status: true</pre>
+  </div>
+
+  <div class="fn">
+    <span class="fname">fmt.Print(a, b, c, ...)</span>
+    <div class="row"><b>Kya karta hai:</b> Println jaisa hi hai, par end mein naya line NAHI daalta — agla print isi line mein continue hoga.</div>
+    <div class="row"><b>Kab use hoga:</b> Jab tum khud control karna chahte ho ki newline kahan aaye (jaise ek progress-bar jaisa output banana ho: <code>fmt.Print(".")</code> loop mein, dots ek hi line pe aate jayenge)</div>
+  </div>
+
+  <div class="fn">
+    <span class="fname">fmt.Printf(formatString, values...)</span>
+    <div class="row"><b>Kya karta hai:</b> "Formatted print" — pehle ek template-string dete ho jisme special placeholders (<code>%s</code>, <code>%d</code>, etc.) hote hain, phir unki jagah actual values bharta hai.</div>
+    <div class="row"><b>Parameters:</b> pehla parameter format-string hai, baaki uske placeholders ko bharne wali values (order maintain hona chahiye)</div>
+    <div class="row"><b>Common placeholders:</b> <code>%s</code> = string, <code>%d</code> = integer number, <code>%f</code> = decimal number, <code>%t</code> = true/false, <code>%v</code> = "koi bhi type" (sabse safe, confuse ho to isi se shuru karo)</div>
+    <pre>port := 80
+name := "target1"
+fmt.Printf("Scanning %s on port %d\n", name, port)
+// Output: Scanning target1 on port 80</pre>
+    <div class="row"><b>Kab use hoga:</b> Jab output ka exact format control karna ho — jaise table-jaisa aligned output, ya specific decimal-places wala number</div>
+  </div>
+
+  <div class="fn">
+    <span class="fname">fmt.Sprintf(formatString, values...)</span>
+    <div class="row"><b>Kya karta hai:</b> Bilkul Printf jaisa hi kaam karta hai (same placeholders), FARAK itna hai: ye print NAHI karta — ek <b>string banake RETURN</b> karta hai jise tum variable mein store kar sakte ho.</div>
+    <div class="row"><b>Return:</b> ek string</div>
+    <pre>url := fmt.Sprintf("http://%s:%d/login", "target.com", 8080)
+// url ab "http://target.com:8080/login" ban gaya, print nahi hua</pre>
+    <div class="row"><b>Kab use hoga:</b> Jab tumhe ek URL/message/payload dynamically banana ho (variables ke values ke saath) taaki baad mein use (request bhejna, file mein likhna) kar sako — print karna maksad nahi hai</div>
+  </div>
+
+  <div class="fn">
+    <span class="fname">fmt.Scanln(&variable)</span>
+    <div class="row"><b>Kya karta hai:</b> Terminal se user ek line type karega, wo value di gayi variable mein store ho jati hai.</div>
+    <div class="row"><b>Parameters:</b> variable ka address (<code>&</code> zaroori hai — bina iske value variable tak pahunch hi nahi payegi, Level 10 ka pointer-concept yahi hai)</div>
+    <pre>var name string
+fmt.Println("Apna naam likho:")
+fmt.Scanln(&name)
+fmt.Println("Hello,", name)</pre>
+    <div class="row"><b>Kab use hoga:</b> Interactive CLI tool banate waqt jahan user se kuch poochna ho (zyadatar exploit-tools mein iski jagah <code>flag</code> package use hota hai, jo Level 10 mein hai — zyada professional tareeka)</div>
+  </div>
+
+  <div class="fn">
+    <span class="fname">fmt.Errorf(formatString, values...)</span>
+    <div class="row"><b>Kya karta hai:</b> Printf jaisa formatting karta hai, par ek <b>error-type value</b> return karta hai (normal string nahi) — Go mein functions errors isi tarah banate hain.</div>
+    <pre>func checkTarget(url string) error {
+    if url == "" {
+        return fmt.Errorf("target URL khali hai")
+    }
+    return nil
+}</pre>
+    <div class="row"><b>Kab use hoga:</b> Apne khud ke function se meaningful error-message return karna ho (Level 9 — <code>err != nil</code> pattern — yahi se errors banate hain)</div>
+  </div>
+</div>
+
+<div class="level" id="p2">
+  <h2>2 <span class="badge blue">strings</span> Text ke saath kaam karna</h2>
+  <span class="pkgname">import "strings"</span>
+
+  <div class="fn">
+    <span class="fname">strings.Contains(s, substring)</span>
+    <div class="row"><b>Kya karta hai:</b> Check karta hai ki bade string <code>s</code> ke andar chhota <code>substring</code> kahin maujood hai ya nahi.</div>
+    <div class="row"><b>Return:</b> <code>true</code> ya <code>false</code></div>
+    <pre>response := "Error: command not found"
+if strings.Contains(response, "Error") {
+    fmt.Println("Kuch galat hua")
+}</pre>
+    <div class="row"><b>Kab use hoga:</b> Response-body check karna (vulnerability-indicator dhoondna), ya kisi bhi "is text mein ye word hai kya" wala check</div>
+  </div>
+
+  <div class="fn">
+    <span class="fname">strings.Split(s, separator)</span>
+    <div class="row"><b>Kya karta hai:</b> String ko diye gaye separator pe tod deta hai, ek slice-of-strings bana deta hai.</div>
+    <div class="row"><b>Return:</b> <code>[]string</code> (slice)</div>
+    <pre>line := "karan,18,active"
+parts := strings.Split(line, ",")
+// parts = ["karan", "18", "active"]
+fmt.Println(parts[0])  // "karan"</pre>
+    <div class="row"><b>Kab use hoga:</b> CSV-jaisi line ko tod ke alag-alag fields nikaalna, ya URL ko "/" se tod ke path-segments nikaalna</div>
+  </div>
+
+  <div class="fn">
+    <span class="fname">strings.Join(slice, separator)</span>
+    <div class="row"><b>Kya karta hai:</b> Split ka ULTA — ek slice-of-strings lekar unhe separator se jod ke wapas ek string banata hai.</div>
+    <pre>words := []string{"port", "80", "open"}
+result := strings.Join(words, " - ")
+// result = "port - 80 - open"</pre>
+  </div>
+
+  <div class="fn">
+    <span class="fname">strings.Replace(s, old, new, n)</span>
+    <div class="row"><b>Kya karta hai:</b> <code>s</code> ke andar <code>old</code> wala part dhoondh ke <code>new</code> se badal deta hai.</div>
+    <div class="row"><b>Parameters:</b> <code>n</code> = kitni baar replace karna hai (agar <code>-1</code> do to SAARI occurrences replace hongi)</div>
+    <pre>payload := strings.Replace("cmd={INJECT}", "{INJECT}", "whoami", -1)
+// payload = "cmd=whoami"</pre>
+    <div class="row"><b>Kab use hoga:</b> Template-payload mein placeholder ki jagah actual command/value bitana</div>
+  </div>
+
+  <div class="fn">
+    <span class="fname">strings.ToUpper(s) / strings.ToLower(s)</span>
+    <div class="row"><b>Kya karta hai:</b> Poore string ko CAPITAL ya small letters mein convert karta hai.</div>
+    <pre>strings.ToUpper("shell.php")  // "SHELL.PHP"</pre>
+    <div class="row"><b>Kab use hoga:</b> Case-insensitive comparison ke liye (jaise extension-check bypass test karte waqt <code>shell.PHP</code> vs <code>shell.php</code> dono treat karna same)</div>
+  </div>
+
+  <div class="fn">
+    <span class="fname">strings.TrimSpace(s)</span>
+    <div class="row"><b>Kya karta hai:</b> String ke shuru aur end se extra spaces, tabs, newlines hata deta hai (beech mein kuch nahi chhedta).</div>
+    <pre>input := "  hello  \n"
+clean := strings.TrimSpace(input)
+// clean = "hello"</pre>
+    <div class="row"><b>Kab use hoga:</b> User-input ya file-se-padhi-hui line ko clean karna, kyunki aksar end mein accidental space/newline reh jata hai jo comparison todta hai</div>
+  </div>
+
+  <div class="fn">
+    <span class="fname">strings.HasPrefix(s, prefix) / strings.HasSuffix(s, suffix)</span>
+    <div class="row"><b>Kya karta hai:</b> Check karta hai string specific cheez se SHURU (prefix) ya KHATAM (suffix) hoti hai ya nahi.</div>
+    <pre>if strings.HasPrefix(url, "https://") {
+    fmt.Println("Secure URL hai")
+}
+if strings.HasSuffix(filename, ".php") {
+    fmt.Println("PHP file hai")
+}</pre>
+  </div>
+
+  <div class="fn">
+    <span class="fname">strings.Fields(s)</span>
+    <div class="row"><b>Kya karta hai:</b> String ko (kitne bhi) spaces pe tod ke words ki slice deta hai — Split se better jab exact separator pata na ho (multiple spaces ko bhi handle karta hai).</div>
+    <pre>strings.Fields("port   80   open")  // ["port", "80", "open"]</pre>
+  </div>
+
+  <div class="fn">
+    <span class="fname">strings.Repeat(s, n)</span>
+    <div class="row"><b>Kya karta hai:</b> String ko <code>n</code> baar repeat karke jod deta hai.</div>
+    <pre>strings.Repeat("A", 500)  // "AAAA...A" (500 A's)</pre>
+    <div class="row"><b>Kab use hoga:</b> Buffer-overflow testing jaisi jagah jahan "bada input dalke dekho kya hota hai" chahiye ho</div>
+  </div>
+</div>
+
+<div class="level" id="p2b">
+  <h2>2b <span class="badge blue">strconv</span> Number ↔ Text convert</h2>
+  <span class="pkgname">import "strconv"</span>
+
+  <div class="fn">
+    <span class="fname">strconv.Atoi(s)</span>
+    <div class="row"><b>Kya karta hai:</b> "ASCII to Integer" — text ko number mein convert karta hai.</div>
+    <div class="row"><b>Return:</b> do values — number, aur error (agar text valid number nahi tha)</div>
+    <pre>portStr := "8080"
+port, err := strconv.Atoi(portStr)
+if err != nil {
+    fmt.Println("Ye number nahi hai")
+}
+// port ab int type hai, math/comparison kar sakte ho</pre>
+    <div class="row"><b>Kab use hoga:</b> User-input ya file se jo bhi mila (hamesha string hota hai), use number ki tarah use karna ho (jaise port-number compare karna)</div>
+  </div>
+
+  <div class="fn">
+    <span class="fname">strconv.Itoa(n)</span>
+    <div class="row"><b>Kya karta hai:</b> "Integer to ASCII" — Atoi ka ulta — number ko text mein convert karta hai.</div>
+    <pre>port := 8080
+portStr := strconv.Itoa(port)
+url := "http://target.com:" + portStr   // string-concatenation ke liye string chahiye, number nahi</pre>
+  </div>
+</div>
+
+<div class="level" id="p3">
+  <h2>3 <span class="badge purple">os</span> Operating System se baat-cheet</h2>
+  <span class="pkgname">import "os"</span>
+
+  <div class="fn">
+    <span class="fname">os.Args</span>
+    <div class="row"><b>Kya hai:</b> Ye function nahi hai, ek ready-made slice hai — jab tum terminal se program chalate ho args ke saath, wo saare words isme aa jate hain.</div>
+    <pre>// chalane ka tareeka: go run tool.go target.com 8080
+fmt.Println(os.Args[0])  // program ka naam khud
+fmt.Println(os.Args[1])  // "target.com"
+fmt.Println(os.Args[2])  // "8080"</pre>
+    <div class="row"><b>Kab use hoga:</b> Simple CLI tools mein (flag package na use karna ho to) — <code>os.Args[0]</code> hamesha program-naam hota hai, actual arguments 1 se shuru hote hain</div>
+  </div>
+
+  <div class="fn">
+    <span class="fname">os.ReadFile(path)</span>
+    <div class="row"><b>Kya karta hai:</b> Poori file ek hi baar mein memory mein padh leta hai.</div>
+    <div class="row"><b>Return:</b> bytes-of-data, aur error</div>
+    <pre>data, err := os.ReadFile("payloads.txt")
+if err != nil {
+    fmt.Println("File nahi padh paya:", err)
+}
+fmt.Println(string(data))   // bytes ko string mein convert karke print karna</pre>
+    <div class="row"><b>Kab use hoga:</b> Chhoti files (config, payload-list) jo poori ek saath memory mein fit ho jayengi — bade wordlist ke liye bufio behtar hai (neeche)</div>
+  </div>
+
+  <div class="fn">
+    <span class="fname">os.WriteFile(path, data, permission)</span>
+    <div class="row"><b>Kya karta hai:</b> Naya file banata hai (ya overwrite karta hai) aur data likh deta hai.</div>
+    <div class="row"><b>Parameters:</b> <code>data</code> bytes-mein hona chahiye (<code>[]byte("text")</code>), <code>permission</code> file-access-rights (<code>0644</code> = owner likh-padh sakta hai, baaki sirf padh sakte hain — ye Linux permission-number hai)</div>
+    <pre>os.WriteFile("results.txt", []byte("Target vulnerable\n"), 0644)</pre>
+    <div class="row"><b>Kab use hoga:</b> Exploit-tool ke scan-results ek file mein save karna</div>
+  </div>
+
+  <div class="fn">
+    <span class="fname">os.Open(path)</span>
+    <div class="row"><b>Kya karta hai:</b> File ko "read-mode" mein khol deta hai — ReadFile se alag, ye poora file ek-saath memory mein nahi daalta, line-by-line padhne ke liye prepare karta hai (bufio ke saath combine hota hai).</div>
+    <pre>f, err := os.Open("wordlist.txt")
+if err != nil {
+    fmt.Println("Kholne mein fail")
+}
+defer f.Close()   // function khatam hote hi file band ho jaye, isiliye "defer"</pre>
+    <div class="row"><b>Kab use hoga:</b> Badi files (huge wordlists) line-by-line padhni ho, poora ek saath RAM mein nahi daalna</div>
+  </div>
+
+  <div class="fn">
+    <span class="fname">os.Getenv(key)</span>
+    <div class="row"><b>Kya karta hai:</b> System ke environment-variable ki value nikaalta hai.</div>
+    <pre>home := os.Getenv("HOME")
+apiKey := os.Getenv("API_KEY")</pre>
+    <div class="row"><b>Kab use hoga:</b> Sensitive data (API keys, tokens) ko code mein hardcode karne ke bajaye environment-variable se lena — security-best-practice hai</div>
+  </div>
+
+  <div class="fn">
+    <span class="fname">os.Exit(code)</span>
+    <div class="row"><b>Kya karta hai:</b> Program ko TURANT band kar deta hai, koi aur line execute nahi hoti.</div>
+    <div class="row"><b>Parameters:</b> <code>code</code> — 0 matlab "sab sahi gaya", koi aur number matlab "kisi error ki wajah se band hua" (convention hai, scripts isse detect karti hain)</div>
+    <pre>if target == "" {
+    fmt.Println("Target do bhai!")
+    os.Exit(1)
+}</pre>
+  </div>
+</div>
+
+<div class="level" id="p3b">
+  <h2>3b <span class="badge purple">io + bufio</span> Streams aur line-by-line padhna</h2>
+  <span class="pkgname">import "io"</span>
+
+  <div class="fn">
+    <span class="fname">io.ReadAll(reader)</span>
+    <div class="row"><b>Kya karta hai:</b> Kisi bhi "stream" (HTTP response-body, file, socket) ka poora content ek saath padh leta hai.</div>
+    <div class="row"><b>Kab use hoga:</b> HTTP response padhna — <code>resp.Body</code> khud ek stream hai, usse poora text nikaalne ke liye yahi use hota hai, har exploit-script mein milega</div>
+    <pre>resp, _ := http.Get(url)
+defer resp.Body.Close()
+body, _ := io.ReadAll(resp.Body)
+fmt.Println(string(body))</pre>
+  </div>
+
+  <span class="pkgname">import "bufio"</span>
+
+  <div class="fn">
+    <span class="fname">bufio.NewScanner(source) + Scan() + Text()</span>
+    <div class="row"><b>Kya karta hai:</b> Teen cheezein saath kaam karti hain — <code>NewScanner</code> ek "line-reader" banata hai, <code>Scan()</code> "agla line hai kya?" check karta hai (loop-condition ki tarah), <code>Text()</code> current line ka content deta hai.</div>
+    <pre>f, _ := os.Open("wordlist.txt")
+defer f.Close()
+
+scanner := bufio.NewScanner(f)
+for scanner.Scan() {              // jab tak lines hain, chalte raho
+    word := scanner.Text()         // current line nikaalo
+    fmt.Println("Trying:", word)
+}</pre>
+    <div class="row"><b>Kab use hoga:</b> Wordlist-based attacks (directory brute-force, password list) — har line ek payload/word hota hai jise ek-ek karke try karna hai</div>
+  </div>
+</div>
+
+<div class="level" id="p4">
+  <h2>4 <span class="badge warn">net/http</span> Web-requests bhejna aur server banana</h2>
+  <span class="pkgname">import "net/http"</span>
+
+  <div class="fn">
+    <span class="fname">http.Get(url)</span>
+    <div class="row"><b>Kya karta hai:</b> Diye gaye URL pe ek simple GET-request bhejta hai (jaise browser mein link khola jata hai).</div>
+    <div class="row"><b>Return:</b> <code>*http.Response</code> (response-object) aur <code>error</code></div>
+    <pre>resp, err := http.Get("http://target.com")
+if err != nil {
+    fmt.Println("Request fail:", err)
+    return
+}
+defer resp.Body.Close()
+fmt.Println("Status:", resp.StatusCode)</pre>
+    <div class="row"><b>Kab use hoga:</b> Simple recon — "ye target reachable hai kya", "status code kya hai"</div>
+  </div>
+
+  <div class="fn">
+    <span class="fname">http.PostForm(url, values)</span>
+    <div class="row"><b>Kya karta hai:</b> Form-data (jaisa HTML form submit karta hai) ke saath POST-request bhejta hai.</div>
+    <div class="row"><b>Parameters:</b> <code>values</code> type <code>url.Values</code> hota hai — ek map jaisa structure jisme form-field-naam aur unki values hoti hain</div>
+    <pre>data := url.Values{}
+data.Set("username", "admin")
+data.Set("password", "' OR 1=1--")
+
+resp, err := http.PostForm("http://target.com/login", data)</pre>
+    <div class="row"><b>Kab use hoga:</b> Login-form, search-box, koi bhi POST-based form test karna (SQLi, command-injection payload bhejna)</div>
+  </div>
+
+  <div class="fn">
+    <span class="fname">http.NewRequest(method, url, body)</span>
+    <div class="row"><b>Kya karta hai:</b> Ek request-object manually banata hai — bhejta nahi khud, bas "taiyar" karta hai, taaki bhejne se pehle usme custom headers add kar sako.</div>
+    <div class="row"><b>Parameters:</b> <code>method</code> = "GET"/"POST"/etc., <code>url</code> = target address, <code>body</code> = request-body (na chahiye ho to <code>nil</code>)</div>
+    <pre>req, err := http.NewRequest("POST", "http://target.com/upload", nil)
+req.Header.Set("Content-Type", "malicious-payload-here")</pre>
+    <div class="row"><b>Kab use hoga:</b> Jab tumhe header-level control chahiye ho — CVE-2017-5638 wale exploit mein yahi use hua tha kyunki payload Content-Type header mein jana tha, jo <code>http.Get</code>/<code>PostForm</code> se possible nahi</div>
+  </div>
+
+  <div class="fn">
+    <span class="fname">client.Do(req)</span>
+    <div class="row"><b>Kya karta hai:</b> <code>http.NewRequest</code> se banaya manual request ko ACTUALLY bhejta hai.</div>
+    <pre>client := &http.Client{}
+resp, err := client.Do(req)</pre>
+    <div class="row"><b>Kab use hoga:</b> Hamesha <code>NewRequest</code> ke saath jodi mein use hota hai — pehle request "banao", phir <code>Do()</code> se "bhejo"</div>
+  </div>
+
+  <div class="fn">
+    <span class="fname">http.ListenAndServe(address, handler)</span>
+    <div class="row"><b>Kya karta hai:</b> Khud ek web-server chalu kar deta hai jo diye gaye address (jaise <code>:8080</code>) pe requests sunta hai.</div>
+    <pre>http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+    fmt.Fprintln(w, "Hello from Go server")
+})
+http.ListenAndServe(":8080", nil)</pre>
+    <div class="row"><b>Kab use hoga:</b> Testing ke liye apna fake-server banana (jaise GoPhish jaisa landing-page server khud likhna), ya kisi callback/OOB-confirmation ke liye apna listener banana</div>
+  </div>
+</div>
+
+<div class="level" id="p4b">
+  <h2>4b <span class="badge warn">net</span> Low-level networking (raw sockets)</h2>
+  <span class="pkgname">import "net"</span>
+
+  <div class="fn">
+    <span class="fname">net.Dial(network, address)</span>
+    <div class="row"><b>Kya karta hai:</b> Ek raw TCP (ya UDP) connection banata hai — HTTP jaisa koi "protocol-structure" nahi hota, seedha bytes bhej/receive kar sakte ho.</div>
+    <pre>conn, err := net.Dial("tcp", "192.168.1.5:4444")
+conn.Write([]byte("hello\n"))</pre>
+    <div class="row"><b>Kab use hoga:</b> Non-HTTP services se baat karna (raw socket services), ya khud ek reverse-shell-connector likhna</div>
+  </div>
+
+  <div class="fn">
+    <span class="fname">net.Listen(network, address)</span>
+    <div class="row"><b>Kya karta hai:</b> Khud ek port pe "sunna" shuru karta hai — incoming connections accept karne ke liye.</div>
+    <pre>listener, _ := net.Listen("tcp", ":4444")
+conn, _ := listener.Accept()   // jab koi connect kare, usse "pakad" leta hai</pre>
+    <div class="row"><b>Kab use hoga:</b> Apna khud ka netcat-jaisa reverse-shell-listener Go mein likhna</div>
+  </div>
+</div>
+
+<div class="level" id="p5">
+  <h2>5 <span class="badge blue">time</span> Waqt, delay, aur timing</h2>
+  <span class="pkgname">import "time"</span>
+
+  <div class="fn">
+    <span class="fname">time.Sleep(duration)</span>
+    <div class="row"><b>Kya karta hai:</b> Program ko diye gaye time tak rok deta hai, kuch nahi karta usi dauraan.</div>
+    <div class="row"><b>Parameters:</b> <code>duration</code> — <code>time.Second</code>, <code>time.Minute</code> jaisi units ke saath likhte hain</div>
+    <pre>time.Sleep(5 * time.Second)   // 5 second rukega
+time.Sleep(500 * time.Millisecond)</pre>
+    <div class="row"><b>Kab use hoga:</b> Requests ke beech delay add karna (rate-limiting se bachna, ya detection-evasion)</div>
+  </div>
+
+  <div class="fn">
+    <span class="fname">time.Now()</span>
+    <div class="row"><b>Kya karta hai:</b> Current date-aur-time ka ek object deta hai.</div>
+    <pre>start := time.Now()</pre>
+  </div>
+
+  <div class="fn">
+    <span class="fname">time.Since(t)</span>
+    <div class="row"><b>Kya karta hai:</b> <code>t</code> (pehle record kiya waqt) se ab tak kitna time beet gaya, wo nikaalta hai.</div>
+    <pre>start := time.Now()
+resp, _ := http.PostForm(url, payloadWithSleep10)
+elapsed := time.Since(start)
+
+if elapsed.Seconds() > 9 {
+    fmt.Println("Blind command-injection CONFIRMED (response delayed)")
+}</pre>
+    <div class="row"><b>Kab use hoga:</b> Yahi exact tareeka hai time-based blind-injection confirm karne ka — jo pehle command-injection-mastery.html mein theory padhi thi, wahi code mein implement ho rahi hai</div>
+  </div>
+</div>
+
+<div class="level" id="p6">
+  <h2>6 <span class="badge purple">sync + context</span> Concurrency control</h2>
+  <span class="pkgname">import "sync"</span>
+
+  <div class="fn">
+    <span class="fname">sync.WaitGroup — Add() / Done() / Wait()</span>
+    <div class="row"><b>Kya karta hai:</b> Multiple goroutines ek saath chal rahi hon, to "sab khatam hui ya nahi" track karta hai.</div>
+    <div class="row"><b>Teeno method:</b> <code>Add(n)</code> = "n goroutines start kar raha hoon, inka hisaab rakho", <code>Done()</code> = "meri ek goroutine khatam hui" (har goroutine ke end mein call hota hai), <code>Wait()</code> = "jab tak sab Done() na ho jayein, yahin ruko"</div>
+    <pre>var wg sync.WaitGroup
+for _, target := range targets {
+    wg.Add(1)
+    go func(t string) {
+        defer wg.Done()
+        checkTarget(t)
+    }(target)
+}
+wg.Wait()
+fmt.Println("Sab targets check ho gaye")</pre>
+  </div>
+
+  <div class="fn">
+    <span class="fname">sync.Mutex — Lock() / Unlock()</span>
+    <div class="row"><b>Kya karta hai:</b> "Lock" lagata hai taaki ek time pe sirf EK goroutine shared-data ko touch kare — do goroutines ek saath same variable change karein to data corrupt ho sakta hai (race condition), Mutex isse rokta hai.</div>
+    <pre>var mu sync.Mutex
+var count int
+
+mu.Lock()
+count++         // safe hai, koi aur goroutine isi waqt change nahi kar sakti
+mu.Unlock()</pre>
+  </div>
+
+  <span class="pkgname">import "context"</span>
+
+  <div class="fn">
+    <span class="fname">context.WithTimeout(parentCtx, duration)</span>
+    <div class="row"><b>Kya karta hai:</b> Ek "time-limit" wala context banata hai — jo bhi operation (jaise HTTP request) ispe depend karta hai, wo diye gaye time ke baad automatically cancel ho jata hai, chahe response aaya ho ya nahi.</div>
+    <pre>ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
+defer cancel()
+
+req, _ := http.NewRequestWithContext(ctx, "GET", url, nil)</pre>
+    <div class="row"><b>Kab use hoga:</b> Jab 100 targets scan kar rahe ho aur koi ek target slow/dead hai — bina timeout ke wo poore program ko hamesha ke liye atka sakta hai</div>
+  </div>
+</div>
+
+<div class="level" id="p7">
+  <h2>7 <span class="badge warn">encoding/json + encoding/base64</span> Data-format conversion</h2>
+  <span class="pkgname">import "encoding/json"</span>
+
+  <div class="fn">
+    <span class="fname">json.Marshal(data)</span>
+    <div class="row"><b>Kya karta hai:</b> Go ki koi bhi value (struct, map) ko JSON-text (bytes) mein convert karta hai.</div>
+    <pre>type Target struct {
+    URL  string
+    Port int
+}
+t := Target{URL: "site.com", Port: 80}
+jsonData, _ := json.Marshal(t)
+fmt.Println(string(jsonData))
+// Output: {"URL":"site.com","Port":80}</pre>
+    <div class="row"><b>Kab use hoga:</b> Kisi API ko JSON-format mein data bhejna ho</div>
+  </div>
+
+  <div class="fn">
+    <span class="fname">json.Unmarshal(jsonBytes, &target)</span>
+    <div class="row"><b>Kya karta hai:</b> Marshal ka ULTA — JSON-text ko wapas Go struct/map mein convert karta hai.</div>
+    <pre>var t Target
+json.Unmarshal(jsonData, &t)
+fmt.Println(t.URL)   // "site.com"</pre>
+    <div class="row"><b>Kab use hoga:</b> API ka response (jo aksar JSON hota hai) padh ke usse specific fields nikaalna</div>
+  </div>
+
+  <span class="pkgname">import "encoding/base64"</span>
+
+  <div class="fn">
+    <span class="fname">base64.StdEncoding.EncodeToString(bytes)</span>
+    <div class="row"><b>Kya karta hai:</b> Raw data ko base64-text mein encode karta hai (readable-safe format banata hai).</div>
+    <pre>encoded := base64.StdEncoding.EncodeToString([]byte("whoami"))
+// encoded = "d2hvYW1p"</pre>
+    <div class="row"><b>Kab use hoga:</b> Command-injection filter-bypass — payload ko base64 mein encode karke bhejna, target pe <code>base64 -d | bash</code> se decode+run karwana</div>
+  </div>
+
+  <div class="fn">
+    <span class="fname">base64.StdEncoding.DecodeString(s)</span>
+    <div class="row"><b>Kya karta hai:</b> Base64 ko wapas original data mein decode karta hai.</div>
+    <pre>decoded, _ := base64.StdEncoding.DecodeString("d2hvYW1p")
+fmt.Println(string(decoded))  // "whoami"</pre>
+  </div>
+</div>
+
+<div class="level" id="p8">
+  <h2>8 <span class="badge danger">crypto/md5, crypto/sha256, crypto/tls</span> Hashing aur encryption</h2>
+  <span class="pkgname">import "crypto/md5"</span>
+
+  <div class="fn">
+    <span class="fname">md5.Sum(data)</span>
+    <div class="row"><b>Kya karta hai:</b> Diye gaye data ka MD5-hash nikaalta hai.</div>
+    <div class="row"><b>Return:</b> ek fixed-size byte-array (raw hash) — usually hex-format mein print karte hain</div>
+    <pre>hash := md5.Sum([]byte("password123"))
+fmt.Printf("%x\n", hash)
+// %x format-specifier bytes ko hex-string mein print karta hai</pre>
+    <div class="row"><b>Kab use hoga:</b> Khud ka hash-cracker banana — wordlist ke har password ko hash karo, target ke stored-hash se compare karo</div>
+  </div>
+
+  <span class="pkgname">import "crypto/sha256"</span>
+  <div class="fn">
+    <span class="fname">sha256.Sum256(data)</span>
+    <div class="row"><b>Kya karta hai:</b> MD5 jaisa hi, bas stronger/modern hashing algorithm (SHA-256) use karta hai.</div>
+    <pre>hash := sha256.Sum256([]byte("password123"))
+fmt.Printf("%x\n", hash)</pre>
+  </div>
+
+  <span class="pkgname">import "crypto/tls"</span>
+  <div class="fn">
+    <span class="fname">tls.Config{InsecureSkipVerify: true}</span>
+    <div class="row"><b>Kya karta hai:</b> HTTPS-client ko batata hai "certificate ki validity check mat karo" — self-signed certificates wale lab/test-targets (jaise tumhari KaranCorp lab) pe request bhejte waqt zaroori hota hai, warna Go request reject kar dega.</div>
+    <pre>tr := &http.Transport{
+    TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+}
+client := &http.Client{Transport: tr}
+resp, _ := client.Get("https://karancorp.local")</pre>
+  </div>
+</div>
+
+<div class="level" id="p9">
+  <h2>9 <span class="badge">errors</span> Custom error handling</h2>
+  <span class="pkgname">import "errors"</span>
+
+  <div class="fn">
+    <span class="fname">errors.New(message)</span>
+    <div class="row"><b>Kya karta hai:</b> Ek simple error-value banata hai, diye gaye message ke saath.</div>
+    <pre>func connect(target string) error {
+    if target == "" {
+        return errors.New("target empty hai")
+    }
+    return nil
+}</pre>
+    <div class="row"><b>Fmt.Errorf se farak:</b> <code>errors.New</code> sirf plain-message leta hai, <code>fmt.Errorf</code> mein formatting (<code>%s</code>, <code>%d</code>) bhi use kar sakte ho — dynamic error-message chahiye ho to Errorf behtar hai</div>
+  </div>
+
+  <div class="fn">
+    <span class="fname">errors.Is(err, targetErr)</span>
+    <div class="row"><b>Kya karta hai:</b> Check karta hai ki ye error WAHI specific error hai jo tum dhoondh rahe ho (generic "koi bhi error" vs "specific wala error" differentiate karna).</div>
+    <pre>if errors.Is(err, context.DeadlineExceeded) {
+    fmt.Println("Timeout ki wajah se fail hua, normal error nahi")
+}</pre>
+  </div>
+</div>
+
+<div class="level" id="p10">
+  <h2>10 <span class="badge blue">flag</span> Professional CLI-tool banana</h2>
+  <span class="pkgname">import "flag"</span>
+
+  <div class="fn">
+    <span class="fname">flag.String(name, defaultValue, helpText)</span>
+    <div class="row"><b>Kya karta hai:</b> Ek text-type command-line flag define karta hai.</div>
+    <div class="row"><b>Return:</b> ek <code>*string</code> (pointer) — isliye use karte waqt <code>*</code> lagana padega</div>
+    <pre>target := flag.String("target", "", "target URL")
+// default value "" hai agar user kuch na de</pre>
+  </div>
+
+  <div class="fn">
+    <span class="fname">flag.Int(name, defaultValue, helpText) / flag.Bool(...)</span>
+    <div class="row"><b>Kya karta hai:</b> Same jaisa String, bas number ya true/false wale flags ke liye.</div>
+    <pre>port := flag.Int("port", 80, "target port")
+verbose := flag.Bool("v", false, "verbose output")</pre>
+  </div>
+
+  <div class="fn">
+    <span class="fname">flag.Parse()</span>
+    <div class="row"><b>Kya karta hai:</b> Saare upar-define-kiye flags ko ACTUALLY terminal se padhta hai aur unme values bharta hai — iske bina upar wale sab flags apni default-value pe hi rahenge.</div>
+    <pre>func main() {
+    target := flag.String("target", "", "target URL")
+    port := flag.Int("port", 80, "port")
+    flag.Parse()   // ZAROORI — iske bina kuch kaam nahi karega
+
+    fmt.Println(*target, *port)   // * se dereference karna padega (pointer hai)
+}
+// Chalane ka tareeka: go run tool.go -target site.com -port 8080</pre>
+    <div class="row"><b>Kab use hoga:</b> Har serious CLI exploit-tool mein — isi se CVE-2017-5638 wale Go-exploit mein <code>-cmd</code> flag banaya tha</div>
+  </div>
+</div>
+
+<div class="level" id="p11">
+  <h2>11 <span class="badge purple">regexp</span> Pattern-matching (text ke andar structure dhoondna)</h2>
+  <span class="pkgname">import "regexp"</span>
+
+  <div class="fn">
+    <span class="fname">regexp.MustCompile(pattern)</span>
+    <div class="row"><b>Kya karta hai:</b> Ek regex-pattern ko "compile" (taiyar) karta hai, reuse karne ke liye ek variable mein store hota hai.</div>
+    <pre>re := regexp.MustCompile(`\d+`)   // \d+ matlab "ek ya zyada digits"</pre>
+  </div>
+
+  <div class="fn">
+    <span class="fname">re.MatchString(s)</span>
+    <div class="row"><b>Kya karta hai:</b> Check karta hai string pattern se match karta hai ya nahi.</div>
+    <pre>re := regexp.MustCompile(`^[0-9]+$`)   // sirf digits
+if re.MatchString("8080") {
+    fmt.Println("Valid port-format hai")
+}</pre>
+  </div>
+
+  <div class="fn">
+    <span class="fname">re.FindString(s) / re.FindAllString(s, n)</span>
+    <div class="row"><b>Kya karta hai:</b> Pattern se match hone wala actual text nikaalta hai — <code>FindString</code> sirf pehla match, <code>FindAllString</code> SAARE matches (n = kitne chahiye, -1 = sab).</div>
+    <pre>re := regexp.MustCompile(`version\s+[\d.]+`)
+match := re.FindString(response)   // "version 2.4.1" jaisa kuch nikaal lega</pre>
+    <div class="row"><b>Kab use hoga:</b> Response ke andar se version-number, emails, ya koi specific pattern extract karna (recon automation)</div>
+  </div>
+</div>
+
+<div class="level" id="p12">
+  <h2>12 <span class="badge warn">sort + math/rand</span> Sorting aur randomness</h2>
+  <span class="pkgname">import "sort"</span>
+
+  <div class="fn">
+    <span class="fname">sort.Strings(slice) / sort.Ints(slice)</span>
+    <div class="row"><b>Kya karta hai:</b> Diye gaye slice ko IN-PLACE sort karta hai (original slice hi badal jati hai, naya nahi banta).</div>
+    <pre>ports := []int{445, 21, 80, 22}
+sort.Ints(ports)
+// ports ab [21, 22, 80, 445] ban gaya</pre>
+  </div>
+
+  <span class="pkgname">import "math/rand"</span>
+  <div class="fn">
+    <span class="fname">rand.Intn(n)</span>
+    <div class="row"><b>Kya karta hai:</b> 0 se (n-1) tak koi random number deta hai.</div>
+    <pre>delay := rand.Intn(5)   // 0,1,2,3 ya 4 mein se koi
+time.Sleep(time.Duration(delay) * time.Second)</pre>
+    <div class="row"><b>Kab use hoga:</b> Requests ke beech random delay — pattern-detection (WAF/IDS) se bachne ke liye, taaki requests "bot jaisi regular-interval" na lagein</div>
+  </div>
+</div>
+
+<div class="level" id="p13">
+  <h2>13 <span class="badge danger">bytes</span> Raw byte-data handle karna</h2>
+  <span class="pkgname">import "bytes"</span>
+
+  <div class="fn">
+    <span class="fname">bytes.NewBufferString(s)</span>
+    <div class="row"><b>Kya karta hai:</b> Ek normal string lekar usse ek "Buffer" (HTTP request-body jaisi jagah use hone layak format) bana deta hai.</div>
+    <pre>body := bytes.NewBufferString(`{"cmd":"whoami"}`)
+req, _ := http.NewRequest("POST", url, body)</pre>
+    <div class="row"><b>Kab use hoga:</b> <code>http.NewRequest</code> ko body chahiye hoti hai "Reader" type ki, plain string nahi chalta — isiliye pehle Buffer banana padta hai</div>
+  </div>
+
+  <div class="fn">
+    <span class="fname">bytes.Contains(byteSlice, subByteSlice)</span>
+    <div class="row"><b>Kya karta hai:</b> <code>strings.Contains</code> jaisa hi, bas bytes pe kaam karta hai (string pe nahi) — jab data already <code>[]byte</code> format mein ho (file-content, raw response) to convert kiye bina seedha check kar sakte ho.</div>
+    <pre>if bytes.Contains(fileData, []byte("MZ")) {
+    fmt.Println("Ye ek Windows executable (.exe) file hai")  // MZ = EXE-file ka magic-byte signature
+}</pre>
+  </div>
+</div>
+
+<div class="level" id="quiz">
+  <h2>🧠 Mini self-check</h2>
+  <details>
+    <summary>Tumhe ek URL dynamically banana hai (IP aur port variables se), print nahi karna, bas store karna hai use mein. Kaunsa function?</summary>
+    <div class="qbody"><code>fmt.Sprintf()</code> — Printf jaisa format karta hai par print nahi karta, string RETURN karta hai jo variable mein store ho sakti hai.</div>
+  </details>
+  <details>
+    <summary>File se padhe gaye "8080" ko number ki tarah compare karna hai. Kya use hoga?</summary>
+    <div class="qbody"><code>strconv.Atoi("8080")</code> — text ko number mein convert karega, phir math/comparison kar sakte ho.</div>
+  </details>
+  <details>
+    <summary>Tumhe check karna hai ki response 10-second se zyada time le raha hai (blind-injection ke liye). Konse 2 functions chahiye?</summary>
+    <div class="qbody"><code>time.Now()</code> request se pehle, aur <code>time.Since(start)</code> request ke baad — dono <code>time</code> package se.</div>
+  </details>
+  <details>
+    <summary>Apna khud ka Content-Type header set karke POST request bhejna hai (CVE-2017-5638 jaisa). Konse 2 functions saath chalenge?</summary>
+    <div class="qbody"><code>http.NewRequest()</code> se manual request banao, <code>req.Header.Set()</code> se custom header lagao, phir <code>client.Do(req)</code> se bhejo.</div>
+  </details>
+</div>
+
+</main>
+<footer>The Network Phantom — Go Standard Library Complete Reference</footer>
+</body>
+</html>
