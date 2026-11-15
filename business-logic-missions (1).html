@@ -1,0 +1,2016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Business Logic Missions (100) — The Network Phantom</title>
+<style>
+  :root{
+    --bg:#0a0e14; --panel:#111722; --panel2:#161d2b; --line:#232d40;
+    --text:#d9e2f1; --muted:#8a97b0; --neon:#00e5a0; --neon2:#ff6b35;
+    --warn:#ffb300; --danger:#ff4d5e; --blue:#4fb3ff; --purple:#b084ff;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:'Segoe UI',Roboto,Arial,sans-serif;line-height:1.65;}
+  header{background:radial-gradient(circle at 30% 20%,#132235,#0a0e14 70%);border-bottom:2px solid var(--neon);
+         padding:36px 24px;text-align:center;}
+  header h1{margin:0 0 8px;font-size:2em;color:var(--neon);letter-spacing:.5px;}
+  header p{margin:0;color:var(--muted);font-size:.95em;}
+  main{max-width:1000px;margin:0 auto;padding:30px 20px 90px;}
+  .toc{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 22px;margin-bottom:34px;
+       display:grid;grid-template-columns:1fr 1fr;gap:2px 20px;}
+  .toc h3{grid-column:1/-1;margin-top:0;color:var(--neon);}
+  .toc a{color:var(--blue);text-decoration:none;padding:4px 0;font-size:.9em;}
+  .toc a:hover{color:var(--neon);}
+  .mission{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:0;margin-bottom:26px;overflow:hidden;}
+  .m-top{display:flex;justify-content:space-between;align-items:center;padding:14px 22px;background:#0d1420;border-bottom:1px solid var(--line);}
+  .badge{display:inline-block;font-weight:700;font-size:.72em;letter-spacing:.5px;padding:4px 12px;border-radius:20px;}
+  .badge.num{background:var(--danger);color:#1a0608;}
+  .badge.cat{background:var(--purple);color:#1a0d2e;}
+  .banner{padding:22px 26px 4px;}
+  .banner h2{margin:0;color:#fff;font-size:1.4em;}
+  .banner .tag{color:var(--neon);font-size:.82em;font-weight:600;letter-spacing:.3px;}
+  .body-pad{padding:4px 26px 22px;}
+  .sec{margin:14px 0;}
+  .label{display:block;font-weight:700;font-size:.92em;margin-bottom:5px;}
+  .label.obj{color:var(--blue);}
+  .label.mind{color:var(--purple);}
+  .label.recon{color:var(--warn);}
+  .sec p{margin:0;color:var(--text);font-size:.93em;}
+  .sec ul{margin:2px 0 0;padding-left:18px;color:var(--text);font-size:.93em;}
+  .sec ul li{margin-bottom:5px;}
+  .sec ul li::marker{color:var(--neon);}
+  .req-compare{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0;}
+  @media(max-width:680px){.req-compare{grid-template-columns:1fr;} .toc{grid-template-columns:1fr;}}
+  .req{border-radius:10px;padding:12px 14px;border:1px solid var(--line);}
+  .req.normal{background:#0d1a16;border-color:#1c4a3a;}
+  .req.exploit{background:#1a1016;border-color:#4a1c24;}
+  .req span{display:block;font-weight:700;font-size:.8em;margin-bottom:7px;}
+  .req.normal span{color:var(--neon);}
+  .req.exploit span{color:var(--danger);}
+  .farak{background:#0d1420;border-left:3px solid var(--neon2);padding:10px 14px;border-radius:6px;
+         font-size:.9em;margin:12px 0;color:var(--text);}
+  .farak b{color:var(--neon2);}
+  pre{background:#000;color:#9cffd0;padding:10px 12px;border-radius:6px;overflow-x:auto;font-size:.78em;margin:0;}
+  code{background:#000;color:#9cffd0;padding:2px 6px;border-radius:4px;font-size:.85em;}
+  details.challenge{background:#161208;border:1px solid #4a3a1c;border-radius:8px;padding:10px 16px;margin:14px 0;}
+  details.challenge summary{cursor:pointer;font-weight:700;color:var(--warn);font-size:.92em;}
+  details.challenge p{margin-top:8px;color:var(--text);font-size:.88em;}
+  .complete{background:#0d1420;border-top:1px solid var(--line);padding:12px 26px;font-size:.85em;color:var(--muted);}
+  .complete b{color:var(--neon);}
+  .where-pill{display:inline-block;background:#2a1e05;border:1px solid var(--warn);color:var(--warn);
+         font-size:.8em;padding:3px 10px;border-radius:20px;}
+  footer{text-align:center;color:var(--muted);padding:34px;font-size:.85em;}
+</style>
+</head>
+<body>
+<header>
+  <h1>🕵️ Business Logic Missions</h1>
+  <p>100 patterns — chhota, seedha, samajh-mein-aane-wala format</p>
+</header>
+<main>
+
+<div class="toc">
+  <h3>Mission List</h3>
+  <a href="#m1">001 — Discount/Coupon Stacking</a>
+  <a href="#m2">002 — Resume-from-Wrong-Step</a>
+  <a href="#m3">003 — Refund Quantity Overflow</a>
+  <a href="#m4">004 — Mass Assignment</a>
+  <a href="#m5">005 — Price-Quantity Decoupling</a>
+  <a href="#m6">006 — OTP/Token Cross-Purpose Reuse</a>
+  <a href="#m7">007 — Privilege Downgrade w/o Re-verify</a>
+  <a href="#m8">008 — Negative Balance / Wallet Underflow</a>
+  <a href="#m9">009 — Time-Zone Manipulation</a>
+  <a href="#m10">010 — Unit/Currency Confusion</a>
+  <a href="#m11">011 — Self-Approval Workflow</a>
+  <a href="#m12">012 — Bulk-Action Logic Gap</a>
+  <a href="#m13">013 — Default Value Abuse</a>
+  <a href="#m14">014 — Multi-Tenant Boundary Leak</a>
+  <a href="#m15">015 — Sequential Token Guessing</a>
+  <a href="#m16">016 — Double-Submit Different Channels</a>
+  <a href="#m17">017 — Upgrade-then-Downgrade Abuse</a>
+  <a href="#m18">018 — Account Delete-Recreate Loop</a>
+  <a href="#m19">019 — Overselling / Quantity-Reservation</a>
+  <a href="#m20">020 — Coupon Brute-Force (Day 2)</a>
+  <a href="#m21">021 — Workflow Step-Skipping (Day 2)</a>
+  <a href="#m22">022 — Unpublished Resource via ID Enum (Day 2)</a>
+  <a href="#m23">023 — Self-Referral Reward Abuse (Day 2)</a>
+  <a href="#m24">024 — Fake Review via Unverified-Purchase (Day 2)</a>
+  <a href="#m25">025 — Fractional Price Rounding Exploit</a>
+  <a href="#m26">026 — Gift Card Balance Reload Loop</a>
+  <a href="#m27">027 — Abandoned Cart Recovery Link Reuse</a>
+  <a href="#m28">028 — Pre-Order Checkout Without Payment Capture</a>
+  <a href="#m29">029 — Shipping Address Change Post Fraud-Check</a>
+  <a href="#m30">030 — Loyalty Points Redemption Race Condition</a>
+  <a href="#m31">031 — Bundle Pricing Decoupling</a>
+  <a href="#m32">032 — Buy-X-Get-Y-Free Partial Return Abuse</a>
+  <a href="#m33">033 — Fake Competitor Price-Match Claim</a>
+  <a href="#m34">034 — Duplicate Refund — Store Credit + Original Method</a>
+  <a href="#m35">035 — Flash Sale URL Pre-Access</a>
+  <a href="#m36">036 — Payment Webhook Replay Attack</a>
+  <a href="#m37">037 — Currency Conversion Rounding Arbitrage</a>
+  <a href="#m38">038 — Loan Eligibility Re-Verification Gap</a>
+  <a href="#m39">039 — Chargeback-then-Continue-Access Abuse</a>
+  <a href="#m40">040 — Daily Withdrawal Limit Race Bypass</a>
+  <a href="#m41">041 — Password Reset Doesn't Kill Old Sessions</a>
+  <a href="#m42">042 — Email Change Without New-Email Verification</a>
+  <a href="#m43">043 — Security Question Answerable from Public Data</a>
+  <a href="#m44">044 — MFA Downgrade via Direct API</a>
+  <a href="#m45">045 — Unverified-Email OAuth Account Takeover</a>
+  <a href="#m46">046 — Trial Reset via Plan-Type Switch</a>
+  <a href="#m47">047 — Seat-Based Billing Session Sharing</a>
+  <a href="#m48">048 — Revoked API Key Still Works (Cache Lag)</a>
+  <a href="#m49">049 — Invite-Only Beta Link Reused Unlimited</a>
+  <a href="#m50">050 — Bulk Data Export Rate-Limit Bypass via Pagination</a>
+  <a href="#m51">051 — Seller Listing Price Edit During Active-Order</a>
+  <a href="#m52">052 — Review Edit After Seller Response (Timing Abuse)</a>
+  <a href="#m53">053 — Escrow Release Without Delivery Confirmation</a>
+  <a href="#m54">054 — Private Profile Data via Alternate Endpoint</a>
+  <a href="#m55">055 — Blocked User Can Still Interact via Group/Shared-Context</a>
+  <a href="#m56">056 — In-Game Currency Duplication via Trade-Cancel Race</a>
+  <a href="#m57">057 — Leaderboard Score Submission Without Server Validation</a>
+  <a href="#m58">058 — Loot-Box Odds Manipulation via Client-Seed</a>
+  <a href="#m59">059 — Payroll Approval Chain Skip via Direct Status-Update</a>
+  <a href="#m60">060 — Terminated Employee Access Not Revoked Immediately</a>
+  <a href="#m61">061 — Hold-Without-Payment Seat/Room Blocking</a>
+  <a href="#m62">062 — Cancellation Policy Bypass via Reschedule-Loop</a>
+  <a href="#m63">063 — Appointment Slot Double-Booking via Race</a>
+  <a href="#m64">064 — Exam Time-Extension via Client-Clock Manipulation</a>
+  <a href="#m65">065 — Rate-Limit Bypass via Header Manipulation</a>
+  <a href="#m66">066 — Missing Idempotency-Key Causes Duplicate Orders</a>
+  <a href="#m67">067 — Deprecated API Version Missing New Security-Checks</a>
+  <a href="#m68">068 — GraphQL Field-Level Authorization Gap</a>
+  <a href="#m69">069 — Audit-Log Bypass via Bulk/Alternate-Endpoint</a>
+  <a href="#m70">070 — Device-Pairing Token Never Expires</a>
+  <a href="#m71">071 — Wishlist-to-Cart Price Snapshot Bypass</a>
+  <a href="#m72">072 — Withdrawal Address Whitelist Bypass via API</a>
+  <a href="#m73">073 — Insurance Claim Submitted Before Policy-Start-Date</a>
+  <a href="#m74">074 — Shadow-Banned Content Still Reachable via Direct-Link</a>
+  <a href="#m75">075 — SAML Response Replay Across Different Service-Providers</a>
+  <a href="#m76">076 — Affiliate Commission Self-Referral via Cookie-Stuffing</a>
+  <a href="#m77">077 — Proration Calculation Exploited on Plan-Downgrade</a>
+  <a href="#m78">078 — Tournament Bracket Manipulation via Late Opponent-Swap</a>
+  <a href="#m79">079 — Prescription Refill Request Without Original-Validity-Check</a>
+  <a href="#m80">080 — Purchase-Order Approval-Threshold Splitting</a>
+  <a href="#m81">081 — Review-Bombing via Multiple-Unverified-Accounts</a>
+  <a href="#m82">082 — KYC Document Reuse Across Multiple-Accounts</a>
+  <a href="#m83">083 — Family-Plan Member-Limit Bypass via Rapid-Add-Remove</a>
+  <a href="#m84">084 — Dispute-Resolution Auto-Refund Before Evidence-Review</a>
+  <a href="#m85">085 — Upload Quota Bypass via Chunked-Upload-Manipulation</a>
+  <a href="#m86">086 — Subscription-Box Skip-Month Still-Charges-Fee</a>
+  <a href="#m87">087 — Peer-to-Peer Transfer to Non-Existent-User Silently-Succeeds</a>
+  <a href="#m88">088 — Private-Event Guest-List Leaked via Calendar-Invite-Forward</a>
+  <a href="#m89">089 — Digital-Signature Workflow Order-Bypass</a>
+  <a href="#m90">090 — Replay/Spectator Data Reveals Hidden-Information</a>
+  <a href="#m91">091 — Gift-Order Recipient-Address-Change by Sender Post-Delivery-Schedule</a>
+  <a href="#m92">092 — Credit-Score Recalculation Lag Exploited for Loan-Approval</a>
+  <a href="#m93">093 — Auction Last-Second Bid-Retraction Exploit</a>
+  <a href="#m94">094 — Expense-Report Currency-Mismatch Reimbursement-Inflation</a>
+  <a href="#m95">095 — Webhook-Secret Not Verified on Incoming Third-Party-Calls</a>
+  <a href="#m96">096 — 'Delete My Account' Doesn't Delete Derived/Aggregated-Data</a>
+  <a href="#m97">097 — Security-Deposit Refund Triggered Without Return-Condition-Check</a>
+  <a href="#m98">098 — Just-In-Time SSO Provisioning Grants Stale-Role</a>
+  <a href="#m99">099 — Deep-Link Action Executed Without In-App Auth-Context Check</a>
+  <a href="#m100">100 — Business-Logic Hunting — The Universal Checklist</a>
+</div>
+
+<div class="mission" id="m1">
+  <div class="m-top"><span class="badge num">MISSION 001</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">E-COMMERCE · CHECKOUT</div><h2>Discount/Coupon Stacking</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho multiple discounts (coupon + gift-card + points) ek saath ek order pe lag sakte hain kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Developer har discount ko <b>alag-alag</b> test karta hai — saath-mein-use hote dekhne ka socha hi nahi</li><li>Backend har apply-request ko independently process karta hai</li><li>Ek shared total pe baar-baar minus karta jaata hai, isliye teeno ek saath chal jaate hain</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Checkout page jahan coupon + gift-card + points teeno box ek saath dikhein</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Coupon "WELCOME20" apply
+₹1000 → ₹800</pre></div>
+      <div class="req exploit"><span>⚠️ Stacked</span><pre>+ gift-card ₹200 → ₹600
++ 300 points → ₹500
+(sab ek saath)</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> teeno discount alag-alag test kiye to sahi the — par teeno ek saath bhar ke submit karne se total ₹500 reh gaya, jo akele-akele allowed tha wahi saath-mein-use galat ban gaya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>2 discount-mechanism dhoondo, dono ek saath apply karke final-total check karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab 2 discounts stack karke dikha sako.</div>
+</div>
+
+<div class="mission" id="m2">
+  <div class="m-top"><span class="badge num">MISSION 002</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">MULTI-STEP FLOWS</div><h2>Resume-from-Wrong-Step</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho payment ke baad browser-back se purana step edit karke confirm-tak pahunchna possible hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>App sochta hai flow hamesha seedha (Step1→2→3→4) chalega</li><li>Par "back" button hamesha available hai</li><li>Agar system sirf "order session mein hai" check karta hai (naya-total se match nahi), payment ke baad bhi cart edit-able reh jaata hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Multi-step checkout, loan/job-application forms, onboarding wizards</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Step1→2→3(pay ₹500)→4(confirm)</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Step3 pay ✓ → back to Step1
+→ add item ₹500 → Step4 direct
+→ ₹1000 worth for ₹500</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> Step3 pe payment ho chuka tha. Back jaake Step1 mein naya item add kiya, seedha Step4 pe confirm kar diya — naye item ka payment kabhi hua hi nahi.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Payment-step tak jao (test-mode), back jaake cart badlo, mismatch create hota hai dekho.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab ek "locked" state ko back-navigation se unlock kar sako.</div>
+</div>
+
+<div class="mission" id="m3">
+  <div class="m-top"><span class="badge num">MISSION 003</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">ORDER MANAGEMENT</div><h2>Refund/Return Quantity Overflow</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho refund-request mein quantity, khareedi-hui-quantity se zyada bheji ja sakti hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Refund-check sirf "order/item exist karta hai" dekhta hai</li><li>"Kitna khareeda tha usse zyada maang rahe ho kya" wala upper-limit check bhool jaata hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Refund/return APIs, warranty-claim forms</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>{"item":"watch","quantity":1}
+(1 hi khareeda tha)</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>{"item":"watch","quantity":5}
+→ 5 ka refund, 1 khareeda tha</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> khareedi thi 1 watch, refund maanga 5 ka — system ne bina check kiye 5 ka paisa wapas kar diya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>1 item khareedo, refund mein quantity 10 bhejo — system kya karta hai note karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab overflow confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m4">
+  <div class="m-top"><span class="badge num">MISSION 004</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">API · OVER-POSTING</div><h2>Mass Assignment</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho API extra, UI-mein-na-dikhne-wale fields (jaise role) accept karta hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>HTTP-request UI se bandhi nahi hoti — form sirf name/email dikhata hai</li><li>Agar backend pura JSON seedha database mein bind kar deta hai (allow-list ke bina)</li><li>Tum khud extra fields bhej sakte ho</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Profile-update, signup, koi bhi JSON PUT/PATCH request</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>{"name":"Karan","email":"k@t.com"}</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>{"name":"Karan","email":"k@t.com",
+ "role":"admin"}
+→ privilege escalated</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> form sirf name+email maangta hai, par request mein ek extra field <code>role:"admin"</code> jod diya — backend ne use bhi save kar liya, account admin ban gaya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Signup/profile-request capture karo, ek field add karo jo UI mein nahi dikhta — test karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab unauthorized-field inject karke result dekh chuke ho.</div>
+</div>
+
+<div class="mission" id="m5">
+  <div class="m-top"><span class="badge num">MISSION 005</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">E-COMMERCE · PRICING</div><h2>Price-Quantity Decoupling</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho quantity aur total independently manipulate ho sakte hain kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Jab total ek hidden-field ki tarah client se aata hai</li><li>Server khud recalculate nahi karta</li><li>Wo field sirf ek "suggestion" ban jaata hai jisse chhed-chhad ki ja sakti hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Cart/checkout jahan quantity editable ho</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>qty=1&price=89&total=89</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>qty=10&price=89&total=89
+→ 10 items ki keemat 1 jitni</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> quantity 10 kar di par total-field purana (1-item-ka) hi rehne diya — server ne total ko hi final maan liya, dobara calculate nahi kiya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Cart-request mein quantity 10 karo, total purana hi rakho, submit karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab mismatch ka proof mil jaye.</div>
+</div>
+
+<div class="mission" id="m6">
+  <div class="m-top"><span class="badge num">MISSION 006</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">AUTH · OTP</div><h2>OTP/Token Cross-Purpose Reuse</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho ek context (password-reset) ka OTP, dusre context (login-2FA) mein bhi chal jaata hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Code-reuse ke chakkar mein ek hi generic <code>verify_otp()</code> function sab jagah use hota hai</li><li>"Ye code KIS purpose ke liye tha" wala context-check chhoot jaata hai</li><li>Sirf "code match karta hai" dekha jaata hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Apps jisme multiple OTP-flows hain (login, reset, verify)</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Reset-OTP: 123456
+(sirf reset ke liye issue hua)</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Login-2FA screen pe 123456 try
+→ login bypassed</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> password-reset ke liye mila OTP, login-2FA screen pe try kiya — accept ho gaya, kyunki system sirf "code match hua kya" dekhta hai, "kis purpose ke liye tha" nahi.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>2 OTP-flows hain to ek se OTP lo, dusre flow mein try karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab cross-purpose reuse confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m7">
+  <div class="m-top"><span class="badge num">MISSION 007</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">PRIVILEGE ESCALATION</div><h2>Privilege Downgrade Without Re-verification</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho "login-as-user" feature re-authentication ke bina kisi bhi target pe chal jaati hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Support-feature jaldi mein banayi jaati hai</li><li>Sirf "session active + koi-bhi-admin-role" check hota hai</li><li>"Is SPECIFIC target ko impersonate karne ka authorized ho" wala check nahi hota</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Admin-panels, support-dashboards</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>{"user_id":55}
+(authorized low-level target)</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>{"user_id":1}  (real admin)
+→ no re-auth asked, impersonated</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> <code>user_id</code> field mein khud se ek real-admin ka id daal diya — system ne bina dobara-puche impersonation de diya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Impersonate-feature mein target-change pe re-auth maangti hai kya check karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab check-gap identify ho jaye.</div>
+</div>
+
+<div class="mission" id="m8">
+  <div class="m-top"><span class="badge num">MISSION 008</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">FINTECH · WALLET</div><h2>Negative Balance / Wallet Underflow</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho transfer-function negative amount accept karta hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Debit aur credit dono ko ek hi generic <code>transfer(amount)</code> function handle karta hai</li><li>Agar sign (+/-) check nahi hota</li><li>Negative-number se subtraction ulta hoke addition ban jaata hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Wallets, P2P-payments, in-app currency</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>{"amount":500}
+→ balance -= 500</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>{"amount":-500}
+→ balance -= (-500) = +500</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> amount negative (-500) bheja — subtraction ulta hoke addition ban gaya, balance ₹0 se ₹500 ho gaya bina kuch deposit kiye.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Wallet mein negative-amount transfer try karo, phir decimal (0.001) bhi.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab sign-manipulation confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m9">
+  <div class="m-top"><span class="badge num">MISSION 009</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">TIME-BASED LOGIC</div><h2>Time-Zone Manipulation</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho time-limited offer client-bheje-time pe depend karta hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Jab "abhi kaunsa time hai" client khud bata raha hota hai (apna local-date bhej ke)</li><li>Wo bilkul attacker-controlled input hai</li><li>Phone-date ya field edit karke time fake kiya ja sakta hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Date-limited sales, daily-bonus, access-windows</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>client_date:"2026-10-30"
+(sale ends today, valid)</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test (31 Oct)</span><pre>client_date:"2026-10-30" (faked)
+→ expired-coupon accepted</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> apna client-date wahi purani (sale-wale-din ki) bhej di, asal mein agla din tha — server ne client ki date trust kar li, expired-coupon chal gaya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Date-limited feature mile to device-clock/field badal ke test karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab client-vs-server time-trust ka answer mile.</div>
+</div>
+
+<div class="mission" id="m10">
+  <div class="m-top"><span class="badge num">MISSION 010</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">PAYMENTS · MULTI-CURRENCY</div><h2>Unit/Currency Confusion</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho raw-amount bina proper-conversion ke accept ho jaata hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Multi-currency conversion complex hoti hai</li><li>Agar number+currency-label dono client se accept ho jaate hain bina server dobara calculate kiye</li><li>Sirf label badalne se real-value drastically badal jaati hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">International SaaS/e-commerce checkout</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal (₹8000)</span><pre>{"amount":8000,"currency":"INR"}</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>{"amount":8000,"currency":"USD"}
+→ raw number passed as-is</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> amount wahi (8000) rakha, sirf currency-label INR se USD kar diya — system ne number ko dobara-convert nahi kiya, seedha process kar diya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Multi-currency checkout mein amount same rakh ke currency badal ke dekho.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab confusion ka result confirm ho jaye.</div>
+</div>
+
+<div class="mission" id="m11">
+  <div class="m-top"><span class="badge num">MISSION 011</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">WORKFLOW · APPROVALS</div><h2>Self-Approval in Approval Workflow</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho requester aur approver same insaan ban ke approval bypass ho sakta hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>System sirf "is id ke paas approver-role hai kya" check karta hai</li><li>"Ye request isi insaan ne khud submit ki thi kya" wala cross-check missing hota hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Expense-tools, leave-approval, content-publishing</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>{"expense_id":55,"approver_id":101}
+(actual manager)</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>{"expense_id":55,"approver_id":SELF}
+→ self-approved</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> <code>approver_id</code> mein khud ka id daal diya — system ne sirf "role hai kya" dekha, "khud ka request khud-approve kar raha hai kya" nahi dekha.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Approval-workflow mile to apna khud ka request khud-approve karne ki koshish karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab self-approval confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m12">
+  <div class="m-top"><span class="badge num">MISSION 012</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">BULK OPERATIONS</div><h2>Bulk-Action Logic Gap</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho single-item ka ownership-check, bulk-endpoint mein bhi hai ya missing.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Bulk-features baad mein add hoti hain, alag code-path ke saath</li><li>Purana single-item-wala security-check naye bulk-loop mein copy karna developer bhool jaata hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">"Select multiple + bulk-action" wali features</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Single (checked)</span><pre>DELETE /document/42
+→ 403 if not owner</pre></div>
+      <div class="req exploit"><span>⚠️ Bulk (lab)</span><pre>{"ids":[42,43,99,150]}
+→ 99,150 others' docs, deleted too</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> single-delete mein ownership-check tha, par bulk-delete mein wahi check missing tha — dusron ke IDs bhi list mein daal ke delete ho gaye.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Bulk-action feature mein ek aisi ID daalo jo tumhari nahi hai.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab bulk-vs-single gap confirm ho jaye.</div>
+</div>
+
+<div class="mission" id="m13">
+  <div class="m-top"><span class="badge num">MISSION 013</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">INPUT HANDLING</div><h2>Default Value / Missing Field Abuse</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho field hata dene par backend favorable-default assume kar leta hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Code mein <code>data.get(field, default)</code> jaisa pattern common hai</li><li>Developer sochta hai "field hamesha aayega hi"</li><li>Isliye default-value zyada soch ke safe nahi banayi jaati</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Koi bhi API jisme multiple optional-lagne-wale fields hon</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>{"code":"SAVE10",
+ "discount_type":"percentage"}</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>{"code":"SAVE10"}
+(field hata diya)
+→ unexpected larger discount</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> <code>discount_type</code> field poori tarah hata diya — backend ek default-value pe fallback hua jo zyada-favorable nikla.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Koi bhi POST-request lo, ek-ek field hata ke response compare karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab default-value-bug dhoond liya ho.</div>
+</div>
+
+<div class="mission" id="m14">
+  <div class="m-top"><span class="badge num">MISSION 014</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">SAAS · MULTI-TENANT</div><h2>Multi-Tenant Boundary Leak</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho ek company ke account se dusri company ka data access ho sakta hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Jab saari companies ka data ek hi shared-database mein hota hai</li><li>"Resource exist karta hai" check kaafi nahi hota</li><li>"Ye MERI company ki hai" wala check bhi zaroori hai, jo chhoot jaata hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">B2B SaaS — invoicing, HR-platforms, project-management</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>GET /invoice/770 (apni company)</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>GET /invoice/771 (dusri company)
+→ returned = isolation broken</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> apni company ka invoice-id dekha (770), paas wala number (771) try kiya — wo dusri company ka tha, phir bhi mil gaya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>2 test-accounts (alag "companies") banao, cross-access try karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab tenant-isolation-gap confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m15">
+  <div class="m-top"><span class="badge num">MISSION 015</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">TOKEN PREDICTABILITY</div><h2>Sequential Token Guessing</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho invite/reset-tokens predictable hain kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Developer ko lagta hai "6-digit number kaafi random hai"</li><li>Par agar underlying-generation auto-increment ya weak-random use karti hai</li><li>Token guess-karne-layak ban jaata hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Invite-links, password-reset, email-verify tokens</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>?token=1042 (apna invite)</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>?token=1041, 1043 ...
+→ others' unused invites mile</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> apna token note kiya (1042), ek upar-niche (1041/1043) try kiya — wo bhi valid nikle, kisi aur ka invite mil gaya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Apna token baar-baar generate karo, pattern note karo — sequential hai kya.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab predictability ka verdict mile.</div>
+</div>
+
+<div class="mission" id="m16">
+  <div class="m-top"><span class="badge num">MISSION 016</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">MULTI-CHANNEL APPS</div><h2>Double-Submit via Different Channels</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho same action 2 alag endpoints (web vs mobile) se possible hai, alag-validation ke saath.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Web aur mobile alag teams banate hain</li><li>Ya purana API-version "deprecated-but-active" chhod diya jaata hai</li><li>Rules dono jagah sync nahi rehte, attacker weaker-path se ghusta hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Web+mobile dono wali apps</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Web (strict)</span><pre>POST /web/checkout
+→ min-order ₹500 enforced</pre></div>
+      <div class="req exploit"><span>⚠️ Mobile-v1 (lab)</span><pre>POST /api/v1/order/create
+→ old endpoint, koi check nahi</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> website-wala endpoint minimum-order-check karta tha, purana mobile-API wala nahi — wahi se request bhej ke check bypass ho gaya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>App ka mobile+web dono version ho to endpoints compare karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab channel-inconsistency confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m17">
+  <div class="m-top"><span class="badge num">MISSION 017</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">SUBSCRIPTIONS</div><h2>Upgrade-then-Downgrade Timing Abuse</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho upgrade-use-downgrade cycle se kam-cost mein full-benefit milta hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Subscription-system sirf "abhi kis-tier-pe-ho" check karta hai</li><li>"Actual-kitna-diya" nahi check karta</li><li>Isliye turant upgrade-use-downgrade se full-benefit kam-cost mein mil jaata hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Subscription-based SaaS tools</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Free → Pay ₹999 → full-month use</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Pay ₹999 → 50 exports
+→ cancel in 5 min → near-zero cost</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> upgrade karke turant poora-use kar liya, phir turant cancel kar diya — system ne "kitna use kiya" ka hisaab nahi rakha, bas "abhi kis-tier-pe-ho" dekha.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Test-SaaS mile to upgrade-use-downgrade cycle try karo, refund-logic note karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab timing-abuse confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m18">
+  <div class="m-top"><span class="badge num">MISSION 018</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">ACCOUNT LIFECYCLE</div><h2>Account Delete-Recreate Loop Abuse</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho account delete+recreate se free-trial dubara mil jaata hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>"Trial-used" flag agar account-record se juda hai (email se nahi)</li><li>Delete+recreate se naya fresh-record ban jaata hai</li><li>Jiska flag bhi fresh hota hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Free-trial/promo-eligibility features</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Signup → trial_used=false
+Use trial → trial_used=true</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Delete account → Signup (same email)
+→ trial_used=false again</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> account delete karke wahi email se dobara signup kiya — naya record fresh tha, "trial already liya tha" wali memory chali gayi.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Trial lo, account-delete karo, dobara-signup karo — trial wapas milta hai kya.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab delete-recreate-loop confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m19">
+  <div class="m-top"><span class="badge num">MISSION 019</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">RACE CONDITION · INVENTORY</div><h2>Insufficient Quantity-Reservation</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho "last-1-item" pe parallel-checkouts se stock se zyada orders confirm ho sakte hain kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>"Stock dikhna" aur "stock reserve hona" alag cheezein hain</li><li>Agar decrement sirf final-payment pe hota hai</li><li>Parallel-requests ek hi unit ko "available" dekh lete hain saath mein</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Limited-stock items, flash-sales, ticket-booking</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal (1 tab)</span><pre>POST /confirm (stock:1)
+→ confirmed, stock → 0</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test (5 parallel)</span><pre>5× POST /confirm same time
+→ 5 orders for 1 unit</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> 5 alag tabs se ek hi time pe order confirm kiya — stock-check sirf payment ke waqt hota tha, ek saath sab ko "available" dikh gaya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Limited-stock-item pe 2-3 parallel requests ek saath bhejo, result note karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — Day 1 (19 patterns) complete.</div>
+</div>
+
+<div class="toc" style="margin-bottom:26px;"><h3 style="grid-column:1/-1;margin:0;">📅 Day 2 — 5 naye patterns</h3></div>
+
+<div class="mission" id="m20">
+  <div class="m-top"><span class="badge num">MISSION 020</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">E-COMMERCE · PROMO ABUSE</div><h2>Coupon Brute-Force (Enumeration)</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho apply-coupon endpoint pe rate-limit hai ya nahi — agar nahi, to valid-coupon-codes brute-force se guess ho sakte hain.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Coupon-codes aksar short aur human-readable banaye jaate hain (marketing ke liye)</li><li>Agar apply-endpoint per-attempt-limit nahi lagata</li><li>Burp Intruder se hazaaron codes second-ke-andar try ho sakte hain</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Checkout ka "apply coupon" field</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>POST /apply-coupon
+{"code":"SAVE10"}
+→ 1 try, 1 result</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Burp Intruder: 5000 guesses/min
+{"code":"XXXX10"} ... pattern-based
+→ valid unpublished codes mil jaate</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> ek-ek coupon manually try karne ki jagah Burp Intruder se hazaaron combinations automatically try kiye — koi lockout/rate-limit na hone se valid codes mil gaye jo kabhi publicly announce nahi hue the.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Apne lab-shop ke coupon-field pe 20-30 rapid-requests bhejo (Burp Repeater se manually ya Intruder se) — kahin block/captcha aata hai kya dekho.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab rate-limit present/absent confirm ho jaye.</div>
+</div>
+
+<div class="mission" id="m21">
+  <div class="m-top"><span class="badge num">MISSION 021</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">WORKFLOW · VERIFICATION</div><h2>Workflow Step-Skipping via Direct API Call</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho ek mandatory-step (jaise KYC/ID-verification) skip karke seedha next-step ka API call karne se flow aage badh jaata hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>UI hamesha steps ko sahi-order mein dikhata hai (Step1 complete na ho to button disable)</li><li>Par ye sirf FRONTEND restriction hai</li><li>Agar backend khud "pichla step complete hua tha kya" track nahi karta</li><li>Seedha agle-step ka API call URL/Burp se hit karke step skip ho jaata hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Onboarding, KYC-verification, loan-application multi-stage flows</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Step1(KYC-upload) → verified
+→ Step2(withdraw) unlocked by UI</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>POST /withdraw directly
+(KYC never submitted)
+→ if backend doesn't check
+  kyc_status: withdrawal succeeds</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> KYC-step ko kabhi complete nahi kiya, seedha "withdraw" wala API Burp se directly call kiya — UI ne button-disable kiya tha, par backend ne kabhi check hi nahi kiya ki KYC hua tha ya nahi.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Multi-step flow mein, Step1 skip karke Step2/3 ka direct-API-call Burp se try karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab step-skip confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m22">
+  <div class="m-top"><span class="badge num">MISSION 022</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">IDOR · CATALOG</div><h2>Unpublished Resource via ID Enumeration</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho draft/unpublished/hidden product-IDs ko seedha guess karke access kiya ja sakta hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>"Hidden from listing" aur "access-protected" alag cheezein hain</li><li>Agar product sirf homepage/search-se hata diya gaya hai (par uska direct-URL/API endpoint same hai)</li><li>ID guess karke seedha wahan pahuncha ja sakta hai, chahe wo abhi draft-price-mein ho ya test-product ho</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Product-detail APIs, numeric/sequential product-IDs</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>GET /product/5001
+(published product)</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>GET /product/5002
+(unpublished/draft, test-price ₹1)
+→ if accessible: order placeable</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> published product ka ID dekh ke uske aas-paas ka number try kiya — wo ek unpublished/draft-product nikla jiski price abhi finalize nahi hui thi (test-value ₹1), phir bhi order-placeable tha.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Ek published-product ka ID note karo, uske ±1/±5 numbers try karo — koi unpublished-item milta hai kya.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab unpublished-access confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m23">
+  <div class="m-top"><span class="badge num">MISSION 023</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">GROWTH · REFERRAL</div><h2>Self-Referral Reward Abuse</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho apna hi dusra-account refer karke dono-taraf ka referral-bonus le sakte ho kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Referral-system "do alag-alag accounts hain" check karta hai (alag email/phone)</li><li>Par "ye dono accounts ek hi insaan ke hain kya" (same device, same payment-method, same IP) check nahi karta</li><li>Jo real-world mein aasani se bypass-able hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Referral-program wali apps (fintech, food-delivery, ride-hailing)</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Refer a friend → friend signs up
+→ both get ₹100</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Account-A refers Account-B
+(both = same person, 2nd email)
+→ ₹100 + ₹100 = ₹200 to self</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> ek naya email se second-account banaya (khud ka hi), pehle-account se refer kiya — system ne "same insaan hai kya" check nahi kiya, dono taraf ka bonus mil gaya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Agar lab mein referral-feature ho, 2nd test-account bana ke self-refer try karo — device/payment-check hota hai kya note karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab self-referral confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m24">
+  <div class="m-top"><span class="badge num">MISSION 024</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">TRUST & SAFETY</div><h2>Fake Review via Unverified-Purchase Bypass</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho "verified purchase" wala review-badge pana, bina actually khareede, possible hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Review-API "user logged-in hai + product-id valid hai" check karta hai</li><li>"Is user ne ye product WAKAI khareeda hai" wala order-history-cross-check alag, zyada-expensive query hai</li><li>Jo kabhi optimize-karne-ke-chakkar-mein skip kar diya jaata hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">E-commerce review/rating submission APIs</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>POST /review
+{"product_id":5001,"rating":5}
+(user ne khareeda tha)</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>POST /review
+{"product_id":5001,"rating":5}
+(kabhi khareeda nahi)
+→ "Verified Purchase" badge phir bhi</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> bina product khareede seedha review-API ko call kiya — system ne order-history se match nahi kiya, "Verified Purchase" ka fake-trust-signal mil gaya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Lab-shop mein bina kharide hue kisi product pe review-submit try karo, "verified" badge milta hai kya dekho.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — Day 2 (5 patterns) complete — total 24/100. Ab aage Day 3 onwards — 76 naye patterns.</div>
+</div>
+
+<div class="toc" style="margin-bottom:26px;"><h3 style="grid-column:1/-1;margin:0;">📅 Day 3 — E-commerce & Fraud Patterns (15)</h3></div>
+<div class="mission" id="m25">
+  <div class="m-top"><span class="badge num">MISSION 025</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">E-COMMERCE · PRICING</div><h2>Fractional Price Rounding Exploit</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho quantity-multiply hote waqt rounding/truncation exploit karke paisa bachaya ja sakta hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Price ₹0.005 jaisa fraction ho to backend usko round kar deta hai per-unit, total pe nahi</li><li>Bulk-quantity order karne pe ye rounding-error multiply hoke accumulate ho jaati hai</li><li>Developer ne per-item round kiya, total-pe-dobara-calculate nahi kiya</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Bulk-order wali APIs, per-unit pricing wale B2B stores</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>qty=1, price=₹10.005 → ₹10.01</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>qty=10000 → rounded-per-unit×10000
+→ few rupees saved per order, scaled = loss</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> per-unit price round hoke ₹10.01 ban gaya, but agar backend total ko dobara calculate kare (10000×10.005) to real total alag aata hai — attacker bulk-order karke ye farak cash karta hai.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Koi bulk-order API mile to quantity 1 aur 10000 dono pe per-unit-effective-price nikaal ke compare karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab rounding-exploit ka numeric-proof mil jaye.</div>
+</div>
+
+<div class="mission" id="m26">
+  <div class="m-top"><span class="badge num">MISSION 026</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">FINTECH · GIFT CARDS</div><h2>Gift Card Balance Reload Loop</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho partially-used gift-card ko dobara-activate/reload karne se purana balance bhi wapas aa jaata hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Gift-card system 'active/inactive' status aur 'balance' ko alag-alag track karta hai</li><li>Reactivation-flow sirf status badalta hai, balance ko zero se dobara calculate nahi karta</li><li>Isse purana-spent-balance bhi 'available' dikhne lag sakta hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Gift-card management panel, support-reactivation tools</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Card ₹500 → ₹200 use → balance ₹300</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Deactivate → Reactivate
+→ balance reset to original ₹500</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> card ko deactivate-reactivate cycle se guzara — system ne current-balance (₹300) ki jagah original-issued-balance (₹500) wapas set kar diya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Agar gift-card/test-wallet mile jisme deactivate-reactivate option ho, cycle chala ke balance check karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab balance-reset confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m27">
+  <div class="m-top"><span class="badge num">MISSION 027</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">E-COMMERCE · CART</div><h2>Abandoned Cart Recovery Link Reuse</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho cart-recovery email ka link expire hone ke baad bhi purani price lock kar deta hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Recovery-link ek snapshot-token banata hai jisme purani price/discount save hoti hai</li><li>Agar backend link-click pe price dobara-verify nahi karta</li><li>Months purana link bhi wahi purani (ab-outdated) price de deta hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Email-marketing/cart-recovery flows</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Link click within 24h → current price</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Same link after price-hike (30 days later)
+→ old lower price still honoured</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> cart-recovery link ko expire hone diya, price badh gayi thi market mein — phir bhi purani link se purani price pe checkout ho gaya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Agar koi cart-recovery email mile, link ko days baad use karo jab price change ho chuki ho.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab stale-price-honour confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m28">
+  <div class="m-top"><span class="badge num">MISSION 028</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">E-COMMERCE · ORDERS</div><h2>Pre-Order Checkout Without Payment Capture</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho pre-order/backorder flow mein order 'confirmed' ho jata hai bina actual payment-capture ke.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Pre-order logic 'payment-intent create hua' ko hi 'paid' samajh leta hai</li><li>Actual capture baad mein (jab stock aaye) hona chahiye tha, par status turant 'confirmed' set ho jaata hai</li><li>Capture-step kabhi trigger hi nahi hota agar background-job fail ho jaye</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Pre-order/backorder enabled e-commerce</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Pre-order → payment authorized → capture on ship</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Cancel card right after auth
+→ order still shows 'confirmed'</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> payment sirf authorize hua tha, capture hone se pehle hi card cancel/invalid kar diya — order phir bhi 'confirmed' dikhta raha kyunki status-check sirf authorization dekhta tha.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Pre-order feature mile to payment-authorize ke turant baad card invalidate karne ki koshish karo (test-card se), order-status note karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab capture-vs-authorize gap confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m29">
+  <div class="m-top"><span class="badge num">MISSION 029</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">FRAUD · ADDRESS</div><h2>Shipping Address Change Post Fraud-Check</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho fraud-check billing-address pe hota hai, par order-confirm ke baad shipping-address change allowed hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Fraud/AVS check sirf checkout-time pe ek baar chalta hai</li><li>Order-confirm ke baad 'edit shipping address' feature alag code-path hai jahan dobara-fraud-check nahi hota</li><li>Isse fraud-check bypass karke kahi bhi deliver करवाया ja sakta hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Order-management/'edit my order' features</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Checkout: billing=shipping, fraud-check pass</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Post-order: change shipping to different country
+→ no re-check triggered</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> checkout ke time sahi billing-shipping match tha (fraud-check pass), order-confirm hote hi address edit karke bilkul alag jagah bhej diya — koi dobara-verification nahi hui.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Order place karo, turant baad 'edit shipping address' try karo — kya re-verification maangta hai.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab post-confirm address-change gap confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m30">
+  <div class="m-top"><span class="badge num">MISSION 030</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">LOYALTY · POINTS</div><h2>Loyalty Points Redemption Race Condition</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho limited-points-balance ko parallel-requests se multiple-baar redeem kiya ja sakta hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Balance-check aur balance-deduct do alag steps hain</li><li>Agar dono atomic (ek-saath-lock) nahi hain</li><li>Parallel-requests ek hi balance ko 'sufficient' dekh lete hain saath mein</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Points/rewards redemption APIs</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal (1 request)</span><pre>1000 points → redeem 1000 → balance 0</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test (5 parallel)</span><pre>5× redeem-1000 same time
+→ 5000 points worth redeemed from 1000</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> 5 parallel requests bheji ek hi 1000-point-balance pe — sab ne balance 'sufficient' dekha ek saath, total 5000 points ka redemption ho gaya jabki sirf 1000 the.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Points-redeem API pe Burp se 5 parallel requests bhejo (Turbo Intruder), final-balance negative/wrong to nahi hua check karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab race-condition confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m31">
+  <div class="m-top"><span class="badge num">MISSION 031</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">E-COMMERCE · BUNDLES</div><h2>Bundle Pricing Decoupling</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho bundle ke andar ke items separately order karke, bundle-discount+individual-availability dono fayda liya ja sakta hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Bundle-price aur individual-item-price alag price-rules follow karte hain</li><li>Agar system check nahi karta 'ye item kisi bundle ka part hai, akela kam price pe mat do'</li><li>Attacker bundle-jaisa-hi-saamaan akele-akele order karke overall kam pay karta hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Combo/bundle offers wali product-pages</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Bundle (A+B+C) = ₹999</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>A alone ₹400 + B alone ₹300 + C from different bundle ₹200
+= ₹900 (bundle se bhi kam, individually)</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> teeno items alag-alag cart mein daale (alag listings/bundles se), total bundle-price se bhi kam aaya — pricing-rules ek-dusre ko account mein nahi lete.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Bundle ka price note karo, phir uske individual-items ko alag-alag combinations se cart mein daal ke total compare karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab price-decoupling ka numeric-gap mil jaye.</div>
+</div>
+
+<div class="mission" id="m32">
+  <div class="m-top"><span class="badge num">MISSION 032</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">E-COMMERCE · PROMOTIONS</div><h2>Buy-X-Get-Y-Free Partial Return Abuse</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho 'Buy 2 Get 1 Free' order mein sirf paid-items return karke free-item rakha ja sakta hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Order mein saare items (paid+free) same-looking line-items ki tarah store hote hain</li><li>Return-flow 'konsa item free tha' track nahi karta, sirf 'quantity-return-request' leta hai</li><li>User selectively sirf-paid-wale return karke free-item apne paas rakh leta hai, refund bhi le leta hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">BOGO/promo-wali product listings</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Buy 2 pay, 1 free → return all 3 → full refund</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Return only the 2 'paid' units
+→ full refund + keep the free 1</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> teeno item order kiye (2 paid+1 free), return-request mein sirf 2-paid-wale select kiye — poora paisa refund hua, free-wala item phir bhi paas reh gaya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>BOGO-offer order karo, sirf paid-units return karo, free-unit apne paas rakho — refund-amount note karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab selective-return-abuse confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m33">
+  <div class="m-top"><span class="badge num">MISSION 033</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">E-COMMERCE · PRICE MATCH</div><h2>Fake Competitor Price-Match Claim</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho price-match-request mein competitor-screenshot/URL ka server-side verification hota hai ya sirf trust kiya jaata hai.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Price-match claims manually ya automated-trust pe approve ho jaate hain</li><li>Agar system competitor-URL ko khud-fetch karke verify nahi karta</li><li>User-submitted 'proof' (edited screenshot/fake-URL) bhi accept ho sakta hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Price-match-guarantee wale retailers</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Submit real competitor-link → verified → matched</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Submit edited-screenshot/non-existent-URL
+→ still approved without real check</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> competitor-price ka ek fake/edited proof submit kiya — agar verification manual-trust pe based hai aur koi automated-cross-check nahi, to galat-price match ho jaata hai.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Agar price-match feature mile, ek banaya-hua fake-proof submit karke response note karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab verification-strength confirm ho jaye.</div>
+</div>
+
+<div class="mission" id="m34">
+  <div class="m-top"><span class="badge num">MISSION 034</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">FINANCE · REFUNDS</div><h2>Duplicate Refund — Store Credit + Original Method</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho ek hi refund-request 2 alag tareekon (store-credit AND original-payment-method) se double process ho sakta hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Refund-process mein 2 separate microservices/queues involve hote hain (payment-service + wallet-service)</li><li>Agar dono independently 'process this refund' trigger ho jaate hain bina ek-dusre ko pata chale</li><li>User ko dono taraf se paisa mil jaata hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Refund/return processing backend (multi-service systems)</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Refund request → 1× processed → 1 credit</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Rapid double-click refund-button / replay request
+→ 2× processed (wallet + original method)</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> refund-button ko rapidly 2 baar click kiya (ya request replay ki) — dono requests race karke alag services ne independently process kar diya, double-refund mil gaya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Refund-flow mile to request ko Burp Repeater se turant 2 baar bhejo — dono process hote hain kya check karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab double-processing confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m35">
+  <div class="m-top"><span class="badge num">MISSION 035</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">E-COMMERCE · FLASH SALE</div><h2>Flash Sale URL Pre-Access</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho sale-start-time se pehle hi product-page/checkout-URL directly access karke sale-price lock ki ja sakti hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Sale-page UI timer se block hoti hai ('sale starts in...')</li><li>Par agar backend product/checkout-API 'abhi sale-time hai kya' check nahi karta</li><li>Sirf frontend-timer hi protection hai, jo URL directly hit karne se bypass ho jaata hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Flash-sale/timed-drop product pages</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Sale starts 12:00 → checkout works 12:00 onwards</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Direct checkout-API hit at 11:58
+→ sale-price already applied</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> sale start-hone se 2 min pehle hi seedha checkout-API ko URL/Burp se hit kiya — sale-price turant apply ho gaya, kyunki time-check sirf frontend pe tha.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Agar koi scheduled-sale mile, uske shuru hone se thodi der pehle checkout-endpoint directly hit karke dekho.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab pre-sale-access confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m36">
+  <div class="m-top"><span class="badge num">MISSION 036</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">FINTECH · WEBHOOKS</div><h2>Payment Webhook Replay Attack</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho payment-success wala webhook dobara (replay) bhejne se account mein paisa dobara credit ho jaata hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Payment-gateway ek webhook bhejta hai 'payment success' ke liye</li><li>Agar backend webhook ko sirf 'payment_id valid hai' check karta hai</li><li>Replay-protection (idempotency-key/already-processed-check) missing ho to same webhook dobara credit kar deta hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Payment-gateway integration endpoints (Stripe/Razorpay-jaisi webhooks)</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Webhook fires once → wallet credited once</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Capture webhook-request, replay via Burp
+→ credited again (same payment_id)</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> ek successful-payment ka webhook-request capture kiya, Burp se wahi request dobara bheja — backend ne idempotency-check nahi kiya, dobara balance credit ho gaya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Agar test-payment-gateway integration ho, webhook-request capture karke replay try karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab replay-vulnerability confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m37">
+  <div class="m-top"><span class="badge num">MISSION 037</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">FINTECH · FOREX</div><h2>Currency Conversion Rounding Arbitrage</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho baar-baar chhote-chhote currency-convert transactions se rounding-favorable-difference accumulate karke profit banaya ja sakta hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Forex-conversion rate har transaction pe independently round hoti hai</li><li>Chhoti amount pe rounding ka % bada hota hai</li><li>Hazaaron chhoti transactions karke ye chhota-chhota favorable-rounding accumulate ho sakta hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Multi-currency wallets, forex-conversion features</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Convert ₹10000 once → standard rate applied</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Convert ₹1 × 10000 times
+→ cumulative rounding-gain vs single conversion</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> ek badi amount ek-saath convert karne ki jagah usi amount ko chhote-chhote tukdon mein convert kiya — rounding har baar thoda favorable tha, accumulate hoke measurable-profit ban gaya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Test-wallet mile to ek badi amount ko chhote parts mein convert karo, total final-amount ko single-conversion se compare karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab rounding-arbitrage ka numeric-proof mile.</div>
+</div>
+
+<div class="mission" id="m38">
+  <div class="m-top"><span class="badge num">MISSION 038</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">FINTECH · LOANS</div><h2>Loan Eligibility Re-Verification Gap</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho eligibility-check ke baad documents silently-edit karne se dobara-verification trigger hoti hai ya nahi.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Eligibility ek time pe check hoti hai (salary-slip upload pe)</li><li>Agar user baad mein wahi document-slot mein doosri file replace kar de</li><li>System purani-approved-eligibility ko hi valid maan ke aage badh jaata hai, dobara-check nahi karta</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Loan/credit-application multi-step forms</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Upload real salary-slip → eligible → proceed</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>After approval, replace uploaded-file (same slot)
+→ no re-verification triggered</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> sahi document se approval mila, approval ke baad wahi file-slot mein doosri (fake/edited) file replace kar di — system ne approval-status ko hi trust kiya, document ko dobara verify nahi kiya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Test-loan-flow mile to approval ke baad document-re-upload try karo, status badalta hai kya dekho.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab re-verification-gap confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m39">
+  <div class="m-top"><span class="badge num">MISSION 039</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">FINTECH · CHARGEBACKS</div><h2>Chargeback-then-Continue-Access Abuse</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho payment ka chargeback-claim karne ke baad bhi purchased-service/content ka access continue rehta hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Chargeback payment-gateway-level pe hota hai (bank ke through)</li><li>Application ko is chargeback ka pata chalne mein delay/webhook-dependency hoti hai</li><li>Agar access-revoke automatically-trigger nahi hota jab tak webhook na process ho, user tab-tak free-access enjoy karta hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Digital-content/subscription purchases</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Purchase → access granted → payment settled</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Purchase → file chargeback with bank immediately
+→ access remains until webhook processed (delay)</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> purchase karte hi bank se chargeback file kar diya — application ko turant pata nahi chala (webhook-delay), tab tak access chalta raha.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>(Conceptual/manual-testing mission — production test-environment mein hi try karo, real-money involve na karo.) Documentation padho ki chargeback-handling kitni jaldi access-revoke karti hai.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab delay-window samajh aa jaye.</div>
+</div>
+
+<div class="toc" style="margin-bottom:26px;"><h3 style="grid-column:1/-1;margin:0;">📅 Day 4 — Fintech, Auth & SaaS Patterns (15)</h3></div>
+<div class="mission" id="m40">
+  <div class="m-top"><span class="badge num">MISSION 040</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">FINTECH · LIMITS</div><h2>Daily Withdrawal Limit Race Bypass</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho 'daily ₹X tak hi withdraw kar sakte ho' wali limit ko parallel-requests se bypass kiya ja sakta hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Limit-check 'aaj-tak-kitna-withdraw-hua' calculate karta hai, phir naya-request allow/deny karta hai</li><li>Ye check-then-act pattern hai — agar atomic nahi hai</li><li>Parallel-requests sab ek-saath 'abhi tak limit nahi pahuncha' dekh lete hain</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Wallet/banking withdrawal APIs with daily-limits</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal (sequential)</span><pre>Limit ₹10000 → 1 withdraw ₹10000 → blocked next</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test (parallel)</span><pre>5× withdraw ₹10000 simultaneously
+→ ₹50000 withdrawn, limit ₹10000</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> 5 withdrawal-requests ek saath bheji — har ek ne apna-apna check karte waqt 'abhi tak kuch withdraw nahi hua' dekha (kyunki dusri requests abhi process ho rahi thi), sab pass ho gayi.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Test-wallet pe daily-limit wali withdrawal-API ko Turbo Intruder se parallel-bhejo, total-withdrawn vs limit compare karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab limit-bypass confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m41">
+  <div class="m-top"><span class="badge num">MISSION 041</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">AUTH · SESSIONS</div><h2>Password Reset Doesn't Kill Old Sessions</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho password-reset karne ke baad, purane-devices pe already-logged-in sessions active rehte hain kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Password-change sirf naya-password-hash database mein save karta hai</li><li>Existing-sessions (tokens/cookies) ko invalidate karna ek alag, aksar-bhoola-hua step hai</li><li>Agar attacker ne already session-hijack kar rakha tha, victim ka password-change bhi use lock-out nahi karta</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Account-security/password-change features</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Change password → all other sessions logged out</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Change password on Device-A
+→ Device-B (old session) still works</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> ek device pe password change kiya, doosre-device pe purani session se dobara-check kiya — wo abhi bhi logged-in thi, kyunki session-invalidation implement hi nahi tha.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>2 devices/browsers pe login karo, ek pe password-change karo, doosre pe refresh karke dekho logged-in rehta hai kya.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab session-invalidation-gap confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m42">
+  <div class="m-top"><span class="badge num">MISSION 042</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">AUTH · EMAIL CHANGE</div><h2>Email Change Without New-Email Verification</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho account ka email-address badalne pe, naye-email pe verification-link bheje bina hi change confirm ho jaata hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Email-change UI turant 'email updated' dikha deta hai</li><li>Agar verification-link sirf 'informational' hai, 'mandatory' nahi</li><li>Account naye (galat/attacker-ka) email se turant operate hone lagta hai bina confirm hue</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Profile/account-settings email-change flow</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Change email → verify-link sent → must click to activate</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Change email → ignore verify-link
+→ login/reset already works with new email</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> email change request bheja, verification-link ko ignore kiya (click hi nahi kiya) — phir bhi naye email se password-reset/login possible tha.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Account-settings mein email-change karo, verify-link click mat karo, naye-email se reset-password try karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab unverified-email-active-hona confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m43">
+  <div class="m-top"><span class="badge num">MISSION 043</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">AUTH · RECOVERY</div><h2>Security Question Answerable from Public Data</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho account-recovery ke security-questions itne generic hain ki social-media/public-info se answer mil sakte hain kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Security-questions (pehla-pet-ka-naam, school-ka-naam) often publicly-guessable hote hain</li><li>System inhe hi 'strong second-factor' maan leta hai</li><li>Attacker target ki social-media profile se ye info nikaal sakta hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Legacy account-recovery flows</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Correct answers (only owner knows) → recovery</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Answers guessed from public social-media bio
+→ recovery succeeds</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> target ke public Instagram/Facebook bio se 'pehla pet', 'school' jaisi info mili — wahi recovery-question ke answers the, account recover ho gaya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>(Apne-hi test-account pe) security-questions set karo jo public-info se guessable hon, phir khud recover karke dikhao gap kaisa hai.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab guessability confirm ho jaye.</div>
+</div>
+
+<div class="mission" id="m44">
+  <div class="m-top"><span class="badge num">MISSION 044</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">AUTH · MFA</div><h2>MFA Downgrade via Direct API</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho MFA ko settings-API seedha call karke disable kiya ja sakta hai, bina current-MFA-code verify kiye.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>UI mein MFA-disable karne se pehle current-OTP maanga jaata hai</li><li>Par agar backend-API khud se 'MFA-required-to-disable-MFA' check nahi karta</li><li>Direct API-call se bina OTP ke hi MFA off ho sakta hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Account-security settings APIs</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>UI: disable MFA → asks current OTP → removed</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>POST /settings/mfa {"enabled":false}
+(no OTP field) → MFA removed</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> UI ka 'disable' button use karne ki jagah seedha settings-API ko bina OTP-field ke call kiya — MFA turant off ho gaya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>MFA-enabled account mein settings-API ko Burp se capture karo, OTP-field hata ke replay karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab MFA-downgrade-bypass confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m45">
+  <div class="m-top"><span class="badge num">MISSION 045</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">AUTH · OAUTH</div><h2>Unverified-Email OAuth Account Takeover</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho attacker apne-unverified-email se OAuth-provider (Google/GitHub) account bana ke, victim ke existing-account se link kar sakta hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Kai apps 'email-match' ko hi 'same-user-hai' ka proof maan lete hain</li><li>Agar OAuth-provider khud email-verify nahi karwata (ya attacker koi aisa provider use kare jo nahi karwata)</li><li>Attacker victim-ka-email use karke OAuth-signup karke seedha victim-ke-existing-account se 'link' ho sakta hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">'Sign in with Google/GitHub' integration wale apps</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>OAuth email verified by provider → safe link</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>OAuth provider with unverified-email option
+→ links to victim's existing account</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> ek OAuth-provider use kiya jisme email-verification optional thi, victim-ka-email daal ke signup kiya — app ne email-match dekh ke seedha victim-ke-account se link kar diya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>(Conceptual) — documentation padho ki app OAuth-email ko verified-flag ke saath check karta hai ya nahi.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab verification-dependency samajh aa jaye.</div>
+</div>
+
+<div class="mission" id="m46">
+  <div class="m-top"><span class="badge num">MISSION 046</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">SAAS · TRIALS</div><h2>Trial Reset via Plan-Type Switch</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho trial ke beech mein plan-type (monthly↔yearly) switch karne se trial-clock reset ho jaata hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Trial-tracking 'subscription-record' se juda hota hai, 'user-account' se nahi</li><li>Plan-switch karne pe system kabhi-kabhi naya-subscription-record bana deta hai</li><li>Jiska apna fresh trial-period hota hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Subscription-SaaS with trial + multiple plan-tiers</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>14-day trial → ends → must pay</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Day 10: switch monthly→yearly plan
+→ fresh 14-day trial starts again</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> trial khatam hone se pehle plan-type switch kiya (monthly se yearly) — naya subscription-record bana, uska apna fresh 14-din-ka trial shuru ho gaya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Test-SaaS mein trial ke beech plan-switch karo, trial-end-date badalta hai kya check karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab trial-reset confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m47">
+  <div class="m-top"><span class="badge num">MISSION 047</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">SAAS · SEATS</div><h2>Seat-Based Billing Session Sharing</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho '5-seat license' wale plan mein, ek seat ka login-session multiple-logged-in-devices pe simultaneously chal sakta hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>'Seat' usually ek user-account ko refer karta hai</li><li>Agar system concurrent-session-limit enforce nahi karta</li><li>Ek-hi-login-credential 10 devices pe ek-saath use ho sakta hai, 5-seat-license 10 logins serve kar deta hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Per-seat priced B2B SaaS tools</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>1 seat = 1 concurrent session enforced</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Same credentials, 10 different devices login
+→ all work simultaneously</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> ek-hi account-credentials 10 alag devices pe login kiye — sab simultaneously active rahe, koi 'already-logged-in-elsewhere' kick-out nahi hua.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Test-SaaS-account ko multiple devices/browsers pe ek-saath login karke concurrent-session-limit check karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab concurrent-session-gap confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m48">
+  <div class="m-top"><span class="badge num">MISSION 048</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">SAAS · API KEYS</div><h2>Revoked API Key Still Works (Cache Lag)</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho API-key revoke karne ke baad bhi, cached-validation ki wajah se thodi der tak key kaam karti hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>API-key-validation performance ke liye cache ki jaati hai</li><li>Revoke sirf database update karta hai, cache ko turant-invalidate nahi karta</li><li>Cache ka TTL khatam hone tak purani-revoked-key kaam karti rehti hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">API-key-based authentication systems</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Revoke key → immediately rejected</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Revoke key → immediately retry same key
+→ still works for X minutes</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> key revoke ki turant baad wahi key dobara use ki — kuch minutes tak kaam karti rahi, kyunki validation-cache turant-update nahi hui thi.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Test-API-key banao, revoke karo, turant usi key se request bhejo — kitni der tak accept hoti hai note karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab cache-lag-window confirm ho jaye.</div>
+</div>
+
+<div class="mission" id="m49">
+  <div class="m-top"><span class="badge num">MISSION 049</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">SAAS · INVITES</div><h2>Invite-Only Beta Link Reused Unlimited</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho 'invite-only' signup-link ek-baar-use ke bajaye unlimited-baar use ho sakta hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Invite-link mein ek unique-token hota hai</li><li>Agar backend 'is-token-already-used' flag check-and-set nahi karta atomically</li><li>Same-link se multiple-alag-accounts signup ho sakte hain</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Invite-only/waitlist-based beta access</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Invite-link → 1 signup → link dead</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Same invite-link → 5 different signups
+→ all succeed</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> ek hi invite-link se 5 alag email-ids se signup kiya — sab successful hue, link sirf 'exist karta hai' check hota tha, 'already-used' nahi.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Invite-link mile to use multiple-baar, alag-alag emails se try karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab unlimited-reuse confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m50">
+  <div class="m-top"><span class="badge num">MISSION 050</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">SAAS · EXPORT</div><h2>Bulk Data Export Rate-Limit Bypass via Pagination</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho 'export limited to 100 rows' wali restriction, pagination-parameter manipulate karke bypass ho sakti hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Export-feature UI mein '100 rows max' dikhaya jaata hai</li><li>Agar backend offset/limit-params client se accept karta hai bina upper-bound-enforce kiye</li><li>page_size=999999 jaisa parameter daal ke poora-dataset export ho sakta hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Reporting/export APIs with UI-enforced limits</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>GET /export?limit=100 → 100 rows</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>GET /export?limit=999999
+→ entire dataset returned</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> limit-parameter ko UI-allowed 100 se badha ke 999999 kar diya — backend ne upper-bound check nahi kiya, poora dataset mil gaya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Export-API mile to limit/page_size parameter ko manually-bada-number bana ke try karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab limit-bypass confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m51">
+  <div class="m-top"><span class="badge num">MISSION 051</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">MARKETPLACE · LISTINGS</div><h2>Seller Listing Price Edit During Active-Order</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho order-place hone ke baad seller apna listing-price change kare to purane-order ka price-lock hota hai ya naya-price apply hota hai.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Order-record ko 'price-at-time-of-order' snapshot karna chahiye</li><li>Agar order sirf 'product_id' reference karta hai, 'current product-price' live-fetch karta hai</li><li>Seller/buyer dono order-ke-baad price-manipulate kar sakte hain</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Marketplace/multi-seller platforms</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Order placed ₹500 → invoice shows ₹500</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Seller changes price to ₹50 post-order
+→ invoice/refund-calc uses new ₹50</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> order place hone ke baad seller ne listing-price drastically-change kar diya — agar order price ko snapshot nahi karta, baad ke calculations (refund etc.) galat price use karte hain.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Marketplace-test-listing pe order place karo, seller-side se price change karo, order-detail mein price check karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab price-snapshot-gap confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m52">
+  <div class="m-top"><span class="badge num">MISSION 052</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">MARKETPLACE · REVIEWS</div><h2>Review Edit After Seller Response (Timing Abuse)</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho buyer apna negative-review seller-ke-response-ke-baad edit karke completely-different-complaint daal sakta hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Review-edit feature 'same-review-id' retain karta hai</li><li>Seller ka response purane-content pe tha, par review-content silently-badal-jaata-hai</li><li>Misleading-context create hota hai jo trust-and-safety ke liye exploit-able hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Review/rating systems with seller-response feature</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Review posted → seller responds → both visible, immutable</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Edit review after seller-response
+→ content changes, response stays (now mismatched)</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> seller ke reply karne ke baad review ka text completely badal diya — purana reply ab naye (unrelated) content ke neeche misleading context bana raha hai.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Test-review post karo, seller-response aane do, phir review ka content edit karo — kya restriction lagti hai.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab post-response-edit-gap confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m53">
+  <div class="m-top"><span class="badge num">MISSION 053</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">MARKETPLACE · ESCROW</div><h2>Escrow Release Without Delivery Confirmation</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho 'payment-on-delivery/escrow' system mein, bina actual-delivery-confirm kiye hi funds seller ko release ho sakte hain kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Escrow-release normally buyer-confirmation ya auto-timeout pe hota hai</li><li>Agar release-API seedha call ho sakti hai bina delivery-status-check ke</li><li>Seller (ya colluding-buyer) fund jaldi release karwa sakta hai bina item bheje</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Escrow/marketplace payment-protection systems</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Buyer confirms delivery → funds released</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>POST /escrow/release {"order_id":X}
+(before delivery-status updated) → released anyway</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> delivery-status 'shipped' bhi nahi tha, seedha release-API call ki — funds release ho gaye bina delivery-confirmation-check ke.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Test-escrow-order mile to release-endpoint ko delivery-confirm-se-pehle hi call karke dekho.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab premature-release confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m54">
+  <div class="m-top"><span class="badge num">MISSION 054</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">SOCIAL · PRIVACY</div><h2>Private Profile Data via Alternate Endpoint</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho 'profile private hai' set karne ke baad bhi, koi doosra API-endpoint (jaise search/suggestions) wahi data leak karta hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Privacy-setting aksar sirf 'main profile view' endpoint pe enforce hoti hai</li><li>Related features (search, 'people you may know', activity-feed) alag code likhte hain</li><li>Developer har jagah privacy-check copy karna bhool jaata hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Social-platforms with privacy-settings</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Private profile → /profile/user123 → 403</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>/api/search?q=user123 or /api/suggestions
+→ private data still returned</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> main profile-page private-hone ke bawajood, search ya suggestions-API ne wahi (supposedly-private) info return kar di — privacy-check sirf ek jagah implement tha.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Private-profile banao, uske data ko alag-alag features (search/suggestions/activity) se access karne ki koshish karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab leak-endpoint confirm/deny ho jaye.</div>
+</div>
+
+<div class="toc" style="margin-bottom:26px;"><h3 style="grid-column:1/-1;margin:0;">📅 Day 5 — Marketplace, Social, Gaming & Enterprise (15)</h3></div>
+<div class="mission" id="m55">
+  <div class="m-top"><span class="badge num">MISSION 055</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">SOCIAL · BLOCKING</div><h2>Blocked User Can Still Interact via Group/Shared-Context</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho A ne B ko block kiya, par shared-group/comment-thread mein B phir bhi A ko mention/tag kar sakta hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Block-logic direct-interaction (DM, profile-view) pe hi apply hoti hai</li><li>Group/shared-spaces mein 'kya block-hua-user yahan bhi restricted hai' alag-check hai</li><li>Aksar ye secondary-check implement hi nahi hota</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Social-apps with groups/shared-threads</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>B blocked by A → B can't DM/view A's profile</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>B mentions/tags A in shared group-post
+→ notification still reaches A</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> B ne A ko DM nahi kiya (block hai), par group-post mein A ko tag kar diya — notification phir bhi A tak pahunch gayi, block ka maqsad fail ho gaya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>2 test-accounts banao, ek-doosre-ko block karo, phir kisi shared-group mein tag/mention try karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab block-bypass-via-group confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m56">
+  <div class="m-top"><span class="badge num">MISSION 056</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">GAMING · CURRENCY</div><h2>In-Game Currency Duplication via Trade-Cancel Race</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho 2 players ke beech trade cancel karte waqt race-condition se currency dono taraf duplicate ho sakti hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Trade mein currency pehle 'escrow/hold' mein jaati hai</li><li>Cancel aur complete, dono simultaneously trigger ho jayein to dono-side-credit ho sakta hai</li><li>Classic duplication-bug jo online-games mein common raha hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Multiplayer games with player-to-player trading</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Trade complete → currency moves once</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Simultaneously click 'complete' and 'cancel'
+→ currency credited on both paths</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> trade-complete aur trade-cancel dono buttons ek-saath (ya bohot-close-timing pe) click kiye — dono code-paths ne currency-credit kar diya, duplication ho gaya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>(Test-environment/sandbox mein) trade-flow ke complete+cancel actions ko close-timing pe trigger karke balance check karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab duplication confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m57">
+  <div class="m-top"><span class="badge num">MISSION 057</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">GAMING · LEADERBOARD</div><h2>Leaderboard Score Submission Without Server Validation</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho score-submit-API client-calculated-score ko bina server-side-replay/validation ke accept karta hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Game-logic client (browser/app) pe chalta hai</li><li>Final-score bhi client hi calculate karke server ko bhejta hai</li><li>Agar server 'ye score possible-hai-kya' validate nahi karta, koi-bhi-number accept ho jaata hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Score/leaderboard submission APIs</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>POST /score {"score":1500} (realistic)</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>POST /score {"score":999999999}
+→ accepted, tops leaderboard</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> seedha score-submission-API ko ek impossible-tarah-ka-bada-number bhej diya — server ne validate nahi kiya ki itna score game-mechanics-se-possible-hai-ya-nahi.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Game/quiz ka score-API capture karo, unrealistic-score manually bhej ke submit karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab unvalidated-score-acceptance confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m58">
+  <div class="m-top"><span class="badge num">MISSION 058</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">GAMING · LOOT</div><h2>Loot-Box Odds Manipulation via Client-Seed</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho randomness ka seed client se bheja jaata hai, jisse favorable-outcome predict/force kiya ja sakta hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Kuch systems 'provably-fair' ke naam pe client-provided-seed use karte hain</li><li>Agar server apna-khud-ka-secret-seed nahi mix karta properly</li><li>Client apna seed pehle-se-test karke favorable-result wala seed choose kar sakta hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Loot-box/gacha-mechanic games</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Random seed → fair random outcome</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Client sends pre-tested seed
+→ predictable favorable outcome</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> alag-alag client-seeds offline test kiye (agar algorithm pata/leak ho), jo favorable-result deta tha wahi seed asli-request mein bheja.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>(Conceptual) — agar seed-submission client-side visible hai, algorithm-predictability research karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab seed-predictability samajh aa jaye.</div>
+</div>
+
+<div class="mission" id="m59">
+  <div class="m-top"><span class="badge num">MISSION 059</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">HR/ENTERPRISE · PAYROLL</div><h2>Payroll Approval Chain Skip via Direct Status-Update</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho multi-level-approval (manager→HR→finance) ko seedha final-status-update-API call karke skip kiya ja sakta hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>UI approval-chain ko sahi-order mein enforce karta hai</li><li>Agar backend ek-hi generic 'update-status' endpoint deta hai jo direct 'approved' state accept kar le</li><li>Koi-bhi-intermediate-role seedha final-status set kar sakta hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Enterprise HR/payroll-approval-systems</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Manager→HR→Finance sequential approval</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Manager-role: PATCH /request {"status":"finance_approved"}
+→ skips HR/Finance review</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> manager-level-access se seedha status 'finance_approved' set karne ki request bheji — backend ne role-ke-hisaab-se allowed-transitions check nahi kiye.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Multi-step approval-system mein lower-role se higher-status directly set karne ki koshish karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab approval-chain-skip confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m60">
+  <div class="m-top"><span class="badge num">MISSION 060</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">HR/ENTERPRISE · OFFBOARDING</div><h2>Terminated Employee Access Not Revoked Immediately</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho employee-termination ke baad bhi API-tokens/sessions kuch-der-tak active rehte hain kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Termination HR-system mein ek record-update hai</li><li>Access-revocation (SSO/API-tokens) alag-system/alag-trigger pe depend karta hai</li><li>Agar in dono ke beech sync-delay hai, terminated-employee kuch-der access rakhta hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Enterprise SSO/employee-lifecycle-management</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Terminate → access revoked within seconds</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Terminate → immediately retry API-token
+→ still works for minutes/hours</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> termination process complete hone ke turant baad purane-API-token se request bheji — kaafi der tak access mila, revocation-sync delayed tha.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>(Conceptual/sandbox) — HR-offboarding-flow ki documentation padho, revocation-timing samjho.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab sync-delay-window samajh aa jaye.</div>
+</div>
+
+<div class="mission" id="m61">
+  <div class="m-top"><span class="badge num">MISSION 061</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">BOOKING · TRAVEL</div><h2>Hold-Without-Payment Seat/Room Blocking</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho 'book-now' click karne se seat/room temporarily-hold ho jaata hai bina payment-commit kiye — isko repeatedly abuse karke availability block ki ja sakti hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Booking-systems checkout-ke-dauraan seat/room ko 'hold' karte hain (10-15 min)</li><li>Agar koi rate-limit nahi hai kitni-baar-hold-liya-ja-sakta-hai</li><li>Attacker baar-baar hold karke-cancel-karke, legit-users ke liye availability fake-khatam dikha sakta hai (DoS-jaisa business-impact)</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Flight/hotel/event-ticket booking systems</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>1 hold at a time per user</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Script: hold all remaining seats repeatedly
+→ real users see 'sold out' falsely</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> script se saari available-seats ko bar-bar hold kar diya (bina-pay-kiye) — real-users ko 'no seats available' dikhne laga, jabki actual-inventory available tha.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>(Conceptual/test-environment) — hold-mechanism ki rate-limiting documentation/behavior padho.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab hold-abuse-potential samajh aa jaye.</div>
+</div>
+
+<div class="mission" id="m62">
+  <div class="m-top"><span class="badge num">MISSION 062</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">BOOKING · CANCELLATION</div><h2>Cancellation Policy Bypass via Reschedule-Loop</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho 'non-refundable' booking ko cancel-na-karke, baar-baar-reschedule karke effectively-free-cancel kiya ja sakta hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Cancellation-fee specifically 'cancel' action pe lagti hai</li><li>'Reschedule' feature alag-treat-hota-hai, usme fee kam/nahi hoti</li><li>User reschedule-karke-date-far-future-rakh-ke, phir wahi-booking-dubara-reschedule-karte-raho, effectively-unlimited-flexibility-mil-jaati-hai bina-fee-ke</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Travel-booking with separate cancel vs reschedule rules</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Cancel → fee charged</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Reschedule repeatedly instead of cancel
+→ no fee, same flexibility</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> actual-cancel karne ki jagah booking ko baar-baar reschedule kiya — koi fee nahi lagi, effectively cancellation-policy ka maqsad hi bypass ho gaya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Test-booking lo, cancel-fee note karo, phir reschedule-feature se compare karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab policy-bypass confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m63">
+  <div class="m-top"><span class="badge num">MISSION 063</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">HEALTHCARE · APPOINTMENTS</div><h2>Appointment Slot Double-Booking via Race</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho ek hi doctor-slot ko 2 patients parallel-request se ek-saath book kar sakte hain kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Slot-availability-check aur slot-book, do alag-steps hain</li><li>Atomic-lock na hone pe dono-parallel-requests slot ko 'available' dekh lete hain</li><li>Dono-ka-booking-confirm ho jaata hai ek hi time-slot ke liye</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Doctor/service-appointment booking systems</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal (sequential)</span><pre>Slot 10AM → booked by A → unavailable for B</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test (parallel)</span><pre>A and B book 10AM slot simultaneously
+→ both confirmed</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> 2 alag-accounts se ek-hi-slot ko same-second mein book karne ki koshish ki — dono ko 'confirmed' mila, backend ne atomic-check nahi kiya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Test-booking-system mile to ek-slot ko 2 alag-sessions se Burp-se-parallel-book karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab double-booking confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m64">
+  <div class="m-top"><span class="badge num">MISSION 064</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">EDUCATION · EXAMS</div><h2>Exam Time-Extension via Client-Clock Manipulation</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho timed-online-exam ka remaining-time client-ke-local-clock pe depend karta hai, jise manipulate karke extra-time liya ja sakta hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Timer-countdown JavaScript browser-clock use karke calculate hota hai</li><li>Agar server submission-ke-time hi 'actual-elapsed-time' verify nahi karta</li><li>Device-clock-badal-ke ya browser-devtools-se timer-manipulate karke extra-time mil sakta hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Online timed-exam/assessment platforms</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>60-min exam → auto-submit at 60 min (server-tracked)</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Pause device-clock / tab-freeze trick
+→ extends effective time beyond 60 min</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> exam ke dauraan device-clock ko pause/slow kiya — timer ne galat-calculate kiya, actual-allowed-time se zyada time mil gaya submit karne ke liye.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>(Test/practice-exam environment mein) timer-behavior observe karo jab device-clock ya tab-state badlo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab client-side-time-trust confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m65">
+  <div class="m-top"><span class="badge num">MISSION 065</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">API · RATE LIMITING</div><h2>Rate-Limit Bypass via Header Manipulation</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho rate-limiting IP-based hai aur X-Forwarded-For header spoof karke bypass ho sakta hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Load-balancer/proxy ke peeche rate-limiter kabhi 'client-IP' ke liye X-Forwarded-For-header trust kar leta hai</li><li>Ye header client khud set kar sakta hai (agar proper-trusted-proxy-chain-validation nahi hai)</li><li>Har request mein alag-fake-IP bhej ke, rate-limit ko 'naya-client-hai' samjhaya ja sakta hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Public APIs with IP-based rate-limiting</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>100 req/min per IP → 101st blocked</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Add header X-Forwarded-For: random-IP each request
+→ limit never triggers</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> har request ke saath X-Forwarded-For header mein ek naya-random-IP daala — rate-limiter ne har request ko 'naya-client' samjha, limit kabhi trigger nahi hui.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Rate-limited-API pe Burp se X-Forwarded-For header randomize karke requests bhejo, limit bypass hoti hai kya.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab header-based-bypass confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m66">
+  <div class="m-top"><span class="badge num">MISSION 066</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">API · IDEMPOTENCY</div><h2>Missing Idempotency-Key Causes Duplicate Orders</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho network-retry (slow-connection pe double-tap/auto-retry) se duplicate-order create ho jaata hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Mobile-apps/frontend aksar 'request-fail-lagi' pe automatically-retry karte hain</li><li>Agar order-creation-API idempotency-key accept/enforce nahi karta</li><li>Same-exact-request 2 baar process hoke 2 alag-orders ban sakte hain (double-charge)</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Order/payment-creation APIs</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>1 submit → 1 order</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Replay exact same POST /order request
+→ 2nd identical order created, 2nd charge</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> slow-response ke dauraan same order-request ko dobara bheja (jaisa auto-retry karta hai) — koi idempotency-check na hone se 2 alag orders ban gaye, 2 baar charge hua.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Order-API capture karo, exact-same-request Burp-se dobara bhejo turant, duplicate-order banta hai kya.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab idempotency-gap confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m67">
+  <div class="m-top"><span class="badge num">MISSION 067</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">API · VERSIONING</div><h2>Deprecated API Version Missing New Security-Checks</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho purana (v1) API-version abhi bhi active hai, jisme naya (v2) wala security-check missing hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Naye-security-features (jaise extra-validation) sirf latest-version mein add kiye jaate hain</li><li>Purana-version 'deprecated-but-still-live' chhod diya jaata hai backward-compatibility ke liye</li><li>Attacker purane-version ko directly target karke naye-checks bypass kar sakta hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">APIs with multiple active versions</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>POST /v2/transfer → extra-fraud-check applied</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>POST /v1/transfer (same action)
+→ old logic, fraud-check missing</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> /v2/ endpoint ki jagah seedha /v1/ wala purana-endpoint use kiya — same kaam ho gaya, par naya-waala fraud-check jo sirf v2 mein tha, wo skip ho gaya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Agar app mein versioned-APIs hain, purana-version abhi bhi accessible-hai-kya check karo, uske security-checks naye-se compare karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab version-gap confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m68">
+  <div class="m-top"><span class="badge num">MISSION 068</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">API · GRAPHQL</div><h2>GraphQL Field-Level Authorization Gap</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho query-level-pe-authorization-hai par individual-field-level-pe-nahi, jisse related-object ke andar sensitive-field leak ho sakta hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>GraphQL mein ek query bohot-saare-nested-objects fetch kar sakti hai</li><li>Top-level-object pe authz-check hota hai, par uske-andar-ke-nested-field (jaise user→company→internal_notes) pe alag-se-check bhool jaata hai</li><li>Query ko creatively-structure karke restricted-field tak pahuncha ja sakta hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">GraphQL APIs with nested object-relationships</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>query { myProfile { name } } → own data</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>query { myProfile { connections { privateNotes } } }
+→ others' private field leaked via nesting</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> apni-profile se related-object (connections) ke andar ek deeply-nested-field (privateNotes) query kiya jo directly-access-protected tha — nesting ke through authorization-check skip ho gaya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>GraphQL-endpoint mile to schema-introspect karo, deeply-nested-queries banake sensitive-fields access try karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab field-level-authz-gap confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m69">
+  <div class="m-top"><span class="badge num">MISSION 069</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">ENTERPRISE · AUDIT</div><h2>Audit-Log Bypass via Bulk/Alternate-Endpoint</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho sensitive-action (jaise data-delete) single-item-endpoint se log hoti hai, par bulk-endpoint se log-skip ho jaata hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Compliance ke liye sensitive-actions audit-logged hone chahiye</li><li>Logging-code single-action-handler mein likha gaya tha</li><li>Bulk-action-handler (jo baad mein add hua) mein logging-call copy karna developer bhool gaya</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Enterprise admin-panels with compliance-logging</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>DELETE /user/5 → audit-log entry created</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>POST /users/bulk-delete {"ids":[5,6,7]}
+→ no audit-log entry for any</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> single-delete karne pe audit-log banta tha, bulk-delete-feature use kiya same-kaam-ke-liye — koi log-entry nahi bani, action untraceable ho gaya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Admin-panel mein single-action vs bulk-action dono try karo, audit-log/activity-history mein dono dikhte hain kya compare karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab logging-gap confirm/deny ho jaye.</div>
+</div>
+
+<div class="toc" style="margin-bottom:26px;"><h3 style="grid-column:1/-1;margin:0;">📅 Day 6 — Booking, Healthcare, API & Misc (15)</h3></div>
+<div class="mission" id="m70">
+  <div class="m-top"><span class="badge num">MISSION 070</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">IOT/DEVICE · PAIRING</div><h2>Device-Pairing Token Never Expires</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho smart-device/app-pairing-token (QR-code/setup-link) time-limited hona chahiye tha par unlimited-time tak valid rehta hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Pairing-flow 'convenience' ke liye long-lived-token generate karta hai</li><li>Agar expiry properly-set nahi hai (ya bohot-lambi hai, jaise '1-year')</li><li>Purana-discarded-QR-code/link months-baad-bhi device-ko-hijack karne ke liye use ho sakta hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">IoT/smart-device companion-apps</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Pair device → token used within minutes</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Old pairing-QR from months ago
+→ still successfully pairs</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> mahino-purana pairing-QR-code/link try kiya (jo kisi-ne-discard-kar-diya-tha) — phir bhi successfully naye-device se pair ho gaya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>(Conceptual) — IoT/smart-device documentation mein pairing-token expiry-policy check karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab expiry-policy samajh aa jaye.</div>
+</div>
+
+<div class="mission" id="m71">
+  <div class="m-top"><span class="badge num">MISSION 071</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">E-COMMERCE · WISHLIST</div><h2>Wishlist-to-Cart Price Snapshot Bypass</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho wishlist mein months-pehle-save-kiya-item 'add to cart' karne pe, purani (discounted/promotional) price honour hoti hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Wishlist-item sirf product-ID-reference save karta hai, price-snapshot nahi</li><li>Agar 'add to cart from wishlist' button ek cached/stale price-display use karta hai</li><li>Checkout-time pe price-recalculation properly nahi hoti to purani price lock ho sakti hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Wishlist feature wale e-commerce</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Wishlist item → add to cart → current price</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Old wishlist item (price changed months ago)
+→ checkout still shows old cached price</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> months-purana wishlist-item cart mein daala — price ab badal-chuki-thi market mein, par checkout pe purani (cached) price hi aayi.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Koi item wishlist mein daalo, uski price change-hone-ka-wait karo (ya admin-se-badalwao), phir add-to-cart try karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab stale-price confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m72">
+  <div class="m-top"><span class="badge num">MISSION 072</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">FINTECH · CRYPTO</div><h2>Withdrawal Address Whitelist Bypass via API</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho 'sirf whitelisted-wallet-address pe withdraw' wali security-feature, direct-API-call se non-whitelisted-address pe bhi kaam kar jaati hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>UI sirf whitelisted-addresses dropdown mein dikhata hai</li><li>Agar withdraw-API 'address whitelisted-hai-kya' server-side-validate nahi karta</li><li>Direct-API se koi-bhi-address pe withdraw-request bheji ja sakti hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Crypto-exchange/wallet withdrawal security-features</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>UI → select whitelisted-address only</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>POST /withdraw {"address":"non-whitelisted-addr"}
+→ processed anyway</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> seedha withdraw-API ko ek-aisi-address ke saath call kiya jo whitelist mein thi hi nahi — backend ne whitelist-check nahi kiya, withdrawal process ho gaya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>(Test-environment/testnet mein) withdraw-API capture karo, address-field ko non-whitelisted-value se replace karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab whitelist-bypass confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m73">
+  <div class="m-top"><span class="badge num">MISSION 073</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">FINTECH · INSURANCE</div><h2>Insurance Claim Submitted Before Policy-Start-Date</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho policy actually-start-hone-se-pehle hi (grace-period/processing-period mein) claim-submit-karke accept ho sakta hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Policy-purchase aur policy-effective-date alag ho sakte hain (waiting-period common hai)</li><li>Agar claim-submission-API sirf 'policy-exists' check karta hai, 'abhi-effective-hai-kya' nahi</li><li>Waiting-period ke dauraan hui-ghatna ka bhi claim accept ho sakta hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Insurance-tech claim-submission systems</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Policy effective Jan 1 → claim for Jan-5-incident → valid</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Policy purchased Jan 1 (effective Jan 15, waiting-period)
+→ claim for Jan-3-incident → accepted</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> policy abhi waiting-period mein thi (effective-date aana baki tha), uske pehle ki ghatna ka claim-submit kiya — system ne effective-date-check nahi kiya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>(Conceptual/test-insurance-platform) — policy-date vs claim-date validation-logic documentation padho.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab date-validation-gap samajh aa jaye.</div>
+</div>
+
+<div class="mission" id="m74">
+  <div class="m-top"><span class="badge num">MISSION 074</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">SOCIAL · CONTENT MODERATION</div><h2>Shadow-Banned Content Still Reachable via Direct-Link</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho 'shadow-banned' post feed/search se hata-diya-jaata-hai, par direct-permalink se abhi-bhi publicly-accessible hota hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Moderation-action 'discoverability' remove karta hai (feed-ranking/search-index se)</li><li>'Access-control' alag cheez hai — agar post abhi-bhi-public-flag pe hai</li><li>Direct-URL/permalink se content accessible rehta hai, link-share karke spread ho sakta hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Content-moderation systems with shadow-ban mechanism</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Shadow-banned post → invisible in feed/search</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Direct permalink to shadow-banned post
+→ fully visible, shareable</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> shadow-banned post feed mein nahi dikha, par uska direct-URL-link abhi-bhi-publicly-open tha — content ban ke bawajood spread ho sakta tha.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Test-account pe content-flag/report karwao (agar-sandbox-available-hai), moderation-ke-baad direct-link check karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab permalink-leak confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m75">
+  <div class="m-top"><span class="badge num">MISSION 075</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">ENTERPRISE · SSO</div><h2>SAML Response Replay Across Different Service-Providers</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho ek SSO-provider ke liye signed-SAML-response, dusre connected-service pe bhi (galti-se) accept ho jaata hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>SAML-response mein 'audience' field hona chahiye (kisके-liye-issued-hua)</li><li>Agar receiving-service-provider audience-field-validate nahi karta</li><li>Service-A ke liye issued-response, Service-B pe replay karke login-ho-sakta-hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Multi-service SSO/SAML-based enterprise-auth</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>SAML response for Service-A → login to A only</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Same SAML response replayed to Service-B
+→ accepted (audience not checked)</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> Service-A ke liye issued SAML-response capture kiya, Service-B ke login-endpoint pe replay kiya — audience-validation missing hone se accept ho gaya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>(Conceptual/lab-SSO-setup) — SAML-response capture karke audience-restriction field check karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab cross-service-replay confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m76">
+  <div class="m-top"><span class="badge num">MISSION 076</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">E-COMMERCE · AFFILIATE</div><h2>Affiliate Commission Self-Referral via Cookie-Stuffing</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho apna-hi-affiliate-link use karke khud-ke-purchase pe commission earn kiya ja sakta hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Affiliate-tracking cookie-based hoti hai (jo-bhi-link-se-aaya-uska-cookie-set)</li><li>System 'ye-purchase-aur-ye-affiliate-same-insaan-hain-kya' check nahi karta</li><li>User apna-khud-ka-affiliate-link click karke, khud-hi-se-kharidta-hai, khud-ko-commission milti hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Affiliate/referral-marketing programs</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Affiliate refers customer → commission earned</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Click own affiliate-link → purchase with own account
+→ commission credited to self</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> apna-hi-affiliate-link click kiya, usi-account se purchase kiya — system ne 'self-purchase-hai-kya' check nahi kiya, commission mil gayi.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Affiliate-program mile to apna-link click karke khud-se-purchase try karo, commission-credit-hoti-hai-kya dekho.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab self-referral-commission confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m77">
+  <div class="m-top"><span class="badge num">MISSION 077</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">SAAS · BILLING</div><h2>Proration Calculation Exploited on Plan-Downgrade</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho mid-cycle plan-downgrade pe proration-credit itna-zyada-calculate-ho-jaata-hai ki agla-mahina-almost-free ho jaata hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Proration 'kitna-unused-time-bacha-hai' ke hisaab se credit deta hai</li><li>Agar calculation-formula edge-case (jaise same-din-upgrade-fir-downgrade) handle nahi karta</li><li>Credit actual-paid-amount se zyada-ban sakta hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Subscription-billing with proration-logic</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Downgrade mid-cycle → partial-credit, fair</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Upgrade→downgrade same-day repeatedly
+→ credit compounds beyond paid-amount</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> same-din-ke-andar upgrade-karke-turant-downgrade-kiya, isko-kai-baar-repeat-kiya — proration-credit har-baar-add-hota-gaya, final-credit actual-payment se zyada ho gaya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Test-SaaS-billing mile to same-session mein plan-upgrade-downgrade multiple-baar try karo, credit-balance track karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab proration-exploit confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m78">
+  <div class="m-top"><span class="badge num">MISSION 078</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">GAMING · TOURNAMENT</div><h2>Tournament Bracket Manipulation via Late Opponent-Swap</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho tournament-match-start-hone-se-just-pehle opponent ko 'easier' player se swap kiya ja sakta hai kya (agar swap-API-properly-locked-nahi-hai).</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Bracket-assignment ek-baar-lock-ho-jaani-chahiye registration-close-hone-ke-baad</li><li>Agar 'swap-opponent' admin/support-feature galti-se-players-ko-bhi-accessible-hai (ya API-directly-callable-hai)</li><li>Match-start-se-pehle-last-second-mein-favorable-opponent-set kiya ja sakta hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Competitive-gaming/esports tournament-platforms</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Bracket locked after registration-close</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>POST /tournament/swap-opponent (player-accessible)
+→ opponent changed last-minute</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> registration-close-ke-baad-bhi swap-opponent-API call-ki (jo sirf-admin-ke-liye-thi) — bracket mein-apna-opponent-easier-player-se-replace-kar-diya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>(Conceptual/test-tournament-platform) — bracket-lock-enforcement aur role-restriction documentation padho.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab bracket-manipulation-potential samajh aa jaye.</div>
+</div>
+
+<div class="mission" id="m79">
+  <div class="m-top"><span class="badge num">MISSION 079</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">HEALTHCARE · PRESCRIPTIONS</div><h2>Prescription Refill Request Without Original-Validity-Check</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho expired/one-time-use prescription ka 'refill-request' baar-baar-submit-karke accept ho sakta hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Refill-API 'prescription-ID-valid-hai' check karta hai</li><li>'Ye prescription abhi-active-hai, refills-remaining-hain' wala counter-check alag hota hai</li><li>Agar counter-decrement-properly-nahi-hota, same-prescription-unlimited-baar refill ho sakti hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Telehealth/pharmacy prescription-refill systems</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>3 refills allowed → 4th blocked</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Rapid/parallel refill-requests
+→ more than 3 refills processed</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> refill-request ko parallel/rapid-succession mein bheja — counter-decrement race-condition ki wajah se allowed-limit (3) se zyada refills process ho gaye.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>(Test/sandbox-healthcare-platform) — refill-API ko parallel-requests se test karo, counter-enforcement check karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab refill-limit-bypass confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m80">
+  <div class="m-top"><span class="badge num">MISSION 080</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">ENTERPRISE · PROCUREMENT</div><h2>Purchase-Order Approval-Threshold Splitting</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho '₹1,00,000-se-upar-approval-zaroori' wali policy ko, order-ko-chhote-chhote-POs mein split-karke bypass kiya ja sakta hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Approval-threshold per-PO (per-purchase-order) pe check hota hai</li><li>System 'ye-saare-POs-related-hain-kya/same-vendor-same-din' cross-check nahi karta</li><li>₹2,50,000 ka order 3 POs (₹83k-each) mein split karke bina-approval-ke process ho sakta hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Enterprise procurement/purchase-order systems</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>PO ₹1,50,000 → requires manager-approval</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>3× PO of ₹50,000 each (same vendor, same day)
+→ no approval triggered, total ₹1,50,000</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> ek-bada-order ko teen-chhote-POs mein split kiya — har-ek-individually threshold-se-neeche-tha, approval-trigger-hi-nahi-hui, jabki total-value-approval-zaroori-karti.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>(Conceptual/enterprise-test-system) — procurement-policy padho, threshold per-PO-hai-ya-aggregate-hai check karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab threshold-splitting-gap samajh aa jaye.</div>
+</div>
+
+<div class="mission" id="m81">
+  <div class="m-top"><span class="badge num">MISSION 081</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">E-COMMERCE · REVIEWS</div><h2>Review-Bombing via Multiple-Unverified-Accounts</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho ek-hi-device/IP se multiple-fake-accounts banake negative/positive-reviews flood-ki-ja-sakti-hain kya (rate-limiting/device-fingerprint-check-ki-kami).</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Review-submission 'logged-in-user-hai' check karta hai</li><li>'Ye-multiple-accounts-same-insaan/device-se-hain-kya' check missing ho sakta hai</li><li>Script se multiple-accounts-banake-ek-product/competitor ko review-bomb kiya ja sakta hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Review/rating platforms</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>1 account → 1 review per product</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>10 accounts, same device/IP → 10 reviews
+→ no fingerprint/rate-limit block</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> ek-hi-device-se-10-alag-accounts-banaye, sabse-ek-hi-product-pe-review-daala — koi device-fingerprint-ya-IP-based-rate-limit-nahi-tha, sab-accept-ho-gaye.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>(Test-shop mein) multiple-test-accounts-banake-same-product-review karo, rate-limiting-ka-behavior note karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab review-bombing-potential confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m82">
+  <div class="m-top"><span class="badge num">MISSION 082</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">FINTECH · KYC</div><h2>KYC Document Reuse Across Multiple-Accounts</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho ek-hi-ID-document (Aadhaar/PAN-jaisa) multiple-alag-accounts ke KYC mein use ho sakta hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>KYC-verification 'document-valid-hai-kya' check karta hai</li><li>'Ye-document-already-kisi-aur-account-mein-use-ho-chuka-hai-kya' duplicate-check missing ho sakta hai</li><li>Ek-hi-ID se multiple-fake-accounts-verify ho sakte hain (fraud/multiple-bonus-abuse ke liye)</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Fintech-apps with KYC-verification</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>1 ID-document → 1 verified-account</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Same ID-document uploaded to 3 different accounts
+→ all 3 pass KYC</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> ek-hi-Aadhaar/PAN-ka-photo 3-alag-naye-accounts-mein-upload-kiya — teeno-accounts-successfully-verified-ho-gaye, koi-duplicate-document-check-nahi-tha.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>(Test/sandbox-KYC-flow mein) same-test-document multiple-accounts-mein-try-karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab duplicate-document-acceptance confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m83">
+  <div class="m-top"><span class="badge num">MISSION 083</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">SUBSCRIPTION · FAMILY PLANS</div><h2>Family-Plan Member-Limit Bypass via Rapid-Add-Remove</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho 'max-5-members' wale family-plan mein member-add-karke-turant-remove-karke-naya-add-karne-se, effectively-unlimited-logins ek-saath-mil-sakte-hain kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Member-limit 'abhi-kitne-members-hain' count-check-karta-hai add-karte-waqt</li><li>Agar remove-turant-count-update-nahi-karta (cache/async-delay)</li><li>Rapid add-remove-add se race-condition exploit-ho-sakti-hai, actual-concurrent-active-sessions limit-se-zyada-ho-sakte-hain</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Family/group-subscription plans</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>5-member limit → 6th add blocked</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Rapid parallel add-requests (beyond count-sync)
+→ 6-7 members added simultaneously</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> member-add-requests-ko-parallel-bheja — count-check race-condition ki wajah se limit (5) se-zyada-members-add-ho-gaye ek-saath.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Test-family-plan mein members-ko-parallel-requests-se-add-karke-limit-enforcement check karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab member-limit-race confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m84">
+  <div class="m-top"><span class="badge num">MISSION 084</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">MARKETPLACE · DISPUTES</div><h2>Dispute-Resolution Auto-Refund Before Evidence-Review</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho buyer-dispute-file-karte-hi, seller-ka-evidence-submit-karne-ka-time milne-se-pehle hi auto-refund trigger ho jaata hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Dispute-system 'buyer-ne-claim-kiya' pe timer-based-auto-refund rakhta hai (agar-seller-time-pe-respond-na-kare)</li><li>Agar timer-bohot-chhota-hai ya seller-ko-notification-properly-nahi-milti</li><li>Legitimate-seller-ko-respond-karne-ka-mauka-hi-nahi-milta, buyer-fraudulent-dispute se-bhi-refund-le-leta-hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Marketplace dispute/resolution-center systems</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Dispute filed → seller has 48h to respond → then decision</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Dispute filed → auto-refund triggers in <1h
+(seller never notified in time)</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> dispute-file-karte-hi dekha-ki-refund-bohot-jaldi (seller-ke-response-window-se-pehle) process-ho-gaya — seller-ko-defend-karne-ka-mauka-hi-nahi-mila.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>(Conceptual/test-marketplace) — dispute-timer aur notification-delivery-timing documentation padho.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab premature-auto-refund-gap samajh aa jaye.</div>
+</div>
+
+<div class="mission" id="m85">
+  <div class="m-top"><span class="badge num">MISSION 085</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">API · FILE UPLOAD</div><h2>Upload Quota Bypass via Chunked-Upload-Manipulation</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho '100MB-max-upload' wali limit, file-ko-chunks-mein-todkar-upload-karne-se bypass-ho-sakti-hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Size-check-aksar-single-complete-file-pe-hota-hai</li><li>Chunked/resumable-upload-APIs (jaise-bade-videos-ke-liye) mein per-chunk-size-check-hoti-hai, total-nahi</li><li>Bohot-saare-chunks-upload-karke-total-limit-se-bada-file-ban-sakta-hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">File/media-upload APIs with chunked-upload-support</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Single upload capped at 100MB</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>50 chunks × 20MB each (chunked-API)
+→ 1GB file assembled, no total-check</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> chunked-upload-API use kiya, chhote-chhote-chunks-mein-bohot-saara-data-bheja — total-assembled-file-size-kabhi-check-nahi-hui, limit-se-bohot-zyada-bada-file-ban-gaya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Agar chunked-upload-feature mile, total-size-limit-se-zyada-data chunks-mein-todkar-upload-karne-ki-koshish-karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab total-size-check-gap confirm/deny ho jaye.</div>
+</div>
+
+<div class="toc" style="margin-bottom:26px;"><h3 style="grid-column:1/-1;margin:0;">📅 Day 7 — Advanced Edge-Cases & Synthesis (15)</h3></div>
+<div class="mission" id="m86">
+  <div class="m-top"><span class="badge num">MISSION 086</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">E-COMMERCE · SUBSCRIPTION BOX</div><h2>Subscription-Box Skip-Month Still-Charges-Fee</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho 'skip-this-month' option use-karne-ke-baad-bhi, koi-background-job-purani-schedule-follow-karke-charge-kar-deta-hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Skip-action ek-flag-set-karta-hai current-record-mein</li><li>Billing-cron-job agar-alag-independent-system-hai jo-apna-purana-schedule-follow-karta-hai</li><li>Dono-ke-beech-sync-na-hone-se, skip-ke-bawajood charge-ho-sakta-hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Subscription-box e-commerce (monthly-delivery-services)</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Skip month → no charge, no shipment</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Skip right before billing-cron runs (race)
+→ charged anyway due to stale-schedule-cache</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> billing-cron-job-chalne-se-thik-pehle 'skip' kiya — cron-ne-purani (cached) schedule-follow-ki, charge-ho-gaya jabki-skip-request-already-submit-ho-chuki-thi.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Test-subscription mein billing-date-ke-paas skip-action-try-karo, charge-hota-hai-kya-observe-karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab skip-vs-billing-race confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m87">
+  <div class="m-top"><span class="badge num">MISSION 087</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">FINTECH · P2P</div><h2>Peer-to-Peer Transfer to Non-Existent-User Silently-Succeeds</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho galat/non-existent-username-pe-transfer-karne-se, paisa 'kahin-nahi-jaata' lekin sender-ka-balance-phir-bhi-deduct-ho-jaata-hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Transfer-API pehle-sender-ka-balance-deduct-karta-hai, phir-recipient-dhoondta-hai</li><li>Agar recipient-not-found-pe-proper-rollback-nahi-hota (transaction-atomic-nahi-hai)</li><li>Paisa-'disappear'-ho-sakta-hai — na-sender-ke-paas-na-kisi-receiver-ke-paas</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">P2P-payment/wallet-transfer features</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Transfer to valid-user → balance moves correctly</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Transfer to slightly-misspelled/deleted-username
+→ sender debited, no recipient-credit, no rollback</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> ek-aisa-username-daala-jo-exist-nahi-karta-tha (ya-recently-deleted-tha) — sender-ka-balance-deduct-ho-gaya, par-paisa-kahin-credit-nahi-hua, koi-automatic-refund-bhi-nahi-aaya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>(Test-wallet mein) non-existent/invalid-recipient-ko-transfer-try-karo, sender-balance-pe-impact-check-karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab atomic-transaction-gap confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m88">
+  <div class="m-top"><span class="badge num">MISSION 088</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">SOCIAL · EVENTS</div><h2>Private-Event Guest-List Leaked via Calendar-Invite-Forward</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho private-event-ka-guest-list, invite-forward-karne-pe-non-invited-logo-ko-bhi-dikh-jaata-hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Calendar-invite-mein-saare-attendees-ki-list-embedded-hoti-hai</li><li>Agar invite-forward-hone-pe-bhi-wahi-full-attendee-list-saath-jaati-hai</li><li>Non-invited-person-ko-pura-guest-list-mil-jaata-hai sirf-ek-forward-se</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Calendar/event-management with guest-lists</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Invited-guests see full attendee-list</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Forward invite-email to outsider
+→ outsider also sees full guest-list</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> ek-invited-guest-ne-invite-email-ko-outsider-ko-forward-kiya — forwarded-email-mein-poora-attendee-list-bhi-included-tha, jo-outsider-ko-dekhne-ka-haq-nahi-tha.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>(Test-calendar-app mein) private-event-banao, invite-forward-karke-check-karo-attendee-list-visible-hoti-hai-kya.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab guest-list-leak confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m89">
+  <div class="m-top"><span class="badge num">MISSION 089</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">ENTERPRISE · CONTRACTS</div><h2>Digital-Signature Workflow Order-Bypass</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho multi-party-contract mein 'Party-A-pehle-sign-kare-phir-Party-B' wali-sequence, direct-Party-B-link-se-skip-ho-sakti-hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>E-signature-platforms-UI-mein-sequence-enforce-karte-hain</li><li>Agar-har-signer-ka-apna-independent-unique-signing-link-hota-hai</li><li>Party-B-apna-link-directly-use-karke-Party-A-ke-sign-kiye-bina-hi-sign-kar-sakta-hai, contract-'fully-signed'-dikh-sakta-hai-galat-order-mein</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">E-signature/digital-contract platforms</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>A signs → B's link activates → B signs</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>B's link used before A signs
+→ B signs anyway, sequence broken</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> Party-A-ne-abhi-sign-nahi-kiya-tha, Party-B-ne-apna-already-generated-link-directly-use-kiya — sign-ho-gaya, intended-sequence-bypass-ho-gayi.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>(Test-e-signature-platform mein) multi-party-contract-banao, order-se-bahar-signing-links-try-karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab sequence-bypass confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m90">
+  <div class="m-top"><span class="badge num">MISSION 090</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">GAMING · ANTI-CHEAT</div><h2>Replay/Spectator Data Reveals Hidden-Information</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho live-match-ka-spectator/replay-feed, abhi-chal-rahe-match-ke-dusre-player-ko-hidden-information (jaise-opponent-ka-hand/position) de-sakta-hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Spectator-mode-'fairness'-ke-liye-kabhi-delay-ya-restricted-view-chahiye</li><li>Agar-real-time-full-data-stream-ho-raha-hai-bina-delay/restriction-ke</li><li>Player-dusre-device-pe-apna-hi-match-spectate-karke (ya-friend-se) opponent-ki-hidden-info-dekh-sakta-hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Competitive multiplayer-games with spectator-mode</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Spectator-view delayed/restricted for fairness</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Real-time spectator-link during own-match
+→ opponent's hidden-info visible live</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> apne-hi-chal-rahe-match-ko-doosre-device-pe-spectate-kiya — koi-delay-ya-restriction-nahi-thi, opponent-ki-normally-hidden-rehne-wali-info-real-time-mein-dikh-gayi.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>(Test/practice-match mein) spectator-feature-ko-apne-hi-match-pe-try-karo, delay/restriction-hai-kya-check-karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab info-leak-via-spectator confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m91">
+  <div class="m-top"><span class="badge num">MISSION 091</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">E-COMMERCE · GIFT ORDERS</div><h2>Gift-Order Recipient-Address-Change by Sender Post-Delivery-Schedule</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho 'ye-order-kisi-aur-ko-gift-hai' wale-flow-mein, sender-delivery-ke-just-pehle-address-badalke-khud-receive-kar-sakta-hai kya (fraud/payment-bypass-ke-liye-nahi-par-logic-gap-ke-liye).</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Gift-order-'recipient'-field-sirf-shipping-ke-liye-use-hoti-hai</li><li>Sender-ke-paas-still-full-edit-access-hoti-hai order-pe</li><li>Recipient-ko-koi-confirmation/lock-nahi-milta, sender-chahe-to-last-moment-address-khud-ki-kar-sakta-hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Gift-order features (e-commerce)</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Gift-order → ships to recipient's address</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Sender edits address just before shipping
+→ redirected to sender</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> gift-order-place-kiya, shipping-hone-se-thik-pehle-address-khud-ki-kar-di — recipient-ko-pata-hi-nahi-chala, order-sender-ke-paas-pahunch-gaya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Test-gift-order-banao, shipping-se-pehle-address-edit-try-karo, koi-lock/notification-hai-kya-check-karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab address-edit-window confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m92">
+  <div class="m-top"><span class="badge num">MISSION 092</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">FINTECH · CREDIT SCORE</div><h2>Credit-Score Recalculation Lag Exploited for Loan-Approval</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho score-drop-hone-ke-turant-baad (jaise-naya-default-mark-hone-par), loan-application purani-cached-score-pe-approve-ho-jaata-hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Credit-score-update-background-job-se-hoti-hai (real-time-nahi)</li><li>Loan-approval-engine-agar-cached/stale-score-use-karta-hai</li><li>Score-drop-hone-aur-cache-refresh-hone-ke-beech-ka-window exploit-ho-sakta-hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Lending-platforms with periodic credit-score-sync</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Score updated → loan-engine uses fresh score</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Apply for loan right after score-drop-event
+→ approved using stale (higher) cached score</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> score-drop-hone-wale-event (jaise-missed-payment) ke-turant-baad loan-apply-kiya — engine-ne-abhi-purani (achi) cached-score-use-ki, approval-mil-gaya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>(Conceptual/test-lending-platform) — score-sync-frequency aur loan-engine-ki-data-source documentation padho.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab stale-score-window samajh aa jaye.</div>
+</div>
+
+<div class="mission" id="m93">
+  <div class="m-top"><span class="badge num">MISSION 093</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">MARKETPLACE · AUCTIONS</div><h2>Auction Last-Second Bid-Retraction Exploit</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho auction-khatam-hone-se-milliseconds-pehle bid-place-karke, turant-retract-karke, 'highest-bidder' status-dikhte-hue-bhi-payment-avoid-ki-ja-sakti-hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Auction-close-hone-ka-moment-aur-bid-processing-mein-chhota-sa-delay-ho-sakta-hai</li><li>Agar-retract-action-close-ke-baad-bhi-process-ho-jaaye (race-condition)</li><li>Winner-dikh-kar-bhi-actual-commitment-na-kiya-ho, seller-ko-nuksaan</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Online-auction platforms</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Bid placed → auction closes → winner locked</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Bid at T-10ms, retract at T+10ms (after close)
+→ retraction still processed</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> auction-close-hone-ke-exactly-around-waqt-bid-place-ki-aur-turant-retract-ki — close-ke-baad-bhi-retraction-process-ho-gayi, 'winning'-commitment-se-bach-gaya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>(Test-auction-platform mein) close-time-ke-aas-paas-bid-place-aur-retract-dono-try-karo timing-precisely.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab retraction-race confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m94">
+  <div class="m-top"><span class="badge num">MISSION 094</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">HR/ENTERPRISE · EXPENSES</div><h2>Expense-Report Currency-Mismatch Reimbursement-Inflation</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho foreign-currency-expense-submit-karte-waqt, galat (favorable) exchange-rate-manually-enter-karke-zyada-reimbursement-liya-ja-sakta-hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Expense-system-kabhi-user-ko-manually-exchange-rate-enter-karne-deta-hai (receipt-ke-saath)</li><li>Agar system-khud-se-real-time-rate-verify-nahi-karta</li><li>User-ek-purana/favorable-rate-daal-ke-zyada-reimbursement-claim-kar-sakta-hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Corporate expense-management/reimbursement-tools</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>$100 expense → system-fetched-rate → ₹8,300</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>$100 expense, manually-entered-rate (inflated)
+→ ₹9,500 claimed, no verification</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> receipt-$100-ka-tha, exchange-rate-field-mein-khud-se-zyada-favorable-number-daal-diya — system-ne-real-time-rate-se-verify-nahi-kiya, zyada-amount-reimburse-ho-gaya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Test-expense-tool-mein foreign-currency-expense-submit-karo, exchange-rate-manually-badal-ke-dekho-accept-hota-hai-kya.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab rate-manipulation confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m95">
+  <div class="m-top"><span class="badge num">MISSION 095</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">API · THIRD-PARTY INTEGRATION</div><h2>Webhook-Secret Not Verified on Incoming Third-Party-Calls</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho third-party-service-se-aane-wale-webhooks (jaise-payment-provider), signature/secret-verify-kiye-bina-hi-trust-kar-liye-jaate-hain kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Webhooks-public-internet-pe-exposed-URLs-hote-hain</li><li>Proper-security-ke-liye-har-incoming-webhook-ka-signature (HMAC) verify-hona-chahiye</li><li>Agar-ye-verification-missing-hai, koi-bhi-us-URL-pe-fake-webhook-bhejke-system-ko-fool-kar-sakta-hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Any system receiving third-party-webhooks</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Legit provider sends signed-webhook → verified → processed</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Craft fake-webhook-payload, send directly to endpoint
+(no signature) → processed as if legit</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> webhook-endpoint-ka-URL-pata-chala, ek-fake-'payment-success'-payload-khud-bana-ke-seedha-bheja — koi-signature-verification-na-hone-se-system-ne-use-asli-maan-liya.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>(Test/sandbox-integration-mein) webhook-URL-ko-directly-ek-custom-payload-ke-saath-call-karo (bina-valid-signature-ke).</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab signature-verification-gap confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m96">
+  <div class="m-top"><span class="badge num">MISSION 096</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">SAAS · DATA EXPORT GDPR</div><h2>'Delete My Account' Doesn't Delete Derived/Aggregated-Data</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho account-delete-request-ke-baad, raw-data-delete-ho-jaata-hai-par-usse-bani-aggregated/derived-reports-mein-wahi-info-reconstruct-ho-sakti-hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>GDPR-jaisi-compliance-ke-liye-'right-to-be-forgotten'-important-hai</li><li>Agar-sirf-primary-database-record-delete-hota-hai</li><li>Analytics/ML-training-data/cached-reports-mein-wahi-information-reh-jaati-hai, indirectly-reconstructable</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Apps handling personal-data with deletion-requests</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Delete account → primary-record gone</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Check analytics-dashboard/aggregated-reports
+→ deleted-user's data-pattern still influences numbers</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> account-delete-request-ke-baad-bhi, company-ke-internal-analytics/reports-mein-us-user-ka-data-indirectly-present-raha — 'complete-deletion' ka-promise-poora-nahi-hua.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>(Conceptual) — privacy-policy/data-deletion-documentation padho, ye-samjho-kya-sach-mein-sab-jagah-se-delete-hota-hai.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab incomplete-deletion-scope samajh aa jaye.</div>
+</div>
+
+<div class="mission" id="m97">
+  <div class="m-top"><span class="badge num">MISSION 097</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">MARKETPLACE · RENTAL</div><h2>Security-Deposit Refund Triggered Without Return-Condition-Check</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho rental-item (jaise-equipment/property) return-hone-pe, condition-verify-kiye-bina-hi-automatically-full-deposit-refund-ho-jaata-hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Deposit-refund-'item-returned'-status-pe-trigger-hota-hai</li><li>'Item-kis-condition-mein-wapas-aaya' manual-inspection-step-hai jo-skip-ho-sakta-hai (auto-timeout)</li><li>Damaged-item-return-karke-bhi-full-deposit-wapas-mil-sakta-hai agar-inspection-window-miss-ho-jaaye</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Rental/equipment-sharing marketplaces</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>Return → inspection → refund-decision</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Return damaged-item → inspection-timeout → auto-full-refund</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> item-damaged-condition-mein-return-kiya, owner-ka-inspection-window-miss-ho-gaya (system-auto-timeout-pe-chala-gaya) — full-deposit-automatically-refund-ho-gaya bina-damage-check-ke.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>(Test-rental-platform mein) return-flow-ke-inspection-window-aur-auto-timeout-behavior-ko-samjho.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab auto-refund-without-inspection confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m98">
+  <div class="m-top"><span class="badge num">MISSION 098</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">ENTERPRISE · SSO PROVISIONING</div><h2>Just-In-Time SSO Provisioning Grants Stale-Role</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho SSO-se-first-time-login-pe, naya-account-auto-create-hota-hai-purane-cached/default-role-ke-saath, jo-ab-outdated-ho-chuka-hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>JIT (Just-In-Time)-provisioning-SSO-attributes-se-role-decide-karta-hai</li><li>Agar-identity-provider-side-role-recently-change-hui-thi-par-SSO-attribute-cache-stale-hai</li><li>Naya-account-purane (zyada-privileged) role-ke-saath-create-ho-sakta-hai</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Enterprise SSO with Just-In-Time account-provisioning</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>First SSO-login → account created with current-role</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Role-downgraded in IdP, then first-SSO-login
+→ account created with stale-cached (higher) role</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> identity-provider-mein-role-recently-downgrade-hui-thi, usi-user-ne-pehli-baar-SSO-se-login-kiya — naya-account-purani (higher) role-ke-saath-create-ho-gaya kyunki-cache-stale-tha.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>(Conceptual/enterprise-SSO-test-setup) — JIT-provisioning-ki-role-source-aur-caching-documentation padho.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab stale-role-provisioning samajh aa jaye.</div>
+</div>
+
+<div class="mission" id="m99">
+  <div class="m-top"><span class="badge num">MISSION 099</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">MOBILE · DEEP LINKS</div><h2>Deep-Link Action Executed Without In-App Auth-Context Check</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Dekho app-ka-deep-link (jaise myapp://transfer?to=X&amount=Y) directly-trigger-karne-se, sensitive-action-bina-proper-in-app-confirmation-ke-execute-ho-jaata-hai kya.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Deep-links-OS-ke-through-directly-app-ke-specific-screen/action-tak-le-jaate-hain</li><li>Agar-deep-link-handler-khud-se-'user-abhi-authenticated-hai-aur-confirm-kar-chuka-hai'-assume-kar-leta-hai</li><li>Malicious-link (SMS/email/QR-se) click-karte-hi-sensitive-action-trigger-ho-sakta-hai bina-extra-confirmation-ke</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Mobile-apps with custom-URL-scheme/deep-linking</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Normal</span><pre>In-app transfer-flow → confirm-screen → PIN → done</pre></div>
+      <div class="req exploit"><span>⚠️ Lab Test</span><pre>Click crafted deep-link: myapp://transfer?to=attacker&amt=5000
+→ skips confirm-screen, direct-action</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> ek-crafted-deep-link-banaya (jaise-SMS/WhatsApp-se-bheja-ja-sakta-hai), victim-click-kare-to-app-directly-transfer-screen-open-karke-kabhi-kabhi-pre-filled-action-execute-kar-deta-hai, bina-full-confirmation-flow-ke.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Apni-test-app-mein-deep-link-handlers-dhoondo (adb/source-se), dekho-koi-sensitive-action-directly-triggerable-hai-kya-bina-in-app-confirmation-ke.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — jab deep-link-action-bypass confirm/deny ho jaye.</div>
+</div>
+
+<div class="mission" id="m100">
+  <div class="m-top"><span class="badge num">MISSION 100</span><span class="badge cat">BUSINESS LOGIC</span></div>
+  <div class="banner"><div class="tag">META · SYNTHESIS</div><h2>Business-Logic Hunting — The Universal Checklist</h2></div>
+  <div class="body-pad">
+    <div class="sec"><span class="label obj">🎯 Objective</span><p>Ye last-mission-nahi-ek-naya-target-dekhte-waqt-use-karne-wala-mental-checklist hai — har-ek-upar-wali-mission-se-nikla-hua-common-pattern.</p></div>
+    <div class="sec"><span class="label mind">🧠 Kyun hota hai</span><ul><li>Kya koi multi-step-flow hai jismein beech-ka-step-skip-ho-sakta-hai?</li><li>Kya koi number/amount/quantity client-se-aata-hai jo server-dobara-verify-nahi-karta?</li><li>Kya koi limit/threshold hai jo split-karke/parallel-karke bypass-ho-sakti-hai (race-condition)?</li><li>Kya 'single-item' aur 'bulk' operation alag-code-path hain jahan check-missing-ho-sakta-hai?</li><li>Kya koi time/date client-pe-depend-karta-hai?</li><li>Kya 2-cheezein-'same-hona-chahiye'-wahan-system-sirf-ek-check-karta-hai (jaise-approver≠requester)?</li><li>Kya purana/deprecated-endpoint abhi-bhi-active-hai jahan-naye-checks-missing-hain?</li></ul></div>
+    <div class="sec"><span class="label recon">🔍 Kahan dhoondo</span><p><span class="where-pill">Koi bhi naya target — in 7 sawalon ko systematically-har-feature-pe-apply-karo</span></p></div>
+    <div class="req-compare">
+      <div class="req normal"><span>📡 Mental Model</span><pre>Ek bug-type → ek jagah test</pre></div>
+      <div class="req exploit"><span>⚠️ Elite Approach</span><pre>7-sawalon-ka-checklist → har-feature-pe-systematically-apply</pre></div>
+    </div>
+    <p class="farak">👉 <b>Farak:</b> yahi-fark-hai-average-aur-elite-bug-hunter-mein — average-wala-ek-hi-pattern-dhoondta-hai-jo-usne-abhi-seekha, elite-wala-har-naye-feature-ko-in-saare-patterns-ke-through-dekh-leta-hai-automatically, bina-list-dekhe.</p>
+    <details class="challenge"><summary>🧪 Challenge</summary><p>Apne-practice-target-pe, ek-feature-choose-karo aur upar-wale-7-sawal-manually-har-ek-pe-apply-karo — kitne-'possible-issue'-flag-hote-hain note-karo.</p></details>
+  </div>
+  <div class="complete">🏁 Mission Complete — 100/100 missions complete. Ab ye poori list tera mental-model ban chuki honi chahiye.</div>
+</div>
+
+
+</main>
+<footer>The Network Phantom — Business Logic Missions</footer>
+</body>
+</html>
