@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RE Crackme Arena — Level 1 to 20</title>
+<style>
+  :root{
+    --bg:#0a0e14; --panel:#111722; --panel2:#161d2b; --line:#232d40;
+    --text:#d9e2f1; --muted:#8a97b0; --neon:#00e5a0; --neon2:#ff6b35;
+    --warn:#ffb300; --danger:#ff4d5e; --blue:#4fb3ff; --purple:#b084ff;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:'Segoe UI',Roboto,Arial,sans-serif;line-height:1.6;}
+  header{background:radial-gradient(circle at 30% 20%,#132235,#0a0e14 70%);border-bottom:2px solid var(--neon);
+         padding:34px 20px;text-align:center;}
+  header h1{margin:0 0 8px;font-size:1.85em;color:var(--neon);}
+  header p{margin:0 0 4px;color:var(--muted);font-size:.92em;}
+  main{max-width:960px;margin:0 auto;padding:26px 16px 90px;}
+
+  .progress-wrap{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin-bottom:26px;}
+  .progress-wrap .row{display:flex;justify-content:space-between;font-size:.85em;color:var(--muted);margin-bottom:8px;}
+  .progress-wrap .row b{color:var(--neon);}
+  .bar{height:10px;background:#0d1420;border-radius:20px;overflow:hidden;border:1px solid var(--line);}
+  .bar-fill{height:100%;background:linear-gradient(90deg,var(--neon),var(--blue));width:0%;transition:width .3s;}
+
+  .toc{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin-bottom:28px;
+       display:grid;grid-template-columns:1fr 1fr;gap:4px 20px;}
+  .toc h3{grid-column:1/-1;margin:0 0 6px;color:var(--neon);font-size:1em;}
+  .toc a{color:var(--blue);text-decoration:none;padding:3px 0;font-size:.85em;}
+  .toc a:hover{color:var(--neon);}
+  @media(max-width:620px){.toc{grid-template-columns:1fr;}}
+
+  .tier-head{margin:36px 0 16px;padding-bottom:8px;border-bottom:2px solid var(--neon);display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .tier-head h2{margin:0;color:var(--neon);font-size:1.3em;}
+  .tier-head p{margin:0;color:var(--muted);font-size:.85em;}
+
+  .chal{background:var(--panel);border:1px solid var(--line);border-radius:14px;margin-bottom:18px;overflow:hidden;}
+  .chal-top{display:flex;align-items:center;gap:10px;padding:13px 18px;background:#0d1420;border-bottom:1px solid var(--line);flex-wrap:wrap;}
+  .chal-top .num{background:var(--blue);color:#06203a;font-weight:700;font-size:.74em;padding:3px 10px;border-radius:18px;}
+  .chal-top h3{margin:0;font-size:1.05em;color:#fff;flex:1;}
+  .badge{font-size:.65em;font-weight:700;padding:3px 10px;border-radius:14px;text-transform:uppercase;letter-spacing:.03em;}
+  .badge.easy{background:#0d2a1f;color:var(--neon);border:1px solid var(--neon);}
+  .badge.medium{background:#3a2a08;color:var(--warn);border:1px solid var(--warn);}
+  .badge.hard{background:#3a0e12;color:var(--danger);border:1px solid var(--danger);}
+
+  .chal-body{padding:14px 18px 18px;}
+  .chal-body label{display:flex;align-items:flex-start;gap:9px;cursor:pointer;margin-bottom:10px;}
+  .chal-body input[type=checkbox]{width:16px;height:16px;accent-color:var(--neon);cursor:pointer;flex-shrink:0;margin-top:4px;}
+  .chal-body input[type=checkbox]:checked ~ span.title{color:var(--muted);text-decoration:line-through;}
+  .title{font-weight:700;color:#fff;font-size:.95em;}
+
+  .goal{font-size:.88em;color:var(--text);margin:8px 0 12px;}
+  .goal b{color:var(--neon2);}
+  .hint{background:#0d1420;border-left:3px solid var(--purple);padding:9px 13px;border-radius:6px;font-size:.85em;margin:8px 0;color:#d8c8ff;}
+  .hint b{color:var(--purple);}
+
+  pre{background:#000;color:#9cffd0;padding:12px 14px;border-radius:8px;overflow-x:auto;font-size:.78em;margin:8px 0;}
+  code{background:#000;color:#9cffd0;padding:2px 6px;border-radius:4px;font-size:.85em;}
+
+  .compile{font-size:.82em;color:var(--muted);margin-top:6px;}
+  .compile code{color:var(--blue);}
+
+  .note{background:#0d1420;border-left:3px solid var(--neon2);padding:12px 16px;border-radius:6px;
+         font-size:.87em;margin:20px 0;color:var(--text);}
+  .note b{color:var(--neon2);}
+  footer{text-align:center;color:var(--muted);padding:30px;font-size:.84em;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🧩 RE Crackme Arena — Batch 1 (Level 1-20)</h1>
+  <p>Khud-compile-karo, Ghidra/GDB mein khol, socho, research karo — koi solution yahan nahi diya, sirf goal + ek chhota hint</p>
+  <div class="progress-wrap"><div class="row"><span>Progress</span><b id="progress-text">0 / 20 solved</b></div><div class="bar"><div class="bar-fill" id="bar-fill"></div></div></div>
+</header>
+
+<main>
+
+  <div class="toc">
+    <h3>📑 Tiers</h3>
+    <a href="#easy">🟢 Easy — 01 to 08 (string/math logic)</a>
+    <a href="#medium">🟡 Medium — 09 to 15 (loops, arrays, bit-tricks)</a>
+    <a href="#hard">🔴 Hard — 16 to 20 (structs, recursion, obfuscation)</a>
+  </div>
+
+  <div class="note">
+    <b>Kaise-use-karna-hai:</b> Har challenge ka C-code copy-paste karke ek <code>.c</code>-file bana, <code>gcc file.c -o file</code> se-compile-kar, phir compiled binary (.c-wali-nahi) ko Ghidra-mein-khol. "Goal" padh, decompiler-ka-pseudocode-samajh, answer-dhoondh. Jahan-atke-wahi-mujhe-bata — solution nahi-dunga, par-concept-zaroor-samjhaunga jab-tak-khud-na-nikal-le.
+  </div>
+
+  <!-- ============ EASY ============ -->
+  <div class="tier-head" id="easy"><h2>🟢 Easy (01-08)</h2><p>Sirf if/compare, basic-math — Ghidra-pseudocode-C-jaisa-hi-dikhega</p></div>
+
+  <div class="chal">
+    <div class="chal-top"><span class="num">01</span><h3>Straight Compare</h3><span class="badge easy">Easy</span></div>
+    <div class="chal-body">
+      <label><input type="checkbox"><span class="title">Password seedha ek string se compare hoti hai</span></label>
+      <div class="goal">Goal: Decompiler mein dhoondh ki kaunsi string check ho rahi hai.</div>
+<pre>#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+int main() {
+    char input[50];
+    printf("Enter password: ");
+    scanf("%s", input);
+    if (strcmp(input, "dragon123") == 0)
+        printf("Access Granted\n");
+    else
+        printf("Access Denied\n");
+    return 0;
+}</pre>
+      <div class="hint"><b>Hint:</b> <code>strcmp</code> call ke pehle/baad kya argument pass ho raha hai, Ghidra mein string references dekh.</div>
+      <div class="compile">Compile: <code>gcc 01.c -o 01</code></div>
+    </div>
+  </div>
+
+  <div class="chal">
+    <div class="chal-top"><span class="num">02</span><h3>Sum Check</h3><span class="badge easy">Easy</span></div>
+    <div class="chal-body">
+      <label><input type="checkbox"><span class="title">Characters ka ASCII-sum ek target number se match karna hai</span></label>
+      <div class="goal">Goal: Kaunsi string daalo jisse sum 1337 ban jaye.</div>
+<pre>#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+int main() {
+    char input[50];
+    int sum = 0;
+    printf("Enter password: ");
+    scanf("%s", input);
+    for (int i = 0; i &lt; strlen(input); i++)
+        sum += input[i];
+    if (sum == 1337)
+        printf("Correct!\n");
+    else
+        printf("Wrong!\n");
+    return 0;
+}</pre>
+      <div class="hint"><b>Hint:</b> Koi bhi combination chalega jiska total 1337 ho — ek simple tarika: equal characters use karo aur divide karo.</div>
+      <div class="compile">Compile: <code>gcc 02.c -o 02</code></div>
+    </div>
+  </div>
+
+  <div class="chal">
+    <div class="chal-top"><span class="num">03</span><h3>Length Gate</h3><span class="badge easy">Easy</span></div>
+    <div class="chal-body">
+      <label><input type="checkbox"><span class="title">Pehle length check hota hai, phir alag logic</span></label>
+      <div class="goal">Goal: Decompiler mein 2 alag checks dhoondh — pehle kaunsa chalta hai.</div>
+<pre>#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+int main() {
+    char input[50];
+    printf("Enter password: ");
+    scanf("%s", input);
+    if (strlen(input) != 8) {
+        printf("Wrong length!\n");
+        return 0;
+    }
+    if (input[0] == 'h' && input[7] == 'k')
+        printf("Correct!\n");
+    else
+        printf("Wrong!\n");
+    return 0;
+}</pre>
+      <div class="hint"><b>Hint:</b> 8-character string chahiye jisme pehla 'h' aur aathvan 'k' ho — beech ke 6 kuch bhi.</div>
+      <div class="compile">Compile: <code>gcc 03.c -o 03</code></div>
+    </div>
+  </div>
+
+  <div class="chal">
+    <div class="chal-top"><span class="num">04</span><h3>XOR Single Byte</h3><span class="badge easy">Easy</span></div>
+    <div class="chal-body">
+      <label><input type="checkbox"><span class="title">Input ko ek fixed byte se XOR karke compare hota hai</span></label>
+      <div class="goal">Goal: XOR-key dhoondh ke asli password nikaal.</div>
+<pre>#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+int main() {
+    char input[50];
+    char target[] = {0x1a, 0x17, 0x1e, 0x1e, 0x02, 0x00};
+    printf("Enter password: ");
+    scanf("%s", input);
+    int ok = 1;
+    for (int i = 0; i &lt; 5; i++)
+        if ((input[i] ^ 0x5A) != target[i]) ok = 0;
+    if (ok) printf("Correct!\n");
+    else printf("Wrong!\n");
+    return 0;
+}</pre>
+      <div class="hint"><b>Hint:</b> <code>target[i] ^ 0x5A</code> nikal lo (XOR apna ulta khud hota hai), wahi asli character hai.</div>
+      <div class="compile">Compile: <code>gcc 04.c -o 04</code></div>
+    </div>
+  </div>
+
+  <div class="chal">
+    <div class="chal-top"><span class="num">05</span><h3>Reversed String</h3><span class="badge easy">Easy</span></div>
+    <div class="chal-body">
+      <label><input type="checkbox"><span class="title">Password ulti string se match hoti hai</span></label>
+      <div class="goal">Goal: Target string ulti padh ke asli password nikaal.</div>
+<pre>#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+int main() {
+    char input[50];
+    char target[] = "evisolpxe";
+    printf("Enter password: ");
+    scanf("%s", input);
+    int len = strlen(target);
+    int ok = 1;
+    for (int i = 0; i &lt; len; i++)
+        if (input[i] != target[len - 1 - i]) ok = 0;
+    if (ok) printf("Correct!\n");
+    else printf("Wrong!\n");
+    return 0;
+}</pre>
+      <div class="hint"><b>Hint:</b> Target string ko pure ulta likh de.</div>
+      <div class="compile">Compile: <code>gcc 05.c -o 05</code></div>
+    </div>
+  </div>
+
+  <div class="chal">
+    <div class="chal-top"><span class="num">06</span><h3>Multi-Condition Gate</h3><span class="badge easy">Easy</span></div>
+    <div class="chal-body">
+      <label><input type="checkbox"><span class="title">Teen alag conditions ek saath (AND) sahi honi chahiye</span></label>
+      <div class="goal">Goal: Teeno conditions satisfy karne wala input dhoondh.</div>
+<pre>#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+int main() {
+    char input[50];
+    printf("Enter password: ");
+    scanf("%s", input);
+    int len = strlen(input);
+    if (len == 6 && input[0] == 'c' && input[len-1] == 'e')
+        printf("Correct!\n");
+    else
+        printf("Wrong!\n");
+    return 0;
+}</pre>
+      <div class="hint"><b>Hint:</b> 6 characters, shuru "c", end "e" — beech ke 4 kuch bhi.</div>
+      <div class="compile">Compile: <code>gcc 06.c -o 06</code></div>
+    </div>
+  </div>
+
+  <div class="chal">
+    <div class="chal-top"><span class="num">07</span><h3>Number Password</h3><span class="badge easy">Easy</span></div>
+    <div class="chal-body">
+      <label><input type="checkbox"><span class="title">Password ek number hai, integer-condition se check hota hai</span></label>
+      <div class="goal">Goal: Decompiler mein numeric comparison dhoondh (atoi call ke baad).</div>
+<pre>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+int main() {
+    char input[50];
+    printf("Enter password: ");
+    scanf("%s", input);
+    int num = atoi(input);
+    if (num * 3 - 7 == 98)
+        printf("Correct!\n");
+    else
+        printf("Wrong!\n");
+    return 0;
+}</pre>
+      <div class="hint"><b>Hint:</b> Equation ulta solve kar: <code>(98+7)/3</code></div>
+      <div class="compile">Compile: <code>gcc 07.c -o 07</code></div>
+    </div>
+  </div>
+
+  <div class="chal">
+    <div class="chal-top"><span class="num">08</span><h3>Case Sensitivity Trap</h3><span class="badge easy">Easy</span></div>
+    <div class="chal-body">
+      <label><input type="checkbox"><span class="title">String case-insensitive compare hoti hai (strcasecmp)</span></label>
+      <div class="goal">Goal: Kaunsa function use ho raha hai, normal strcmp se kaise alag hai.</div>
+<pre>#include &lt;stdio.h&gt;
+#include &lt;strings.h&gt;
+int main() {
+    char input[50];
+    printf("Enter password: ");
+    scanf("%s", input);
+    if (strcasecmp(input, "ShadowByte") == 0)
+        printf("Correct!\n");
+    else
+        printf("Wrong!\n");
+    return 0;
+}</pre>
+      <div class="hint"><b>Hint:</b> Case se farak nahi padta, koi bhi capitalization chalega.</div>
+      <div class="compile">Compile: <code>gcc 08.c -o 08</code></div>
+    </div>
+  </div>
+
+  <!-- ============ MEDIUM ============ -->
+  <div class="tier-head" id="medium"><h2>🟡 Medium (09-15)</h2><p>Loops, arrays, chhote bit-tricks — pseudocode thoda ghuma hua dikhega</p></div>
+
+  <div class="chal">
+    <div class="chal-top"><span class="num">09</span><h3>Lookup Table</h3><span class="badge medium">Medium</span></div>
+    <div class="chal-body">
+      <label><input type="checkbox"><span class="title">Har character ek table ke through transform hota hai</span></label>
+      <div class="goal">Goal: Table dekh ke reverse-mapping banani padegi.</div>
+<pre>#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+int main() {
+    char input[50];
+    int table[26] = {4,17,0,6,14,19,1,8,15,20,2,13,5,18,9,16,7,3,21,12,22,10,25,11,23,24};
+    char target[] = {17,14,8,19,4}; // length 5
+    printf("Enter password: ");
+    scanf("%s", input);
+    int ok = 1;
+    for (int i = 0; i &lt; 5; i++)
+        if (table[input[i]-'a'] != target[i]) ok = 0;
+    if (ok) printf("Correct!\n");
+    else printf("Wrong!\n");
+    return 0;
+}</pre>
+      <div class="hint"><b>Hint:</b> Har target value ke liye table mein dhoondh kaunsa index match karta hai, wahi letter hai.</div>
+      <div class="compile">Compile: <code>gcc 09.c -o 09</code></div>
+    </div>
+  </div>
+
+  <div class="chal">
+    <div class="chal-top"><span class="num">10</span><h3>Fibonacci Gate</h3><span class="badge medium">Medium</span></div>
+    <div class="chal-body">
+      <label><input type="checkbox"><span class="title">Password ek number hai jo ek Fibonacci-jaisi series check pass kare</span></label>
+      <div class="goal">Goal: Recursive/iterative logic padh ke sahi number nikaal.</div>
+<pre>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+int fib(int n) {
+    if (n &lt;= 1) return n;
+    return fib(n-1) + fib(n-2);
+}
+int main() {
+    char input[50];
+    printf("Enter password: ");
+    scanf("%s", input);
+    int num = atoi(input);
+    if (fib(num) == 55)
+        printf("Correct!\n");
+    else
+        printf("Wrong!\n");
+    return 0;
+}</pre>
+      <div class="hint"><b>Hint:</b> Fibonacci series likh: 0,1,1,2,3,5,8,13,21,34,55 — 55 kaunsi position pe hai.</div>
+      <div class="compile">Compile: <code>gcc 10.c -o 10</code></div>
+    </div>
+  </div>
+
+  <div class="chal">
+    <div class="chal-top"><span class="num">11</span><h3>Bit Flags</h3><span class="badge medium">Medium</span></div>
+    <div class="chal-body">
+      <label><input type="checkbox"><span class="title">Multiple bitwise flags ek saath set hone chahiye</span></label>
+      <div class="goal">Goal: Decompiler mein bitwise AND/OR dekh, kaunse bits set karne hain nikaal.</div>
+<pre>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+int main() {
+    char input[50];
+    printf("Enter password (number): ");
+    scanf("%s", input);
+    int num = atoi(input);
+    int flag1 = (num & 0x01) != 0;
+    int flag2 = (num & 0x04) != 0;
+    int flag3 = (num & 0x10) == 0;
+    if (flag1 && flag2 && flag3)
+        printf("Correct!\n");
+    else
+        printf("Wrong!\n");
+    return 0;
+}</pre>
+      <div class="hint"><b>Hint:</b> Bit 0 aur bit 2 ON hone chahiye, bit 4 OFF — binary mein socho.</div>
+      <div class="compile">Compile: <code>gcc 11.c -o 11</code></div>
+    </div>
+  </div>
+
+  <div class="chal">
+    <div class="chal-top"><span class="num">12</span><h3>Checksum Match</h3><span class="badge medium">Medium</span></div>
+    <div class="chal-body">
+      <label><input type="checkbox"><span class="title">Rolling checksum (har char ka weighted sum) target se match karna hai</span></label>
+      <div class="goal">Goal: Checksum formula samajh ke koi bhi valid string bana.</div>
+<pre>#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+int main() {
+    char input[50];
+    printf("Enter password: ");
+    scanf("%s", input);
+    int len = strlen(input);
+    long checksum = 0;
+    for (int i = 0; i &lt; len; i++)
+        checksum += (long)input[i] * (i + 1);
+    if (checksum == 3200)
+        printf("Correct!\n");
+    else
+        printf("Wrong!\n");
+    return 0;
+}</pre>
+      <div class="hint"><b>Hint:</b> Position (i+1) se multiply hota hai — ek lamba string use kar aur manually calculate kar.</div>
+      <div class="compile">Compile: <code>gcc 12.c -o 12</code></div>
+    </div>
+  </div>
+
+  <div class="chal">
+    <div class="chal-top"><span class="num">13</span><h3>Array Index Puzzle</h3><span class="badge medium">Medium</span></div>
+    <div class="chal-body">
+      <label><input type="checkbox"><span class="title">Input characters ek array ko index karte hain, result check hota hai</span></label>
+      <div class="goal">Goal: Array values dekh ke kaunse indices chahiye nikaal.</div>
+<pre>#include &lt;stdio.h&gt;
+int main() {
+    char input[50];
+    int arr[10] = {5,2,9,1,7,3,8,4,6,0};
+    printf("Enter 3-digit password: ");
+    scanf("%s", input);
+    int a = arr[input[0]-'0'];
+    int b = arr[input[1]-'0'];
+    int c = arr[input[2]-'0'];
+    if (a == 9 && b == 0 && c == 8)
+        printf("Correct!\n");
+    else
+        printf("Wrong!\n");
+    return 0;
+}</pre>
+      <div class="hint"><b>Hint:</b> arr mein value 9, 0, 8 kis index pe hain, wahi digits hain.</div>
+      <div class="compile">Compile: <code>gcc 13.c -o 13</code></div>
+    </div>
+  </div>
+
+  <div class="chal">
+    <div class="chal-top"><span class="num">14</span><h3>Nested Function Check</h3><span class="badge medium">Medium</span></div>
+    <div class="chal-body">
+      <label><input type="checkbox"><span class="title">Password 2 alag functions se guzarta hai, dono sahi honi chahiye</span></label>
+      <div class="goal">Goal: Dono helper functions ko disassembly/decompile mein alag-alag samajh.</div>
+<pre>#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+int check_length(char *s) {
+    return strlen(s) == 7;
+}
+int check_sum(char *s) {
+    int sum = 0;
+    for (int i = 0; s[i]; i++) sum += s[i];
+    return sum == 700;
+}
+int main() {
+    char input[50];
+    printf("Enter password: ");
+    scanf("%s", input);
+    if (check_length(input) && check_sum(input))
+        printf("Correct!\n");
+    else
+        printf("Wrong!\n");
+    return 0;
+}</pre>
+      <div class="hint"><b>Hint:</b> 7 characters, total ASCII-sum 700 — average 100 per char ('d' hai 100).</div>
+      <div class="compile">Compile: <code>gcc 14.c -o 14</code></div>
+    </div>
+  </div>
+
+  <div class="chal">
+    <div class="chal-top"><span class="num">15</span><h3>Simple Caesar Cipher</h3><span class="badge medium">Medium</span></div>
+    <div class="chal-body">
+      <label><input type="checkbox"><span class="title">Input ek fixed shift se encode hoke target se compare hota hai</span></label>
+      <div class="goal">Goal: Shift value nikaal ke target ko ulta decode kar.</div>
+<pre>#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+int main() {
+    char input[50];
+    char target[] = "krphu";
+    printf("Enter password: ");
+    scanf("%s", input);
+    int len = strlen(target);
+    int ok = 1;
+    for (int i = 0; i &lt; len; i++)
+        if ((input[i] - 'a' + 3) % 26 + 'a' != target[i]) ok = 0;
+    if (ok) printf("Correct!\n");
+    else printf("Wrong!\n");
+    return 0;
+}</pre>
+      <div class="hint"><b>Hint:</b> Shift +3 hai, matlab target ko -3 shift karo (ulta Caesar cipher).</div>
+      <div class="compile">Compile: <code>gcc 15.c -o 15</code></div>
+    </div>
+  </div>
+
+  <!-- ============ HARD ============ -->
+  <div class="tier-head" id="hard"><h2>🔴 Hard (16-20)</h2><p>Structs, recursion, thoda obfuscation — zyada patience chahiye</p></div>
+
+  <div class="chal">
+    <div class="chal-top"><span class="num">16</span><h3>Struct-Based State Machine</h3><span class="badge hard">Hard</span></div>
+    <div class="chal-body">
+      <label><input type="checkbox"><span class="title">Password character-by-character ek state machine se guzarta hai</span></label>
+      <div class="goal">Goal: States ka graph banao, sahi path dhoondho jo FINAL state tak pahuche.</div>
+<pre>#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+int main() {
+    char input[50];
+    printf("Enter password: ");
+    scanf("%s", input);
+    int state = 0;
+    int len = strlen(input);
+    for (int i = 0; i &lt; len; i++) {
+        char c = input[i];
+        if (state == 0 && c == 'x') state = 1;
+        else if (state == 1 && c == 'y') state = 2;
+        else if (state == 2 && c == 'z') state = 3;
+        else state = -1;
+        if (state == -1) break;
+    }
+    if (state == 3 && len == 3)
+        printf("Correct!\n");
+    else
+        printf("Wrong!\n");
+    return 0;
+}</pre>
+      <div class="hint"><b>Hint:</b> States 0→1→2→3 ka path trace kar, har transition pe konsa character chahiye.</div>
+      <div class="compile">Compile: <code>gcc 16.c -o 16</code></div>
+    </div>
+  </div>
+
+  <div class="chal">
+    <div class="chal-top"><span class="num">17</span><h3>Recursive Obfuscation</h3><span class="badge hard">Hard</span></div>
+    <div class="chal-body">
+      <label><input type="checkbox"><span class="title">Validation ek recursive function mein chhupi hai</span></label>
+      <div class="goal">Goal: Recursion ko trace kar, base-case aur har call ka kaam samajh.</div>
+<pre>#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+int recurse_check(char *s, int i, int acc) {
+    if (s[i] == '\0') return acc == 42;
+    return recurse_check(s, i + 1, acc + (s[i] - '0'));
+}
+int main() {
+    char input[50];
+    printf("Enter password (digits only): ");
+    scanf("%s", input);
+    if (recurse_check(input, 0, 0))
+        printf("Correct!\n");
+    else
+        printf("Wrong!\n");
+    return 0;
+}</pre>
+      <div class="hint"><b>Hint:</b> Ye sirf digit-sum check hai, recursion se ghabra mat — kisi bhi digits ka sum 42 bana.</div>
+      <div class="compile">Compile: <code>gcc 17.c -o 17</code></div>
+    </div>
+  </div>
+
+  <div class="chal">
+    <div class="chal-top"><span class="num">18</span><h3>Struct Array Validation</h3><span class="badge hard">Hard</span></div>
+    <div class="chal-body">
+      <label><input type="checkbox"><span class="title">Password struct-based rules ke array se check hoti hai</span></label>
+      <div class="goal">Goal: Struct members ko Ghidra mein offset se identify karna padega.</div>
+<pre>#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+typedef struct { int pos; char expected; } Rule;
+int main() {
+    char input[50];
+    Rule rules[3] = {{0,'f'},{2,'g'},{4,'h'}};
+    printf("Enter 5-char password: ");
+    scanf("%s", input);
+    int ok = 1;
+    for (int i = 0; i &lt; 3; i++)
+        if (input[rules[i].pos] != rules[i].expected) ok = 0;
+    if (ok) printf("Correct!\n");
+    else printf("Wrong!\n");
+    return 0;
+}</pre>
+      <div class="hint"><b>Hint:</b> Position 0='f', 2='g', 4='h', baki positions kuch bhi.</div>
+      <div class="compile">Compile: <code>gcc 18.c -o 18</code></div>
+    </div>
+  </div>
+
+  <div class="chal">
+    <div class="chal-top"><span class="num">19</span><h3>Multi-Stage Transform</h3><span class="badge hard">Hard</span></div>
+    <div class="chal-body">
+      <label><input type="checkbox"><span class="title">Input 3 transforms se guzarta hai (reverse → XOR → shift) phir compare</span></label>
+      <div class="goal">Goal: Pipeline ko ulta trace kar — teeno steps backward apply kar.</div>
+<pre>#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+int main() {
+    char input[50];
+    char target[] = {0x23, 0x24, 0x21, 0x24}; // len 4
+    printf("Enter password: ");
+    scanf("%s", input);
+    int len = strlen(input);
+    char buf[50];
+    for (int i = 0; i &lt; len; i++) buf[i] = input[len-1-i]; // reverse
+    for (int i = 0; i &lt; len; i++) buf[i] ^= 0x50;           // xor
+    for (int i = 0; i &lt; len; i++) buf[i] += 1;              // shift
+    int ok = (len == 4);
+    for (int i = 0; i &lt; 4 && ok; i++)
+        if (buf[i] != target[i]) ok = 0;
+    if (ok) printf("Correct!\n");
+    else printf("Wrong!\n");
+    return 0;
+}</pre>
+      <div class="hint"><b>Hint:</b> Ulta order mein undo kar: pehle target se -1, phir XOR 0x50, phir reverse.</div>
+      <div class="compile">Compile: <code>gcc 19.c -o 19</code></div>
+    </div>
+  </div>
+
+  <div class="chal">
+    <div class="chal-top"><span class="num">20</span><h3>The Boss — Combined Challenge</h3><span class="badge hard">Hard</span></div>
+    <div class="chal-body">
+      <label><input type="checkbox"><span class="title">Length + checksum + ek specific character rule, teeno saath</span></label>
+      <div class="goal">Goal: Batch-1 ka sabse bada combo — sabr se tod.</div>
+<pre>#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+int helper(char *s) {
+    int sum = 0;
+    for (int i = 0; s[i]; i++) sum += s[i] * (i % 3 + 1);
+    return sum;
+}
+int main() {
+    char input[50];
+    printf("Enter password: ");
+    scanf("%s", input);
+    int len = strlen(input);
+    if (len != 9) { printf("Wrong!\n"); return 0; }
+    if (input[4] != '_') { printf("Wrong!\n"); return 0; }
+    if (helper(input) == 2650)
+        printf("Correct! You beat the boss.\n");
+    else
+        printf("Wrong!\n");
+    return 0;
+}</pre>
+      <div class="hint"><b>Hint:</b> 9 characters, 5th character (index 4) hamesha '_', baki 8 ka weighted-sum 2650 banana hai.</div>
+      <div class="compile">Compile: <code>gcc 20.c -o 20</code></div>
+    </div>
+  </div>
+
+  <div class="note">
+    👉 <b>Batch-1 complete hone ke baad</b> bata dena, Batch-2 (21-40) ready kar dunga, usme thoda zyada tough aur real-CTF-style (string-encoding, simple anti-debug checks) honge. Jahan-bhi-kisi-challenge-mein-atke, solution nahi-dunga pehle — concept-hint-dunga, khud-nikaalne-ki-koshish-kar, usi-se-asli-skill-banti-hai.
+  </div>
+
+</main>
+
+<footer>RE Crackme Arena — Batch 1 of ongoing series</footer>
+
+<script>
+(function(){
+  const boxes = Array.from(document.querySelectorAll('input[type=checkbox]'));
+  const KEY = 're-crackme-arena-batch1-v1';
+  function load(){
+    try{
+      const saved = JSON.parse(localStorage.getItem(KEY) || '{}');
+      boxes.forEach((b,i)=>{ if(saved[i]) b.checked = true; });
+    }catch(e){}
+  }
+  function save(){
+    try{
+      const state = {};
+      boxes.forEach((b,i)=>{ if(b.checked) state[i]=true; });
+      localStorage.setItem(KEY, JSON.stringify(state));
+    }catch(e){}
+  }
+  function updateProgress(){
+    const done = boxes.filter(b=>b.checked).length;
+    const total = boxes.length;
+    document.getElementById('progress-text').textContent = done + ' / ' + total + ' solved';
+    document.getElementById('bar-fill').style.width = (total? (done/total*100):0) + '%';
+  }
+  boxes.forEach(b=>b.addEventListener('change', ()=>{ save(); updateProgress(); }));
+  load();
+  updateProgress();
+})();
+</script>
+
+</body>
+</html>
